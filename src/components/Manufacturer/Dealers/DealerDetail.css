@@ -1,0 +1,409 @@
+/* DealerDetail.css - Flipkart Theme */
+
+/* Container and Layout */
+.dealer-detail-container {
+  background: linear-gradient(135deg, #f8f9ff 0%, #f0f2f5 100%);
+  min-height: 100vh;
+  padding: 24px;
+}
+
+/* Header Section */
+.header-section {
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.page-title {
+  font-size: 28px !important;
+  font-weight: 600 !important;
+  color: #212121 !important;
+  margin: 0 !important;
+}
+
+/* Loading States */
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #2874f0;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text,
+.error-text {
+  color: #666 !important;
+  margin-top: 16px !important;
+}
+
+/* Card Styles */
+.buyer-info-card {
+  margin-bottom: 32px !important;
+  transition: all 0.3s ease !important;
+}
+
+.card-content {
+  padding: 24px !important;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.section-icon {
+  color: #2874f0 !important;
+  font-size: 24px !important;
+}
+
+.section-title {
+  font-size: 20px !important;
+  font-weight: 600 !important;
+  color: #212121 !important;
+  margin: 0 !important;
+}
+
+.section-divider {
+  margin: 16px 0 24px 0 !important;
+  background-color: #e0e0e0 !important;
+}
+
+/* Info Grid */
+.info-grid {
+  margin-top: 8px !important;
+}
+
+.info-icon {
+  color: #757575 !important;
+  font-size: 20px !important;
+  flex-shrink: 0;
+}
+
+.info-label {
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: #757575 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px !important;
+}
+
+.info-value {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: #212121 !important;
+  word-break: break-word;
+}
+
+/* Orders Section */
+.orders-section {
+  margin-top: 32px;
+}
+
+.orders-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 16px 0;
+}
+
+.order-card {
+  margin-bottom: 24px !important;
+  border-left: 4px solid #2874f0 !important;
+  transition: all 0.3s ease !important;
+}
+
+.order-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+}
+
+.order-content {
+  padding: 20px !important;
+}
+
+/* Order Header */
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: linear-gradient(135deg, #f8f9ff 0%, #fff 100%);
+  border-radius: 8px;
+  border: 1px solid #e3f2fd;
+}
+
+.order-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.order-id-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.order-icon {
+  color: #2874f0 !important;
+  font-size: 20px !important;
+}
+
+.order-id {
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  color: #212121 !important;
+  margin: 0 !important;
+}
+
+.order-chip {
+  background-color: #e3f2fd !important;
+  color: #1976d2 !important;
+  font-weight: 500 !important;
+}
+
+.order-amount {
+  text-align: right;
+}
+
+.amount-label {
+  font-size: 12px !important;
+  color: #757575 !important;
+  font-weight: 500 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px !important;
+}
+
+.amount-value {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  color: #2e7d32 !important;
+  margin: 0 !important;
+}
+
+/* Table Styles */
+.products-table-container {
+  margin-top: 16px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e0e0e0;
+}
+
+.table-container {
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+.table-container .MuiTable-root {
+  background-color: #fff;
+}
+
+.table-container .MuiTableCell-root {
+  border-bottom: 1px solid #f0f0f0 !important;
+  padding: 12px 8px !important;
+}
+
+/* Image Cell */
+.image-cell {
+  width: 80px !important;
+}
+
+.product-image {
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 8px !important;
+  border: 1px solid #e0e0e0 !important;
+}
+
+.product-image-placeholder {
+  width: 48px !important;
+  height: 48px !important;
+  background-color: #f5f5f5 !important;
+  border: 1px solid #e0e0e0 !important;
+}
+
+/* Product Name Cell */
+.product-name-cell {
+  max-width: 200px !important;
+}
+
+.product-name {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #212121 !important;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.2s ease;
+}
+
+.product-name:hover {
+  color: #2874f0 !important;
+}
+
+/* Table Text */
+.table-text {
+  font-size: 12px !important;
+  color: #424242 !important;
+  font-weight: 400 !important;
+  margin: 0 !important;
+}
+
+/* Chips */
+.sku-chip {
+  background-color: #f3e5f5 !important;
+  color: #7b1fa2 !important;
+  font-weight: 500 !important;
+  font-size: 11px !important;
+}
+
+.quantity-chip {
+  background-color: #e8f5e8 !important;
+  color: #2e7d32 !important;
+  font-weight: 600 !important;
+  min-width: 32px !important;
+}
+
+/* Price Text */
+.price-text {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #424242 !important;
+  margin: 0 !important;
+}
+
+.total-price-text {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: #2e7d32 !important;
+  margin: 0 !important;
+}
+
+/* No Orders State */
+.no-orders-card {
+  border: 2px dashed #e0e0e0 !important;
+  background: linear-gradient(135deg, #fafafa 0%, #fff 100%) !important;
+}
+
+.no-orders-content {
+  text-align: center !important;
+  padding: 48px 24px !important;
+}
+
+.no-orders-icon {
+  font-size: 64px !important;
+  color: #bdbdbd !important;
+  margin-bottom: 16px !important;
+}
+
+.no-orders-title {
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  color: #424242 !important;
+  margin-bottom: 8px !important;
+}
+
+.no-orders-subtitle {
+  font-size: 14px !important;
+  color: #757575 !important;
+  margin: 0 !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dealer-detail-container {
+    padding: 16px;
+  }
+  
+  .page-title {
+    font-size: 24px !important;
+  }
+  
+  .order-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  
+  .order-amount {
+    text-align: left;
+    width: 100%;
+  }
+  
+  .info-grid {
+    gap: 16px !important;
+  }
+  
+  .table-container {
+    overflow-x: auto;
+  }
+  
+  .product-name-cell {
+    max-width: 150px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .dealer-detail-container {
+    padding: 12px;
+  }
+  
+  .card-content,
+  .order-content {
+    padding: 16px !important;
+  }
+  
+  .order-header {
+    padding: 12px;
+  }
+  
+  .page-title {
+    font-size: 20px !important;
+  }
+  
+  .section-title {
+    font-size: 18px !important;
+  }
+}
+
+/* Animation for smooth transitions */
+.dealer-detail-container * {
+  transition: all 0.2s ease;
+}
+
+/* Hover effects for interactive elements */
+.order-card:hover .order-id {
+  color: #2874f0 !important;
+}
+
+/* Focus states for accessibility */
+.MuiButton-root:focus,
+.MuiIconButton-root:focus {
+  outline: 2px solid #2874f0;
+  outline-offset: 2px;
+}

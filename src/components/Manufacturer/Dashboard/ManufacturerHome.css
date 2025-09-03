@@ -1,0 +1,208 @@
+/* ManufacturerHome.css */
+
+.enhanced-table-container {
+  border-radius: 16px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+  overflow: hidden !important;
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+.enhanced-table {
+  min-width: 100% !important;
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+.enhanced-table-head {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
+  border-bottom: 2px solid #e2e8f0 !important;
+}
+
+.enhanced-table-head .MuiTableCell-root {
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  color: #1e293b !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  padding: 20px 16px !important;
+  border-bottom: none !important;
+  white-space: nowrap !important;
+  position: relative !important;
+}
+
+.enhanced-table-head .MuiTableCell-root:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 25%;
+  height: 50%;
+  width: 1px;
+  background: #cbd5e1;
+}
+
+.enhanced-table-body .MuiTableRow-root {
+  transition: all 0.2s ease !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+  cursor: pointer !important;
+}
+
+.enhanced-table-body .MuiTableRow-root:hover {
+  background-color: #f8fafc !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+}
+
+.enhanced-table-body .MuiTableRow-root:last-child {
+  border-bottom: none !important;
+}
+
+.enhanced-table-body .MuiTableCell-root {
+  padding: 18px 16px !important;
+  font-size: 14px !important;
+  color: #334155 !important;
+  vertical-align: middle !important;
+  border-bottom: none !important;
+}
+
+.product-name-cell {
+  font-weight: 600 !important;
+  color: #1e293b !important;
+  max-width: 200px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.sku-cell {
+  text-align: center !important;
+}
+
+.sku-badge {
+  font-family: 'Monaco', 'Menlo', monospace !important;
+  font-size: 13px !important;
+  background: #f1f5f9 !important;
+  padding: 8px 12px !important;
+  border-radius: 6px !important;
+  display: inline-block !important;
+  color: #475569 !important;
+  font-weight: 500 !important;
+}
+
+.brand-cell {
+  font-weight: 500 !important;
+  color: #0f172a !important;
+}
+
+.category-cell {
+  color: #64748b !important;
+}
+
+.purchase-date-cell {
+  font-size: 13px !important;
+  color: #64748b !important;
+  text-align: center !important;
+}
+
+.units-sold-cell {
+  font-weight: 600 !important;
+  color: #059669 !important;
+  font-size: 15px !important;
+  text-align: center !important;
+}
+
+.total-sales-cell {
+  font-weight: 700 !important;
+  color: #dc2626 !important;
+  font-size: 16px !important;
+  text-align: right !important;
+}
+
+.no-products-row {
+  background: #fafbfc !important;
+}
+
+.no-products-cell {
+  padding: 60px 20px !important;
+  text-align: center !important;
+  color: #64748b !important;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+}
+
+.no-products-icon {
+  font-size: 48px !important;
+  color: #cbd5e1 !important;
+  margin-bottom: 16px !important;
+  display: block !important;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .manufacturer-table-head-cell,
+  .manufacturer-table-body-cell {
+    padding: 14px 12px;
+    font-size: 13px;
+  }
+  
+  .manufacturer-table-body-cell.product-name {
+    max-width: 150px;
+  }
+}
+
+@media (max-width: 768px) {
+  .manufacturer-table-container {
+    border-radius: 12px;
+    margin: 0 -8px;
+  }
+  
+  .manufacturer-table-head-cell,
+  .manufacturer-table-body-cell {
+    padding: 12px 8px;
+    font-size: 12px;
+  }
+  
+  .manufacturer-table-head-cell {
+    font-size: 11px;
+  }
+  
+  .manufacturer-table-body-cell.product-name {
+    max-width: 120px;
+  }
+  
+  .manufacturer-table-body-cell.sku-number {
+    font-size: 11px;
+    padding: 6px 8px;
+  }
+}
+
+/* Column-specific alignments */
+.text-center {
+  text-align: center !important;
+}
+
+.text-right {
+  text-align: right !important;
+}
+
+.text-left {
+  text-align: left !important;
+}
+
+/* Custom scrollbar for table container */
+.manufacturer-table-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.manufacturer-table-container::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.manufacturer-table-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.manufacturer-table-container::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
