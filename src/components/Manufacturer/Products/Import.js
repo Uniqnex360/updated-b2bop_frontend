@@ -221,7 +221,7 @@ function Import() {
          
         </label>
         <Box>
-        <FormControl fullWidth error={locationError}>
+        {/* <FormControl fullWidth error={locationError}>
   <InputLabel>Industry</InputLabel>
   <Select
     label="Industry"
@@ -243,7 +243,7 @@ function Import() {
     ))}
   </Select>
   {locationError && <FormHelperText>Industry must be selected</FormHelperText>}
-</FormControl>
+</FormControl> */}
 
 
 </Box>

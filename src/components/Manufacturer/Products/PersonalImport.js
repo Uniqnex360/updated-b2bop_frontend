@@ -297,7 +297,7 @@ const PersonalImport = () => {
 
 
 <Box sx={{marginTop:'20px'}}>
-        <FormControl fullWidth error={locationError}>
+        {/* <FormControl fullWidth error={locationError}>
   <InputLabel>Industry</InputLabel>
   <Select
     label="Industry"
@@ -319,7 +319,7 @@ const PersonalImport = () => {
     ))}
   </Select>
   {locationError && <FormHelperText>Industry must be selected</FormHelperText>}
-</FormControl>
+</FormControl> */}
 
 
 </Box>
