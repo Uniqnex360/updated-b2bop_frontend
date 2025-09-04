@@ -1,3 +1,4 @@
+// src\components\Manufacturer\Orders\OrderList.js
 import React, { useEffect, useState, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
@@ -128,6 +129,17 @@ const OrderList = () => {
   const initialPage = parseInt(queryParams.get("page"), 10) || 0;
   const [page, setPage] = useState(initialPage);
 
+  const filteredOrders = orders.filter((order) => {
+    const normalizedSearchTerm = searchTerm?.toString().trim().toLowerCase();
+    const orderIdMatch = order.order_id?.toString().toLowerCase().includes(normalizedSearchTerm);
+    const dealerNameMatch = order.dealer_name?.toLowerCase().includes(normalizedSearchTerm);
+    const destinationMatch = (order.address?.city?.toLowerCase() + ', ' + order.address?.country?.toLowerCase()).includes(normalizedSearchTerm);
+    const paymentStatusMatch = order.payment_status?.toLowerCase().includes(normalizedSearchTerm);
+    const deliveryStatusMatch = order.delivery_status?.toLowerCase().includes(normalizedSearchTerm);
+    
+    return orderIdMatch || dealerNameMatch || destinationMatch || paymentStatusMatch || deliveryStatusMatch;
+  });
+
   // Fetch dealers
   const fetchDealers = useCallback(async () => {
     setLoadingDealers(true);
@@ -157,7 +169,7 @@ const OrderList = () => {
     }
   }, [user.manufacture_unit_id]);
 
-  // Fetch orders (integrates with updated backend search filter)
+  // Fetch orders
   const fetchOrders = useCallback(async () => {
     setLoading(true);
     if (!user || !user.manufacture_unit_id) {
@@ -470,7 +482,6 @@ const OrderList = () => {
                 value={searchTerm}
                 size="small"
                 onChange={handleSearchChange}
-                // Updated placeholder to reflect backend's updated search filter:
                 placeholder="Search by Order ID, Dealer Name, City, Country, Delivery or Payment Status"
                 sx={{ width: { xs: "100%", sm: "300px" }, borderRadius: "8px" }}
                 InputProps={{
@@ -510,9 +521,9 @@ const OrderList = () => {
                   whiteSpace: "nowrap",
                 }}
               >
-                <Typography variant="body2">
-                  Total Orders: <strong>{totalOrders}</strong>
-                </Typography>
+            <Typography variant="body2">
+  Total Orders: <strong>{filteredOrders.length}</strong>
+</Typography>
               </Box>
             </Stack>
           </Grid>
