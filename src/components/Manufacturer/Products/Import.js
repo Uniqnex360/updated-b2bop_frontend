@@ -251,13 +251,7 @@ function Import() {
 
       </Box>
   <Box sx={{marginTop: '56px'}}>
-      <TextField
-        disabled
-        fullWidth
-        placeholder="No file selected"
-        value={file ? file.name : ''}
-        sx={{ flexGrow: 1 }}
-      />
+      
 </Box>
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
