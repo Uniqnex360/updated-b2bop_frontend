@@ -1,13 +1,7 @@
+
 import React, { useState } from "react";
 import {
   ShoppingCart as ShoppingCartIcon,
-  LocalOffer as LocalOfferIcon,
-  TrendingUp as TrendingUpIcon,
-  AttachMoney as AttachMoneyIcon,
-  Inventory2 as Inventory2Icon,
-  MonetizationOn as MonetizationOnIcon,
-  People as PeopleIcon,
-  Repeat as RepeatIcon,
   ArrowUpward as ArrowUpwardIcon,
   AccessTime as AccessTimeIcon,
   CheckCircleOutline as CheckCircleOutlineIcon,
@@ -15,7 +9,6 @@ import {
 } from "@mui/icons-material";
 import {
   Box,
-  CircularProgress,
   Typography,
   Grid,
   Card,
@@ -48,9 +41,11 @@ import {
   PointElement,
   Tooltip,
   Legend,
+  Title,
+  Filler,
 } from "chart.js";
 
-// Register Chart.js components
+// Register Chart.js components (added Title, Filler to match ManufacturerHome)
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -58,13 +53,28 @@ ChartJS.register(
   LineElement,
   PointElement,
   Tooltip,
-  Legend
+  Legend,
+  Title,
+  Filler
 );
+
+// Custom background plugin (same as ManufacturerHome)
+const backgroundPlugin = {
+  id: 'customCanvasBackgroundColor',
+  beforeDraw: (chart, args, options) => {
+    const { ctx } = chart;
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-over';
+    ctx.fillStyle = options.color || '#ffffff';
+    ctx.fillRect(0, 0, chart.width, chart.height);
+    ctx.restore();
+  },
+};
 
 const DashboardHome = () => {
   const navigate = useNavigate();
 
-  // Static data for all dashboard sections
+  // Static data for dashboard sections
   const staticDashboardData = {
     total_spend: 154500.75,
     total_order_count: 520,
@@ -155,7 +165,7 @@ const DashboardHome = () => {
     { id: '5', name: 'Safety Supplies' },
   ];
 
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [orderStatus, setOrderStatus] = useState('');
   const [productCategory, setProductCategory] = useState('');
@@ -175,7 +185,7 @@ const DashboardHome = () => {
     return true;
   });
 
-  // UPDATED KPI CARD DATA
+  // KPI cards
   const analyticsData = [
     {
       title: 'Total Orders',
@@ -215,56 +225,165 @@ const DashboardHome = () => {
     },
   ];
 
-  const barDataBrands = {
-    labels: staticDashboardData.top_selling_brands.map(brand => brand.brand_name),
+  // SAME STATIC CHART DATA/OPTIONS AS ManufacturerHome
+  // Bar chart (Top 5 Products by Units Sold)
+  const barChartLabels = ['Air Brake Hoses', 'Adhesives', 'Solar Lanterns', 'Bushings', 'Capacitors'];
+  const barChartDataValues = [250, 190, 175, 150, 140];
+
+  const barChartData = {
+    labels: barChartLabels,
     datasets: [
       {
-        label: "Products Sold",
-        data: staticDashboardData.top_selling_brands.map(brand => brand.units_sold),
-        backgroundColor: "rgba(33, 150, 243, 0.8)",
-        borderColor: "rgba(33, 150, 243, 1)",
+        label: "Units Sold",
+        data: barChartDataValues,
+        backgroundColor: [
+          'rgba(59, 130, 246, 0.8)',
+          'rgba(147, 197, 253, 0.8)',
+          'rgba(191, 219, 254, 0.8)',
+          'rgba(219, 234, 254, 0.8)',
+          'rgba(239, 246, 255, 0.8)',
+        ],
+        borderColor: [
+          'rgba(29, 78, 216, 1)',
+          'rgba(59, 130, 246, 1)',
+          'rgba(147, 197, 253, 1)',
+          'rgba(191, 219, 254, 1)',
+          'rgba(219, 234, 254, 1)',
+        ],
         borderWidth: 1,
-        borderRadius: 4,
+        borderRadius: 8,
+        hoverBackgroundColor: [
+          'rgba(29, 78, 216, 0.9)',
+          'rgba(59, 130, 246, 0.9)',
+          'rgba(147, 197, 253, 0.9)',
+          'rgba(191, 219, 254, 0.9)',
+          'rgba(219, 234, 254, 0.9)',
+        ],
       },
     ],
   };
 
-  const lineDataCategories = {
-    labels: staticDashboardData.top_selling_categorys.map(category => category.category_name),
-    datasets: [
-      {
-        label: "Products Sold",
-        data: staticDashboardData.top_selling_categorys.map(category => category.units_sold),
-        backgroundColor: "rgba(33, 150, 243, 0.1)",
-        borderColor: "rgba(33, 150, 243, 1)",
-        borderWidth: 3,
-        fill: true,
-        tension: 0.4,
-        pointBackgroundColor: "rgba(33, 150, 243, 1)",
-        pointBorderColor: "#fff",
-        pointBorderWidth: 2,
-        pointRadius: 5,
-        pointHoverRadius: 7,
-      },
-    ],
-  };
-
-  const chartOptions = {
+  const barChartOptions = {
     responsive: true,
-    maintainAspectRatio: false,
     plugins: {
-      legend: { position: "top" },
+      legend: {
+        position: 'top',
+        labels: {
+          color: '#1e293b',
+          font: { size: 14, weight: '600' },
+          padding: 20,
+        },
+      },
+      title: {
+        display: true,
+        text: 'Top 5 Products Purchased',
+        color: '#1e293b',
+        font: { size: 18, weight: '700' },
+        padding: { top: 10, bottom: 20 },
+      },
       tooltip: {
+        backgroundColor: 'rgba(59, 130, 246, 0.95)',
+        titleFont: { size: 14, weight: '600' },
+        bodyFont: { size: 12 },
+        padding: 12,
+        cornerRadius: 8,
+        titleColor: '#ffffff',
+        bodyColor: '#f8fafc',
         callbacks: {
-          label: (context) => {
-            const dataPoint = context.raw;
-            const label = context.dataset.label;
-            return `${label}: ${dataPoint}`;
-          },
+          label: (context) => `${context.label}: ${context.raw} units`,
         },
       },
     },
-    scales: { x: { display: true }, y: { beginAtZero: true } },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: { color: '#475569', font: { size: 12, weight: '500' }, maxRotation: 45, minRotation: 0 },
+        offset: true,
+      },
+      y: {
+        grid: { color: 'rgba(203, 213, 225, 0.5)', drawBorder: false },
+        ticks: { color: '#475569', font: { size: 12, weight: '500' }, stepSize: 1 },
+        beginAtZero: true,
+      },
+    },
+    layout: { padding: 20 },
+    maintainAspectRatio: false,
+    animation: { duration: 1000, easing: 'easeOutQuart' },
+  };
+
+  // Line/Area chart (Key Business Trends over Time)
+  const trendsLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const revenueData = [15000, 18000, 17000, 22000, 24000, 26000, 25000, 27000, 29000, 31000, 34000, 38000];
+
+  const lineTrendChartData = {
+    labels: trendsLabels,
+    datasets: [
+      {
+        label: "Revenue",
+        data: revenueData,
+        borderColor: "#3b82f6",
+        backgroundColor: "rgba(59, 130, 246, 0.1)",
+        tension: 0.35,
+        borderWidth: 2,
+        pointRadius: 3,
+        fill: true,
+      },
+    ]
+  };
+
+  const lineTrendChartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',
+        labels: { color: '#1e293b', font: { size: 14, weight: '600' }, padding: 20 },
+      },
+      title: {
+        display: true,
+        text: 'Key Business Trends over Time',
+        color: '#1e293b',
+        font: { size: 18, weight: '700' },
+        padding: { top: 10, bottom: 20 },
+      },
+      tooltip: {
+        mode: 'index',
+        intersect: false,
+        backgroundColor: "#f1f5fd",
+        titleColor: "#1e293b",
+        bodyColor: "#3b82f6",
+        borderColor: "#bae6fd",
+        borderWidth: 2,
+        cornerRadius: 12,
+        padding: 14,
+        callbacks: {
+          title: (context) => `Month: ${context[0].label}`,
+          label: (context) => {
+            const value = context.raw;
+            return `Revenue: $${Number(value).toLocaleString()}`;
+          }
+        }
+      },
+    },
+    scales: {
+      x: {
+        title: { display: true, text: 'Time Period (Months)', color: '#475569', font: { size: 14, weight: '600' }, padding: { top: 10 } },
+        grid: { display: false, drawBorder: false },
+        ticks: { color: "#64748b", font: { size: 13, weight: "500" } },
+      },
+      y: {
+        title: { display: true, text: 'Value', color: '#475569', font: { size: 14, weight: '600' }, padding: { bottom: 10 } },
+        grid: { color: "rgba(203,213,225,0.5)", drawBorder: false },
+        ticks: {
+          color: "#64748b",
+          font: { size: 13, weight: "500" },
+          callback: (value) => (value >= 1000 ? `$${(value / 1000).toFixed(1)}K` : `$${value}`),
+        },
+        beginAtZero: true,
+      }
+    },
+    layout: { padding: { top: 20, left: 10, right: 10, bottom: 10 } },
+    maintainAspectRatio: false,
+    animation: { duration: 1200, easing: "easeOutQuart" }
   };
 
   const handleProductClick = (productId) => {
@@ -336,7 +455,7 @@ const DashboardHome = () => {
           <DatePicker
             label="Date"
             value={selectedDate}
-            onChange={handleDateChange}
+            onChange={setSelectedDate}
             slotProps={{
               textField: {
                 size: 'small',
@@ -353,10 +472,9 @@ const DashboardHome = () => {
 
       <Fade in={!loading} timeout={600}>
         <Box>
-          
-                   <Typography variant="h6" sx={{ fontWeight: 600, color: '#475569', mb: 3 }}>
-                     Quick Summary
-                   </Typography>
+          <Typography variant="h6" sx={{ fontWeight: 600, color: '#475569', mb: 3 }}>
+            Quick Summary
+          </Typography>
 
           {/* Analytics Section */}
           <Grid container spacing={3} sx={{ mb: 4 }}>
@@ -414,7 +532,7 @@ const DashboardHome = () => {
             ))}
           </Grid>
 
-          {/* Charts Section */}
+          {/* Charts Section (now same as ManufacturerHome) */}
           <Grid container spacing={3} sx={{ mb: 4 }}>
             <Grid item xs={12} md={6}>
               <Paper
@@ -429,14 +547,10 @@ const DashboardHome = () => {
                   '&:hover': { boxShadow: '0 8px 30px rgba(0, 0, 0, 0.12)' },
                 }}
               >
-                <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b', mb: 2 }}>
-                  Top Selling Brands
-                </Typography>
-                <div className="h-60 sm:h-72">
-                  <Bar data={barDataBrands} options={chartOptions} id="bar-chart-brands" />
-                </div>
+                <Bar data={barChartData} options={barChartOptions} plugins={[backgroundPlugin]} />
               </Paper>
             </Grid>
+
             <Grid item xs={12} md={6}>
               <Paper
                 elevation={0}
@@ -445,17 +559,23 @@ const DashboardHome = () => {
                   borderRadius: '12px',
                   boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
                   p: 3,
-                  height: '400px',
-                  transition: 'box-shadow 0.3s ease',
-                  '&:hover': { boxShadow: '0 8px 30px rgba(0, 0, 0, 0.12)' },
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  textAlign: 'center',
                 }}
               >
-                <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b', mb: 2 }}>
-                  Top Selling Categories
+                <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b', mb: 2, alignSelf: 'flex-start' }}>
+                  Key Business Trends over Time
                 </Typography>
-                <div className="h-60 sm:h-72">
-                  <Line data={lineDataCategories} options={chartOptions} id="line-chart-categories" />
-                </div>
+                <Box sx={{ width: "100%", height: 260 }}>
+                  <Line
+                    data={lineTrendChartData}
+                    options={lineTrendChartOptions}
+                    plugins={[backgroundPlugin]}
+                  />
+                </Box>
               </Paper>
             </Grid>
           </Grid>
