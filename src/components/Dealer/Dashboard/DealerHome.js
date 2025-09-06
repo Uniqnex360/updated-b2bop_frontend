@@ -5,6 +5,13 @@ import {
   TrendingUp as TrendingUpIcon,
   AttachMoney as AttachMoneyIcon,
   Inventory2 as Inventory2Icon,
+  MonetizationOn as MonetizationOnIcon,
+  People as PeopleIcon,
+  Repeat as RepeatIcon,
+  ArrowUpward as ArrowUpwardIcon,
+  AccessTime as AccessTimeIcon,
+  CheckCircleOutline as CheckCircleOutlineIcon,
+  HourglassEmpty as HourglassEmptyIcon,
 } from "@mui/icons-material";
 import {
   Box,
@@ -168,34 +175,43 @@ const DashboardHome = () => {
     return true;
   });
 
+  // UPDATED KPI CARD DATA
   const analyticsData = [
     {
-      title: "Total Spendings",
-      value: `$${staticDashboardData.total_spend.toFixed(2)}`,
-      icon: <AttachMoneyIcon fontSize="large" className="text-green-600" />,
-      color: "bg-green-100 border-green-500 text-green-700",
-      onClick: () => navigate("/dealer/orders", { state: { filter: { payment_status: "Completed" } } }),
-    },
-    {
-      title: "Total Orders",
-      value: staticDashboardData.total_order_count,
-      icon: <ShoppingCartIcon fontSize="large" className="text-blue-600" />,
-      color: "bg-blue-100 border-blue-500 text-blue-700",
+      title: 'Total Orders',
+      value: '1,247',
+      change: '+8.2%',
+      icon: <ShoppingCartIcon fontSize="large" />,
+      color: '#22c55e',
+      bgColor: '#dcfce7',
       onClick: () => navigate("/dealer/orders"),
     },
     {
-      title: "Pending Payments",
-      value: staticDashboardData.pending_order_count,
-      icon: <TrendingUpIcon fontSize="large" className="text-red-600" />,
-      color: "bg-red-100 border-red-500 text-red-700",
-      onClick: () => navigate("/dealer/orders", { state: { filter: { payment_status: "Pending" } } }),
+      title: 'Orders in Progress',
+      value: '22',
+      change: '+5.5%',
+      icon: <AccessTimeIcon fontSize="large" />,
+      color: '#f59e0b',
+      bgColor: '#fef3c7',
+      onClick: () => navigate("/dealer/orders", { state: { filter: { order_status: "Pending" } } }),
     },
     {
-      title: "Re-Orders",
-      value: staticDashboardData.re_order_count,
-      icon: <Inventory2Icon fontSize="large" className="text-purple-600" />,
-      color: "bg-purple-100 border-purple-500 text-purple-700",
-      onClick: () => navigate("/dealer/orders", { state: { is_reorder: "yes" } }),
+      title: 'Delivered Orders',
+      value: '1,225',
+      change: '+10.2%',
+      icon: <CheckCircleOutlineIcon fontSize="large" />,
+      color: '#3b82f6',
+      bgColor: '#dbeafe',
+      onClick: () => navigate("/dealer/orders", { state: { filter: { order_status: "Delivered" } } }),
+    },
+    {
+      title: 'Pending Payments',
+      value: '15',
+      change: '+2.1%',
+      icon: <HourglassEmptyIcon fontSize="large" />,
+      color: '#ef4444',
+      bgColor: '#fee2e2',
+      onClick: () => navigate("/dealer/orders", { state: { filter: { payment_status: "Pending" } } }),
     },
   ];
 
@@ -337,17 +353,10 @@ const DashboardHome = () => {
 
       <Fade in={!loading} timeout={600}>
         <Box>
-          <Typography
-            variant="h4"
-            sx={{
-              fontWeight: 700,
-              color: '#1e293b',
-              mb: 4,
-              textAlign: { xs: 'center', md: 'left' },
-            }}
-          >
-            Dealer Dashboard
-          </Typography>
+          
+                   <Typography variant="h6" sx={{ fontWeight: 600, color: '#475569', mb: 3 }}>
+                     Quick Summary
+                   </Typography>
 
           {/* Analytics Section */}
           <Grid container spacing={3} sx={{ mb: 4 }}>
@@ -358,37 +367,46 @@ const DashboardHome = () => {
                   sx={{
                     bgcolor: '#ffffff',
                     borderRadius: '12px',
-                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)',
                     transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-                    borderLeft: `5px solid ${item.color.split(' ')[2].split('-')[1]}`,
+                    height: '100%',
                     '&:hover': {
                       transform: 'translateY(-4px)',
-                      boxShadow: '0 8px 30px rgba(0, 0, 0, 0.12)',
+                      boxShadow: '0 8px 30px rgba(0, 0, 0, 0.1)',
                       cursor: 'pointer',
                     },
-                    p: 2,
                   }}
                 >
-                  <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <CardContent sx={{ p: 2.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Box>
+                      <Typography variant="body2" color="text.secondary">
+                        {item.title}
+                      </Typography>
+                      <Typography variant="h5" sx={{ fontWeight: 'bold', my: 0.5, color: '#1e293b' }}>
+                        {item.value}
+                      </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <ArrowUpwardIcon sx={{ color: '#16a34a', fontSize: '1rem' }} />
+                        <Typography variant="caption" color="text.secondary">
+                          <Box component="span" sx={{ color: '#16a34a', fontWeight: 'medium' }}>
+                            {item.change}
+                          </Box>
+                          {' vs last period'}
+                        </Typography>
+                      </Box>
+                    </Box>
                     <Box
                       sx={{
-                        bgcolor: `${item.color.split(' ')[0]}`.replace('bg', 'rgba').replace('100', '15'),
-                        p: 1.5,
-                        borderRadius: '50%',
+                        width: 48,
+                        height: 48,
+                        borderRadius: 2,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
+                        bgcolor: item.bgColor,
                       }}
                     >
-                      {item.icon}
-                    </Box>
-                    <Box>
-                      <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 500 }}>
-                        {item.title}
-                      </Typography>
-                      <Typography variant="h5" sx={{ fontWeight: 700, color: '#1e293b' }}>
-                        {item.value}
-                      </Typography>
+                      {React.cloneElement(item.icon, { sx: { color: item.color, fontSize: 28 } })}
                     </Box>
                   </CardContent>
                 </Card>

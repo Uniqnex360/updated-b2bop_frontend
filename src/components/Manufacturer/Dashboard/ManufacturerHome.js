@@ -23,6 +23,7 @@ import {
   IconButton,
   InputLabel
 } from "@mui/material";
+import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -48,6 +49,15 @@ import {
   Repeat as RepeatIcon,
   KeyboardArrowDown as KeyboardArrowDownIcon,
   KeyboardArrowUp as KeyboardArrowUpIcon,
+  ArrowUpward as ArrowUpwardIcon,
+  Layers as LayersIcon,
+  Category as CategoryIcon,
+  LocalOffer as LocalOfferIcon,
+  Domain as DomainIcon,
+  CalendarToday as CalendarTodayIcon,
+  ViewWeek as ViewWeekIcon,
+  EventNote as EventNoteIcon,
+  Event as EventIcon,
 } from "@mui/icons-material";
 import './ManufacturerHome.css';
 
@@ -613,6 +623,114 @@ const ManufacturerHome = () => {
     navigate(`/manufacturer/dealer-details/${username}`);
   };
 
+  // FIRST ROW OF KPI CARDS
+  const cardData = [
+    {
+      title: 'Total Revenue',
+      value: '$2,847,329',
+      change: '+12.5%',
+      icon: <MonetizationOnIcon />,
+      color: '#3b82f6',
+      bgColor: '#dbeafe',
+    },
+    {
+      title: 'Total Orders',
+      value: '1,247',
+      change: '+8.2%',
+      icon: <ShoppingCartIcon />,
+      color: '#22c55e',
+      bgColor: '#dcfce7',
+    },
+    {
+      title: 'Active Buyers',
+      value: '847',
+      change: '+15.3%',
+      icon: <PeopleIcon />,
+      color: '#8b5cf6',
+      bgColor: '#ede9fe',
+    },
+    {
+      title: 'Average Order Value',
+      value: '$2,284',
+      change: '+5.7%',
+      icon: <ShoppingCartCheckoutIcon />,
+      color: '#818cf8',
+      bgColor: '#e0e7ff',
+    },
+  ];
+
+  // SECOND ROW OF KPI CARDS
+  const secondRowCardData = [
+    {
+      title: 'Number of SKU’s',
+      value: '2,500',
+      change: '+10.1%',
+      icon: <LayersIcon />,
+      color: '#f59e0b',
+      bgColor: '#fef3c7',
+    },
+    {
+      title: 'Number. of Industries',
+      value: '15',
+      change: '+2.0%',
+      icon: <DomainIcon />,
+      color: '#ef4444',
+      bgColor: '#fee2e2',
+    },
+    {
+      title: 'Number. of Brands',
+      value: '75',
+      change: '+7.8%',
+      icon: <LocalOfferIcon />,
+      color: '#10b981',
+      bgColor: '#dcfce7',
+    },
+    {
+      title: 'Number. of End-Level Categories',
+      value: '250',
+      change: '+4.3%',
+      icon: <CategoryIcon />,
+      color: '#6366f1',
+      bgColor: '#eef2ff',
+    },
+  ];
+
+  // THIRD ROW OF KPI CARDS
+  const salesAnalyticsData = [
+    {
+      title: 'Daily revenue',
+      value: '$9,250',
+      change: '+2.5%',
+      icon: <CalendarTodayIcon />,
+      color: '#0ea5e9',
+      bgColor: '#e0f7fa',
+    },
+    {
+      title: 'Weekly revenue',
+      value: '$65,400',
+      change: '+8.1%',
+      icon: <ViewWeekIcon />,
+      color: '#f59e0b',
+      bgColor: '#fff7ed',
+    },
+    {
+      title: 'Monthly revenue',
+      value: '$245,000',
+      change: '+12.3%',
+      icon: <EventNoteIcon />,
+      color: '#10b981',
+      bgColor: '#dcfce7',
+    },
+    {
+      title: 'Annual revenue',
+      value: '$2,940,000',
+      change: '+15.8%',
+      icon: <EventIcon />,
+      color: '#8b5cf6',
+      bgColor: '#ede9fe',
+    },
+  ];
+
   return (
     <Box sx={{ bgcolor: '#f5f7fa', minHeight: '100vh', p: { xs: 2, md: 4 } }}>
       {/* Search Bar & Filter Dropdowns */}
@@ -704,463 +822,539 @@ const ManufacturerHome = () => {
             }}
           />
         </LocalizationProvider>
-
       </Box>
 
       <Fade in={!loading} timeout={600}>
         <Box>
-          {loading ? (
-            <Grid item xs={12} sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "50vh" }}>
-              <CircularProgress size={48} sx={{ color: '#3b82f6' }} />
-            </Grid>
-          ) : (
-            <Box>
-              {error && (
-                <Typography
-                  variant="body1"
-                  sx={{
-                    color: '#ef4444',
-                    textAlign: 'center',
-                    bgcolor: '#fee2e2',
-                    p: 2,
-                    borderRadius: '8px',
-                    mb: 3,
-                  }}
-                >
-                  {error}
-                </Typography>
-              )}
-              <Typography
-                variant="h4"
-                sx={{
-                  fontWeight: 700,
-                  color: '#1e293b',
-                  mb: 4,
-                  textAlign: { xs: 'center', md: 'left' },
-                }}
-              >
-                Manufacturer Dashboard
-              </Typography>
-
-              {/* Summary Cards */}
-              <Grid container spacing={3} sx={{ mb: 4 }}>
-                {[
-                  {
-                    title: 'Total Sales',
-                    value: `$${dashboardData?.total_sales || '0'}`,
-                    icon: <MonetizationOnIcon sx={{ fontSize: 40, color: '#3b82f6' }} />,
-                    color: '#3b82f6',
-                    onClick: handleTotalSpendingsClick,
-                  },
-                  {
-                    title: 'Active Buyers',
-                    value: dashboardData?.dealer_count || '0',
-                    icon: <PeopleIcon sx={{ fontSize: 40, color: '#8b5cf6' }} />,
-                    color: '#8b5cf6',
-                    onClick: handleActiveBuyerClick,
-                  },
-                  {
-                    title: 'Pending Orders',
-                    value: dashboardData?.pending_order_count || '0',
-                    icon: <ShoppingCartIcon sx={{ fontSize: 40, color: '#f59e0b' }} />,
-                    color: '#f59e0b',
-                    onClick: handlePendingClick,
-                  },
-                  {
-                    title: 'Re-Orders',
-                    value: dashboardData?.re_order_count || '0',
-                    icon: <RepeatIcon sx={{ fontSize: 40, color: '#10b981' }} />,
-                    color: '#10b981',
-                    onClick: handleReorderClick,
-                  },
-                ].map((card, index) => (
-                  <Grid item xs={12} sm={6} md={3} key={index}>
-                    <Card
-                      onClick={card.onClick}
-                      sx={{
-                        bgcolor: '#ffffff',
-                        borderRadius: '12px',
-                        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
-                        transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-                        borderLeft: `5px solid ${card.color}`,
-                        '&:hover': {
-                          transform: 'translateY(-4px)',
-                          boxShadow: '0 8px 30px rgba(0, 0, 0, 0.12)',
-                          cursor: 'pointer',
-                        },
-                        p: 2,
-                      }}
-                    >
-                      <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <Box
-                          sx={{
-                            bgcolor: `${card.color}15`,
-                            p: 1.5,
-                            borderRadius: '50%',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                        >
-                          {card.icon}
-                        </Box>
-                        <Box>
-                          <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 500 }}>
-                            {card.title}
-                          </Typography>
-                          <Typography variant="h5" sx={{ fontWeight: 700, color: '#1e293b' }}>
-                            {card.value}
-                          </Typography>
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                ))}
-              </Grid>
-
-              {/* Charts */}
-              <Grid container spacing={3} sx={{ mb: 4 }}>
-                <Grid item xs={12} md={6}>
-                  <Paper
-                    elevation={0}
-                    sx={{
-                      bgcolor: '#ffffff',
-                      borderRadius: '12px',
-                      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
-                      p: 3,
-                      height: '400px',
-                      transition: 'box-shadow 0.3s ease',
-                      '&:hover': { boxShadow: '0 8px 30px rgba(0, 0, 0, 0.12)' },
-                    }}
-                  >
-                    <Bar data={barChartData} options={barChartOptions} plugins={[backgroundPlugin]} />
-                  </Paper>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <Paper
-                    elevation={0}
-                    sx={{
-                      bgcolor: '#ffffff',
-                      borderRadius: '12px',
-                      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
-                      p: 3,
-                      height: '400px',
-                      transition: 'box-shadow 0.3s ease',
-                      '&:hover': { boxShadow: '0 8px 30px rgba(0, 0, 0, 0.12)' },
-                    }}
-                  >
-                    <Line data={lineChartData} options={lineChartOptions} plugins={[backgroundPlugin]} />
-                  </Paper>
-                </Grid>
-              </Grid>
-
-              {/* Top Selling Products */}
-              <Box sx={{ mb: 4 }}>
-                <Paper
-                  elevation={0}
+          {error && (
+            <Typography
+              variant="body1"
+              sx={{
+                color: '#ef4444',
+                textAlign: 'center',
+                bgcolor: '#fee2e2',
+                p: 2,
+                borderRadius: '8px',
+                mb: 3,
+              }}
+            >
+              {error}
+            </Typography>
+          )}
+          
+          <Typography variant="h6" sx={{ fontWeight: 600, color: '#475569', mb: 3 }}>
+            Quick Summary
+          </Typography>
+          
+          {/* Summary Cards - First Row */}
+          <Grid container spacing={3} sx={{ mb: 4 }}>
+            {cardData.map((card, index) => (
+              <Grid item xs={12} sm={6} md={3} key={index}>
+                <Card
                   sx={{
                     bgcolor: '#ffffff',
                     borderRadius: '12px',
-                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
-                    p: 3,
+                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)',
+                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                    height: '100%',
+                    '&:hover': {
+                      transform: 'translateY(-4px)',
+                      boxShadow: '0 8px 30px rgba(0, 0, 0, 0.1)',
+                      cursor: 'pointer',
+                    },
                   }}
                 >
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                    <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b' }}>
-                      Top Selling Products
-                    </Typography>
-                    <FormControl size="small" sx={{ minWidth: 200 }}>
-                      <Select
-                        value={selectedCategory}
-                        onChange={handleDashboardCategoryChange}
-                        displayEmpty
-                        sx={{
-                          '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e2e8f0' },
-                          '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#3b82f6' },
-                          '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#3b82f6' },
-                        }}
-                      >
-                        <MenuItem value="">All Categories</MenuItem>
-                        {dashboardCategory?.map((category) => (
-                          <MenuItem key={category.id} value={category.id}>
-                            {category.name}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </Box>
-                  
-                  <TableContainer component={Paper} sx={{ borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-                    <Table aria-label="top selling products">
-                      <TableHead sx={{ bgcolor: '#f8fafc' }}>
-                        <TableRow>
-                          <TableCell />
-                          <TableCell sx={{ fontWeight: 600, color: '#1e293b' }}>Product</TableCell>
-                          <TableCell sx={{ fontWeight: 600, color: '#1e293b' }} align="center">SKU No</TableCell>
-                          <TableCell sx={{ fontWeight: 600, color: '#1e293b' }}>Brand</TableCell>
-                          <TableCell sx={{ fontWeight: 600, color: '#1e293b' }}>Category</TableCell>
-                          <TableCell sx={{ fontWeight: 600, color: '#1e293b' }} align="center">Latest Purchase</TableCell>
-                          <TableCell sx={{ fontWeight: 600, color: '#1e293b' }} align="center">Units Sold</TableCell>
-                          <TableCell sx={{ fontWeight: 600, color: '#1e293b' }} align="right">Total Sales ($)</TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {topSellingProducts?.top_selling_products?.length > 0 ? (
-                          topSellingProducts.top_selling_products.map((product, index) => (
-                            <Row 
-                              key={index} 
-                              row={product} 
-                              handleProductClick={handleProductClick}
-                            />
-                          ))
-                        ) : (
-                          <TableRow>
-                            <TableCell colSpan={8} align="center" sx={{ py: 4 }}>
-                              <Typography variant="body1" color="textSecondary">
-                                No products found
-                              </Typography>
-                            </TableCell>
-                          </TableRow>
-                        )}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </Paper>
-              </Box>
-
-              {/* Two-column container */}
-              <Grid container spacing={3}>
-                {/* Column 1 - Top Buyers */}
-                <Grid item xs={12} md={6}>
-                  <Paper
-                    elevation={0}
-                    sx={{
-                      bgcolor: '#ffffff',
-                      borderRadius: '12px',
-                      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
-                      p: 3,
-                      height: '100%',
-                    }}
-                  >
-                    <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b', mb: 2 }}>
-                      Top Buyers
-                    </Typography>
-                    <Box sx={{ maxHeight: 400, overflowY: 'auto' }}>
-                      {dealerOrderData && Array.isArray(displayedDealers) && displayedDealers.length > 0 ? (
-                        displayedDealers.map((dealer, index) => (
-                          <Card
-                            key={dealer.id}
-                            onClick={() => handleRowClick(dealer.id)}
-                            sx={{
-                              mb: 2,
-                              bgcolor: '#ffffff',
-                              borderRadius: '8px',
-                              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-                              transition: 'all 0.3s ease',
-                              borderLeft: `4px solid ${
-                                index === 0 ? '#3b82f6' : 
-                                index === 1 ? '#8b5cf6' : 
-                                index === 2 ? '#10b981' : '#64748b'
-                              }`,
-                              '&:hover': {
-                                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-                                transform: 'translateY(-2px)',
-                                cursor: 'pointer',
-                              },
-                              p: 2,
-                            }}
-                          >
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                              <Box sx={{ position: 'relative' }}>
-                                <Box
-                                  sx={{
-                                    width: 48,
-                                    height: 48,
-                                    borderRadius: '50%',
-                                    overflow: 'hidden',
-                                    bgcolor: '#e2e8f0',
-                                  }}
-                                >
-                                  <img
-                                    src={
-                                      index === 0
-                                        ? 'https://randomuser.me/api/portraits/men/32.jpg'
-                                        : index === 1
-                                        ? 'https://randomuser.me/api/portraits/women/44.jpg'
-                                        : index === 2
-                                        ? 'https://randomuser.me/api/portraits/men/67.jpg'
-                                        : index % 2 === 0
-                                        ? 'https://randomuser.me/api/portraits/men/75.jpg'
-                                        : 'https://randomuser.me/api/portraits/women/63.jpg'
-                                    }
-                                    alt={dealer.name}
-                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                  />
-                                </Box>
-                                {index < 3 && (
-                                  <Box
-                                    sx={{
-                                      position: 'absolute',
-                                      top: -4,
-                                      right: -4,
-                                      width: 24,
-                                      height: 24,
-                                      borderRadius: '50%',
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      justifyContent: 'center',
-                                      fontSize: '0.75rem',
-                                      fontWeight: 700,
-                                      color: '#ffffff',
-                                      border: '2px solid #ffffff',
-                                      bgcolor:
-                                        index === 0 ? '#f59e0b' : 
-                                        index === 1 ? '#94a3b8' : 
-                                        '#f97316',
-                                    }}
-                                  >
-                                    {index + 1}
-                                  </Box>
-                                )}
-                              </Box>
-                              <Box>
-                                <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                                  {dealer.name}
-                                </Typography>
-                                <Typography variant="body2" sx={{ color: '#3b82f6', fontWeight: 500 }}>
-                                  ${dealer.order_value.toFixed(2)}
-                                </Typography>
-                              </Box>
-                            </Box>
-                          </Card>
-                        ))
-                      ) : (
-                        <Box
-                          sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            py: 4,
-                            gap: 2,
-                          }}
-                        >
-                          <Box
-                            sx={{
-                              p: 2,
-                              bgcolor: '#e2e8f0',
-                              borderRadius: '50%',
-                            }}
-                          >
-                            <PeopleIcon sx={{ fontSize: 40, color: '#64748b' }} />
+                  <CardContent sx={{ p: 2.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Box>
+                      <Typography variant="body2" color="text.secondary">
+                        {card.title}
+                      </Typography>
+                      <Typography variant="h5" sx={{ fontWeight: 'bold', my: 0.5, color: '#1e293b' }}>
+                        {card.value}
+                      </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <ArrowUpwardIcon sx={{ color: '#16a34a', fontSize: '1rem' }} />
+                        <Typography variant="caption" color="text.secondary">
+                          <Box component="span" sx={{ color: '#16a34a', fontWeight: 'medium' }}>
+                            {card.change}
                           </Box>
-                          <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                            No dealers found
-                          </Typography>
-                          <Typography variant="body2" sx={{ color: '#64748b' }}>
-                            Check back later for updates
-                          </Typography>
-                        </Box>
-                      )}
-                    </Box>
-                    {dealers.length > 5 && (
-                      <Box sx={{ mt: 2, textAlign: 'center' }}>
-                        <Button
-                          onClick={handleSeeMore}
-                          variant="outlined"
-                          sx={{
-                            borderColor: '#3b82f6',
-                            color: '#3b82f6',
-                            borderRadius: '8px',
-                            textTransform: 'none',
-                            '&:hover': {
-                              bgcolor: '#3b82f6',
-                              color: '#ffffff',
-                            },
-                          }}
-                        >
-                          {showAll ? 'Show Less' : 'See More'}
-                        </Button>
+                          {' vs last period'}
+                        </Typography>
                       </Box>
-                    )}
-                  </Paper>
-                </Grid>
-
-                {/* Column 2 - Top-Selling Product (Static UI) */}
-                <Grid item xs={12} md={6}>
-                  <Paper
-                    elevation={0}
-                    sx={{
-                      bgcolor: '#ffffff',
-                      borderRadius: '12px',
-                      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
-                      p: 3,
-                      height: '100%',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      textAlign: 'center',
-                    }}
-                  >
-                    <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b', mb: 2, alignSelf: 'flex-start' }}>
-                      Top-Selling Product
-                    </Typography>
+                    </Box>
                     <Box
                       sx={{
-                        width: 160,
-                        height: 160,
-                        borderRadius: '12px',
-                        overflow: 'hidden',
-                        mb: 3,
-                        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                        width: 48,
+                        height: 48,
+                        borderRadius: 2,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        bgcolor: card.bgColor,
                       }}
                     >
-                      <img
-                        src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8cHJvZHVjdHxlbnwwfHwwfHx8MA%3D%3D"
-                        alt="Top Product"
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
+                      {React.cloneElement(card.icon, { sx: { color: card.color, fontSize: 28 } })}
                     </Box>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                      Premium Sony Camera
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: '#64748b', mt: 1 }}>
-                      Best seller of the month
-                    </Typography>
-                    <Typography variant="h6" sx={{ color: '#3b82f6', fontWeight: 700, mt: 2 }}>
-                      $149.99
-                    </Typography>
-                    <Box sx={{ display: 'flex', gap: 1, mt: 3 }}>
-                      <Box
-                        sx={{
-                          px: 2,
-                          py: 0.5,
-                          bgcolor: '#dcfce7',
-                          borderRadius: '12px',
-                        }}
-                      >
-                        <Typography variant="caption" sx={{ color: '#16a34a', fontWeight: 600 }}>
-                          +35% Sales
-                        </Typography>
-                      </Box>
-                      <Box
-                        sx={{
-                          px: 2,
-                          py: 0.5,
-                          bgcolor: '#fef9c3',
-                          borderRadius: '12px',
-                        }}
-                      >
-                        <Typography variant="caption" sx={{ color: '#ca8a04', fontWeight: 600 }}>
-                          1.2k Orders
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </Paper>
-                </Grid>
+                  </CardContent>
+                </Card>
               </Grid>
-            </Box>
-          )}
+            ))}
+          </Grid>
+
+          {/* Summary Cards - Second Row */}
+          <Grid container spacing={3} sx={{ mb: 4 }}>
+            {secondRowCardData.map((card, index) => (
+              <Grid item xs={12} sm={6} md={3} key={index}>
+                <Card
+                  sx={{
+                    bgcolor: '#ffffff',
+                    borderRadius: '12px',
+                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)',
+                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                    height: '100%',
+                    '&:hover': {
+                      transform: 'translateY(-4px)',
+                      boxShadow: '0 8px 30px rgba(0, 0, 0, 0.1)',
+                      cursor: 'pointer',
+                    },
+                  }}
+                >
+                  <CardContent sx={{ p: 2.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Box>
+                      <Typography variant="body2" color="text.secondary">
+                        {card.title}
+                      </Typography>
+                      <Typography variant="h5" sx={{ fontWeight: 'bold', my: 0.5, color: '#1e293b' }}>
+                        {card.value}
+                      </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <ArrowUpwardIcon sx={{ color: '#16a34a', fontSize: '1rem' }} />
+                        <Typography variant="caption" color="text.secondary">
+                          <Box component="span" sx={{ color: '#16a34a', fontWeight: 'medium' }}>
+                            {card.change}
+                          </Box>
+                          {' vs last period'}
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Box
+                      sx={{
+                        width: 48,
+                        height: 48,
+                        borderRadius: 2,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        bgcolor: card.bgColor,
+                      }}
+                    >
+                      {React.cloneElement(card.icon, { sx: { color: card.color, fontSize: 28 } })}
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+          
+          {/* Sales Analytics Charts */}
+          <Typography variant="h6" sx={{ fontWeight: 600, color: '#475569', mb: 3 }}>
+            Sales Analytics
+          </Typography>
+          <Grid container spacing={3} sx={{ mb: 4 }}>
+            {salesAnalyticsData.map((card, index) => (
+              <Grid item xs={12} sm={6} md={3} key={index}>
+                <Card
+                  sx={{
+                    bgcolor: '#ffffff',
+                    borderRadius: '12px',
+                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)',
+                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                    height: '100%',
+                    '&:hover': {
+                      transform: 'translateY(-4px)',
+                      boxShadow: '0 8px 30px rgba(0, 0, 0, 0.1)',
+                      cursor: 'pointer',
+                    },
+                  }}
+                >
+                  <CardContent sx={{ p: 2.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Box>
+                      <Typography variant="body2" color="text.secondary">
+                        {card.title}
+                      </Typography>
+                      <Typography variant="h5" sx={{ fontWeight: 'bold', my: 0.5, color: '#1e293b' }}>
+                        {card.value}
+                      </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <ArrowUpwardIcon sx={{ color: '#16a34a', fontSize: '1rem' }} />
+                        <Typography variant="caption" color="text.secondary">
+                          <Box component="span" sx={{ color: '#16a34a', fontWeight: 'medium' }}>
+                            {card.change}
+                          </Box>
+                          {' vs last period'}
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Box
+                      sx={{
+                        width: 48,
+                        height: 48,
+                        borderRadius: 2,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        bgcolor: card.bgColor,
+                      }}
+                    >
+                      {React.cloneElement(card.icon, { sx: { color: card.color, fontSize: 28 } })}
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+
+          {/* Charts */}
+          <Grid container spacing={3} sx={{ mb: 4 }}>
+            <Grid item xs={12} md={6}>
+              <Paper
+                elevation={0}
+                sx={{
+                  bgcolor: '#ffffff',
+                  borderRadius: '12px',
+                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+                  p: 3,
+                  height: '400px',
+                  transition: 'box-shadow 0.3s ease',
+                  '&:hover': { boxShadow: '0 8px 30px rgba(0, 0, 0, 0.12)' },
+                }}
+              >
+                <Bar data={barChartData} options={barChartOptions} plugins={[backgroundPlugin]} />
+              </Paper>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Paper
+                elevation={0}
+                sx={{
+                  bgcolor: '#ffffff',
+                  borderRadius: '12px',
+                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+                  p: 3,
+                  height: '400px',
+                  transition: 'box-shadow 0.3s ease',
+                  '&:hover': { boxShadow: '0 8px 30px rgba(0, 0, 0, 0.12)' },
+                }}
+              >
+                <Line data={lineChartData} options={lineChartOptions} plugins={[backgroundPlugin]} />
+              </Paper>
+            </Grid>
+          </Grid>
+
+          {/* Top Selling Products */}
+          <Box sx={{ mb: 4 }}>
+            <Paper
+              elevation={0}
+              sx={{
+                bgcolor: '#ffffff',
+                borderRadius: '12px',
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+                p: 3,
+              }}
+            >
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b' }}>
+                  Top Selling Products
+                </Typography>
+                <FormControl size="small" sx={{ minWidth: 200 }}>
+                  <Select
+                    value={selectedCategory}
+                    onChange={handleDashboardCategoryChange}
+                    displayEmpty
+                    sx={{
+                      '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e2e8f0' },
+                      '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#3b82f6' },
+                      '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#3b82f6' },
+                    }}
+                  >
+                    <MenuItem value="">All Categories</MenuItem>
+                    {dashboardCategory?.map((category) => (
+                      <MenuItem key={category.id} value={category.id}>
+                        {category.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Box>
+              
+              <TableContainer component={Paper} sx={{ borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+                <Table aria-label="top selling products">
+                  <TableHead sx={{ bgcolor: '#f8fafc' }}>
+                    <TableRow>
+                      <TableCell />
+                      <TableCell sx={{ fontWeight: 600, color: '#1e293b' }}>Product</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#1e293b' }} align="center">SKU No</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#1e293b' }}>Brand</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#1e293b' }}>Category</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#1e293b' }} align="center">Latest Purchase</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#1e293b' }} align="center">Units Sold</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#1e293b' }} align="right">Total Sales ($)</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {topSellingProducts?.top_selling_products?.length > 0 ? (
+                      topSellingProducts.top_selling_products.map((product, index) => (
+                        <Row 
+                          key={index} 
+                          row={product} 
+                          handleProductClick={handleProductClick}
+                        />
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={8} align="center" sx={{ py: 4 }}>
+                          <Typography variant="body1" color="textSecondary">
+                            No products found
+                          </Typography>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Paper>
+          </Box>
+
+          {/* Two-column container */}
+          <Grid container spacing={3}>
+            {/* Column 1 - Top Buyers */}
+            <Grid item xs={12} md={6}>
+              <Paper
+                elevation={0}
+                sx={{
+                  bgcolor: '#ffffff',
+                  borderRadius: '12px',
+                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+                  p: 3,
+                  height: '100%',
+                }}
+              >
+                <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b', mb: 2 }}>
+                  Top Buyers
+                </Typography>
+                <Box sx={{ maxHeight: 400, overflowY: 'auto' }}>
+                  {dealerOrderData && Array.isArray(displayedDealers) && displayedDealers.length > 0 ? (
+                    displayedDealers.map((dealer, index) => (
+                      <Card
+                        key={dealer.id}
+                        onClick={() => handleRowClick(dealer.id)}
+                        sx={{
+                          mb: 2,
+                          bgcolor: '#ffffff',
+                          borderRadius: '8px',
+                          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                          transition: 'all 0.3s ease',
+                          borderLeft: `4px solid ${
+                            index === 0 ? '#3b82f6' : 
+                            index === 1 ? '#8b5cf6' : 
+                            index === 2 ? '#10b981' : '#64748b'
+                          }`,
+                          '&:hover': {
+                            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                            transform: 'translateY(-2px)',
+                            cursor: 'pointer',
+                          },
+                          p: 2,
+                        }}
+                      >
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                          <Box sx={{ position: 'relative' }}>
+                            <Box
+                              sx={{
+                                width: 48,
+                                height: 48,
+                                borderRadius: '50%',
+                                overflow: 'hidden',
+                                bgcolor: '#e2e8f0',
+                              }}
+                            >
+                              <img
+                                src={
+                                  index === 0
+                                    ? 'https://randomuser.me/api/portraits/men/32.jpg'
+                                    : index === 1
+                                    ? 'https://randomuser.me/api/portraits/women/44.jpg'
+                                    : index === 2
+                                    ? 'https://randomuser.me/api/portraits/men/67.jpg'
+                                    : index % 2 === 0
+                                    ? 'https://randomuser.me/api/portraits/men/75.jpg'
+                                    : 'https://randomuser.me/api/portraits/women/63.jpg'
+                                }
+                                alt={dealer.name}
+                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                              />
+                            </Box>
+                            {index < 3 && (
+                              <Box
+                                sx={{
+                                  position: 'absolute',
+                                  top: -4,
+                                  right: -4,
+                                  width: 24,
+                                  height: 24,
+                                  borderRadius: '50%',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  fontSize: '0.75rem',
+                                  fontWeight: 700,
+                                  color: '#ffffff',
+                                  border: '2px solid #ffffff',
+                                  bgcolor:
+                                    index === 0 ? '#f59e0b' : 
+                                    index === 1 ? '#94a3b8' : 
+                                    '#f97316',
+                                }}
+                              >
+                                {index + 1}
+                              </Box>
+                            )}
+                          </Box>
+                          <Box>
+                            <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                              {dealer.name}
+                            </Typography>
+                            <Typography variant="body2" sx={{ color: '#3b82f6', fontWeight: 500 }}>
+                              ${dealer.order_value?.toFixed(2)}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Card>
+                    ))
+                  ) : (
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        py: 4,
+                        gap: 2,
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          p: 2,
+                          bgcolor: '#e2e8f0',
+                          borderRadius: '50%',
+                        }}
+                      >
+                        <PeopleIcon sx={{ fontSize: 40, color: '#64748b' }} />
+                      </Box>
+                      <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                        No dealers found
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: '#64748b' }}>
+                        Check back later for updates
+                      </Typography>
+                    </Box>
+                  )}
+                </Box>
+                {dealers.length > 5 && (
+                  <Box sx={{ mt: 2, textAlign: 'center' }}>
+                    <Button
+                      onClick={handleSeeMore}
+                      variant="outlined"
+                      sx={{
+                        borderColor: '#3b82f6',
+                        color: '#3b82f6',
+                        borderRadius: '8px',
+                        textTransform: 'none',
+                        '&:hover': {
+                          bgcolor: '#3b82f6',
+                          color: '#ffffff',
+                        },
+                      }}
+                    >
+                      {showAll ? 'Show Less' : 'See More'}
+                    </Button>
+                  </Box>
+                )}
+              </Paper>
+            </Grid>
+
+            {/* Column 2 - Top-Selling Product (Static UI) */}
+            <Grid item xs={12} md={6}>
+              <Paper
+                elevation={0}
+                sx={{
+                  bgcolor: '#ffffff',
+                  borderRadius: '12px',
+                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+                  p: 3,
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  textAlign: 'center',
+                }}
+              >
+                <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b', mb: 2, alignSelf: 'flex-start' }}>
+                  Top-Selling Product
+                </Typography>
+                <Box
+                  sx={{
+                    width: 160,
+                    height: 160,
+                    borderRadius: '12px',
+                    overflow: 'hidden',
+                    mb: 3,
+                    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                  }}
+                >
+                  <img
+                    src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8cHJvZHVjdHxlbnwwfHwwfHx8MA%3D%3D"
+                    alt="Top Product"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                </Box>
+                <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                  Premium Sony Camera
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#64748b', mt: 1 }}>
+                  Best seller of the month
+                </Typography>
+                <Typography variant="h6" sx={{ color: '#3b82f6', fontWeight: 700, mt: 2 }}>
+                  $149.99
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 1, mt: 3 }}>
+                  <Box
+                    sx={{
+                      px: 2,
+                      py: 0.5,
+                      bgcolor: '#dcfce7',
+                      borderRadius: '12px',
+                    }}
+                  >
+                    <Typography variant="caption" sx={{ color: '#16a34a', fontWeight: 600 }}>
+                      +35% Sales
+                    </Typography>
+                  </Box>
+                  <Box
+                    sx={{
+                      px: 2,
+                      py: 0.5,
+                      bgcolor: '#fef9c3',
+                      borderRadius: '12px',
+                    }}
+                  >
+                    <Typography variant="caption" sx={{ color: '#ca8a04', fontWeight: 600 }}>
+                      1.2k Orders
+                    </Typography>
+                  </Box>
+                </Box>
+              </Paper>
+            </Grid>
+          </Grid>
         </Box>
       </Fade>
     </Box>
