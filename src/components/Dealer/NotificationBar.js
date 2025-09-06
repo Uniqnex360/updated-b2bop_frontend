@@ -1,11 +1,24 @@
-// src/components/Dealer/NotificationBar.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { Box, Typography, IconButton, Badge, Tooltip, Menu, MenuItem, Avatar } from '@mui/material';
+import { 
+  Box, 
+  Typography, 
+  IconButton, 
+  Badge, 
+  Tooltip, 
+  Menu, 
+  MenuItem, 
+  Avatar,
+  TextField,
+  InputAdornment,
+  useMediaQuery,
+  useTheme
+} from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import SearchIcon from '@mui/icons-material/Search';
 
 const NotificationBar = ({ cartCount, userData, toggleSidebar }) => {
   const [logoPreview, setLogoPreview] = useState(null);
@@ -13,6 +26,9 @@ const NotificationBar = ({ cartCount, userData, toggleSidebar }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
+  
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   // Static random profile image from Unsplash (same as seller component)
   const profileImage = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
@@ -68,18 +84,25 @@ const NotificationBar = ({ cartCount, userData, toggleSidebar }) => {
       justifyContent: 'space-between',
       alignItems: 'center',
       boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+      flexDirection: { xs: 'column', sm: 'row' },
+      gap: { xs: 2, sm: 0 },
     }}>
       {/* Left - Brand Name and Logo */}
-      <Box sx={{ display: "flex", alignItems: "center", gap: '20px' }}>
+      <Box sx={{ 
+        display: "flex", 
+        alignItems: "center", 
+        gap: '20px', 
+        width: { xs: '100%', sm: 'auto' }, 
+        justifyContent: { xs: 'center', sm: 'flex-start' } 
+      }}>
         <Typography 
           variant="h6" 
           fontSize={20} 
           fontWeight="bold" 
-          sx={{ letterSpacing: '0.5px' }}
+          sx={{ letterSpacing: '0.5px', whiteSpace: 'nowrap' }}
         >
-           Buyer Dashboard
+          Buyer Dashboard
         </Typography>
-
         {logoPreview && (
           <img 
             src={logoPreview} 
@@ -94,8 +117,38 @@ const NotificationBar = ({ cartCount, userData, toggleSidebar }) => {
         )}
       </Box>
 
+      {/* Center - Search Bar */}
+      <Box sx={{ 
+        flexGrow: 1, 
+        mx: { xs: 0, sm: 2 }, 
+        order: { xs: 3, sm: 2 }, 
+        display: 'flex', 
+        justifyContent: { xs: 'center', sm: 'flex-start' }
+      }}>
+        <TextField
+          variant="outlined"
+          placeholder="Search Brand, Category..."
+          size="small"
+          sx={{ width: '100%', maxWidth: 500 }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon sx={{ color: '#94a3b8' }} />
+              </InputAdornment>
+            ),
+            sx: {
+              borderRadius: '8px',
+              bgcolor: '#f8fafc',
+              '& fieldset': { border: 'none' },
+              '&:hover fieldset': { border: 'none' },
+              '&.Mui-focused fieldset': { border: '1px solid #3b82f6' },
+            }
+          }}
+        />
+      </Box>
+
       {/* Right - Navigation Icons and Profile */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, order: { xs: 2, sm: 3 } }}>
         <Tooltip title="WishList" arrow>
           <IconButton
             sx={{ color: '#333', '&:hover': { backgroundColor: 'rgba(0,0,0,0.05)' } }}
@@ -133,7 +186,7 @@ const NotificationBar = ({ cartCount, userData, toggleSidebar }) => {
           </IconButton>
           <Typography 
             variant="body1" 
-            sx={{ fontSize: '16px', fontWeight: 500, color: '#333', cursor: 'pointer' }}
+            sx={{ fontSize: '16px', fontWeight: 500, color: '#333', cursor: 'pointer', display: { xs: 'none', sm: 'block' } }}
             onClick={handleMenuOpen}
           >
             {userData?.first_name || user.name}
