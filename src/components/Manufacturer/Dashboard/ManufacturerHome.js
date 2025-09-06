@@ -393,7 +393,22 @@ const ManufacturerHome = () => {
         fetchDashboardCategory();
     }, [fetchDashboardCategory]);
 
-    const dealers = dealerOrderData?.total_dealer_list || [];
+    // Added more static data to the dealers array
+    const expandedDealersData = [
+        { id: 1, name: 'Christopher Brown', order_value: 125000.75, imageUrl: 'https://randomuser.me/api/portraits/men/32.jpg' },
+        { id: 2, name: 'John Doe', order_value: 98000.50, imageUrl: 'https://randomuser.me/api/portraits/women/44.jpg' },
+        { id: 3, name: 'Sophia Taylor', order_value: 76000.25, imageUrl: 'https://randomuser.me/api/portraits/men/67.jpg' },
+        { id: 4, name: 'Isabella Harris', order_value: 55000.00, imageUrl: 'https://randomuser.me/api/portraits/women/63.jpg' },
+        { id: 5, name: 'William Anderson', order_value: 42000.10, imageUrl: 'https://randomuser.me/api/portraits/men/75.jpg' },
+        { id: 6, name: 'Emily Davis', order_value: 38000.45, imageUrl: 'https://randomuser.me/api/portraits/women/21.jpg' },
+        { id: 7, name: 'James Miller', order_value: 34500.80, imageUrl: 'https://randomuser.me/api/portraits/men/19.jpg' },
+        { id: 8, name: 'Michael Johnson', order_value: 31000.30, imageUrl: 'https://randomuser.me/api/portraits/men/88.jpg' },
+        { id: 9, name: 'Olivia Wilson', order_value: 29500.90, imageUrl: 'https://randomuser.me/api/portraits/women/55.jpg' },
+        { id: 10, name: 'Ava Thompson', order_value: 27000.60, imageUrl: 'https://randomuser.me/api/portraits/women/77.jpg' },
+    ];
+    
+    // Instead of using the fetched data, we'll use our static data for the demo.
+    const dealers = expandedDealersData;
     const displayedDealers = showAll ? dealers : dealers.slice(0, 5);
 
     // eslint-disable-next-line
@@ -1351,7 +1366,158 @@ const ManufacturerHome = () => {
 
 
                     {/* Two-column container */}
-                 
+<Grid container spacing={3}>
+    {/* Column 1 - Top Buyers */}
+    <Grid item xs={12} md={6}>
+        <Paper
+            elevation={0}
+            sx={{
+                bgcolor: '#ffffff',
+                borderRadius: '12px',
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+                p: 3,
+                height: '100%',
+            }}
+        >
+            <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b', mb: 2 }}>
+                Top Buyers
+            </Typography>
+            <Box sx={{ maxHeight: 400, overflowY: 'auto' }}>
+                {displayedDealers && displayedDealers.length > 0 ? (
+                    displayedDealers.map((dealer, index) => (
+                        <Card
+                            key={dealer.id}
+                            onClick={() => handleRowClick(dealer.id)}
+                            sx={{
+                                mb: 2,
+                                bgcolor: '#ffffff',
+                                borderRadius: '8px',
+                                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                                transition: 'all 0.3s ease',
+                                borderLeft: `4px solid ${
+                                    index === 0 ? '#3b82f6' :
+                                    index === 1 ? '#8b5cf6' :
+                                    index === 2 ? '#10b981' :
+                                    index === 3 ? '#f59e0b' :
+                                    '#64748b'
+                                }`,
+                                '&:hover': {
+                                    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                                    transform: 'translateY(-2px)',
+                                    cursor: 'pointer',
+                                },
+                                p: 2,
+                            }}
+                        >
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                <Box sx={{ position: 'relative' }}>
+                                    <Box
+                                        sx={{
+                                            width: 48,
+                                            height: 48,
+                                            borderRadius: '50%',
+                                            overflow: 'hidden',
+                                            bgcolor: '#e2e8f0',
+                                        }}
+                                    >
+                                        {dealer.imageUrl && (
+                                            <img
+                                                src={dealer.imageUrl}
+                                                alt={dealer.name}
+                                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                            />
+                                        )}
+                                    </Box>
+                                    <Box
+                                        sx={{
+                                            position: 'absolute',
+                                            top: -4,
+                                            right: -4,
+                                            width: 24,
+                                            height: 24,
+                                            borderRadius: '50%',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            fontSize: '0.75rem',
+                                            fontWeight: 700,
+                                            color: '#ffffff',
+                                            border: '2px solid #ffffff',
+                                            bgcolor:
+                                                index === 0 ? '#f59e0b' :
+                                                index === 1 ? '#94a3b8' :
+                                                index === 2 ? '#f97316' :
+                                                index === 3 ? '#3b82f6' :
+                                                '#8b5cf6',
+                                        }}
+                                    >
+                                        {index + 1}
+                                    </Box>
+                                </Box>
+                                <Box>
+                                    <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                                        {dealer.name}
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ color: '#3b82f6', fontWeight: 500 }}>
+                                        ${dealer.order_value.toFixed(2)}
+                                    </Typography>
+                                </Box>
+                            </Box>
+                        </Card>
+                    ))
+                ) : (
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            py: 4,
+                            gap: 2,
+                        }}
+                    >
+                        <Box
+                            sx={{
+                                p: 2,
+                                bgcolor: '#e2e8f0',
+                                borderRadius: '50%',
+                            }}
+                        >
+                            <PeopleIcon sx={{ fontSize: 40, color: '#64748b' }} />
+                        </Box>
+                        <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                            No dealers found
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: '#64748b' }}>
+                            Check back later for updates
+                        </Typography>
+                    </Box>
+                )}
+            </Box>
+            {dealers.length > 5 && (
+                <Box sx={{ mt: 2, textAlign: 'center' }}>
+                    <Button
+                        onClick={handleSeeMore}
+                        variant="outlined"
+                        sx={{
+                            borderColor: '#3b82f6',
+                            color: '#3b82f6',
+                            borderRadius: '8px',
+                            textTransform: 'none',
+                            '&:hover': {
+                                bgcolor: '#3b82f6',
+                                color: '#ffffff',
+                            },
+                        }}
+                    >
+                        {showAll ? 'Show Less' : 'See More'}
+                    </Button>
+                </Box>
+            )}
+        </Paper>
+    </Grid>
+</Grid>
+                    
                 </Box>
             </Fade>
         </Box>

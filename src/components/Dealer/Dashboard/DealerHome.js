@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   ShoppingCart as ShoppingCartIcon,
@@ -170,18 +169,25 @@ const DashboardHome = () => {
   const [orderStatus, setOrderStatus] = useState('');
   const [productCategory, setProductCategory] = useState('');
   const [paymentStatus, setPaymentStatus] = useState('');
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [fromDate, setFromDate] = useState(null);
+  const [toDate, setToDate] = useState(null);
 
   const handleOrderStatusChange = (event) => setOrderStatus(event.target.value);
   const handleProductCategoryChange = (event) => setProductCategory(event.target.value);
   const handlePaymentStatusChange = (event) => setPaymentStatus(event.target.value);
-  const handleDateChange = (newDate) => setSelectedDate(newDate);
+  const handleFromDateChange = (newDate) => setFromDate(newDate);
+  const handleToDateChange = (newDate) => setToDate(newDate);
 
   const filteredRecentOrders = staticDashboardData.recent_orders.filter(order => {
     if (orderStatus && order.order_status !== orderStatus) return false;
     if (productCategory && order.product_category !== productCategory) return false;
     if (paymentStatus && order.payment_status !== paymentStatus) return false;
-    if (selectedDate && !dayjs(order.order_date).isSame(dayjs(selectedDate), 'day')) return false;
+    
+    // Date range filtering
+    const orderDate = dayjs(order.order_date);
+    if (fromDate && orderDate.isBefore(dayjs(fromDate), 'day')) return false;
+    if (toDate && orderDate.isAfter(dayjs(toDate), 'day')) return false;
+    
     return true;
   });
 
@@ -453,9 +459,28 @@ const DashboardHome = () => {
 
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DatePicker
-            label="Date"
-            value={selectedDate}
-            onChange={setSelectedDate}
+            label="From Date"
+            value={fromDate}
+            onChange={handleFromDateChange}
+            slotProps={{
+              textField: {
+                size: 'small',
+                sx: {
+                  flexGrow: 1,
+                  minWidth: 150,
+                  '& .MuiOutlinedInput-root': { borderRadius: '8px', '& fieldset': { borderColor: '#e2e8f0' } }
+                }
+              }
+            }}
+          />
+        </LocalizationProvider>
+
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DatePicker
+            label="To Date"
+            value={toDate}
+            onChange={handleToDateChange}
+            minDate={fromDate}
             slotProps={{
               textField: {
                 size: 'small',
