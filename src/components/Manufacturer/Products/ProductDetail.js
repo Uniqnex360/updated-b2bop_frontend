@@ -510,53 +510,57 @@ const ProductDetail = () => {
                   </Box>
                   {/* Accordions */}
                   <Box sx={{ mt: 4, flexGrow: 1 }}>
-                    <StyledAccordion
-                      expanded={expandedInfo}
-                      onChange={() => setExpandedInfo(!expandedInfo)}
-                    >
-                      <AccordionSummary
-                        expandIcon={expandedInfo ? <RemoveIcon /> : <AddIcon />}
-                        sx={{ background: flipkartTheme.palette.background.default }}
-                      >
-                        <Typography sx={{ fontWeight: 600, color: flipkartTheme.palette.secondary.main }}>
-                          Product Information
-                        </Typography>
-                      </AccordionSummary>
-                      <AccordionDetails sx={{ p: 2 }}>
-                        <TableContainer>
-                          <Table size="small">
-                            <TableBody>
-                              {Object.entries({
-                                "Model Name": product?.model,
-                                "Brand Name": product?.brand_name,
-                                "Product Category": product?.end_level_category,
-                                Industry: product?.industry_name,
-                                "Product Description": product?.long_description,
-                                "MPN Number": product?.mpn,
-                                "UPC Number": product?.upc_ean,
-                                MSRP: product?.msrp ? `$${product.msrp.toFixed(2)}` : "N/A",
-                              }).map(([key, value]) => (
-                                <TableRow key={key}>
-                                  <TableCell
-                                    sx={{
-                                      width: 180,
-                                      fontWeight: 600,
-                                      color: "text.primary",
-                                      borderBottom: "none",
-                                    }}
-                                  >
-                                    {key}
-                                  </TableCell>
-                                  <TableCell sx={{ color: "text.secondary", borderBottom: "none" }}>
-                                    {value || "N/A"}
-                                  </TableCell>
-                                </TableRow>
-                              ))}
-                            </TableBody>
-                          </Table>
-                        </TableContainer>
-                      </AccordionDetails>
-                    </StyledAccordion>
+   
+<StyledAccordion
+  expanded={expandedInfo}
+  onChange={() => setExpandedInfo(!expandedInfo)}
+>
+  <AccordionSummary
+    expandIcon={expandedInfo ? <RemoveIcon /> : <AddIcon />}
+    sx={{ background: flipkartTheme.palette.background.default }}
+  >
+    <Typography sx={{ fontWeight: 600, color: flipkartTheme.palette.secondary.main }}>
+      Product Information
+    </Typography>
+  </AccordionSummary>
+  <AccordionDetails sx={{ p: 2 }}>
+    <TableContainer>
+      <Table size="small">
+        <TableBody>
+          {Object.entries({
+            "Model Name": product?.model,
+            "Brand Name": product?.brand_name,
+            "Product Category": product?.end_level_category,
+            Industry: product?.industry_name || product?.industry_name || "N/A",
+            "Product Description": product?.long_description,
+            "MPN Number": product?.mpn,
+            "UPC Number": product?.upc_ean,
+            MSRP: product?.msrp ? `$${product.msrp.toFixed(2)}` : (product?.industry_name || "N/A"),
+          }).map(([key, value]) => (
+            <TableRow key={key}>
+              <TableCell
+                sx={{
+                  width: 180,
+                  fontWeight: 600,
+                  color: "text.primary",
+                  borderBottom: "none",
+                }}
+              >
+                {key}
+              </TableCell>
+              <TableCell sx={{ color: "text.secondary", borderBottom: "none" }}>
+                {value === "N/A" && key === "MSRP"
+                  ? product?.industry_name || "N/A"
+                  : value || product?.industry_name || "N/A"}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  </AccordionDetails>
+</StyledAccordion>
+
                     <StyledAccordion
                       expanded={expandedAttributes}
                       onChange={() => setExpandedAttributes(!expandedAttributes)}

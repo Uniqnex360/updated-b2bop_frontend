@@ -565,7 +565,7 @@ const ManufacturerHome = () => {
                     {error}
                   </Typography>
                 )}
-                <Typography
+                {/* <Typography
                   variant="h4"
                   sx={{
                     fontWeight: 700,
@@ -575,83 +575,93 @@ const ManufacturerHome = () => {
                   }}
                 >
                   Manufacturer Dashboard
-                </Typography>
+                </Typography> */}
 
-                {/* Summary Cards */}
-                <Grid container spacing={3} sx={{ mb: 4 }}>
-                  {[
-                    {
-                      title: 'Total Sales',
-                      value: `$${dashboardData?.total_sales || '0'}`,
-                      icon: <MonetizationOnIcon sx={{ fontSize: 40, color: '#3b82f6' }} />,
-                      color: '#3b82f6',
-                      onClick: handleTotalSpendingsClick,
-                    },
-                    {
-                      title: 'Active Buyers',
-                      value: dashboardData?.dealer_count || '0',
-                      icon: <PeopleIcon sx={{ fontSize: 40, color: '#8b5cf6' }} />,
-                      color: '#8b5cf6',
-                      onClick: handleActiveBuyerClick,
-                    },
-                    {
-                      title: 'Pending Orders',
-                      value: dashboardData?.pending_order_count || '0',
-                      icon: <ShoppingCartIcon sx={{ fontSize: 40, color: '#f59e0b' }} />,
-                      color: '#f59e0b',
-                      onClick: handlePendingClick,
-                    },
-                    {
-                      title: 'Re-Orders',
-                      value: dashboardData?.re_order_count || '0',
-                      icon: <RepeatIcon sx={{ fontSize: 40, color: '#10b981' }} />,
-                      color: '#10b981',
-                      onClick: handleReorderClick,
-                    },
-                  ].map((card, index) => (
-                    <Grid item xs={12} sm={6} md={3} key={index}>
-                      <Card
-                        onClick={card.onClick}
-                        sx={{
-                          bgcolor: '#ffffff',
-                          borderRadius: '12px',
-                          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
-                          transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-                          borderLeft: `5px solid ${card.color}`,
-                          '&:hover': {
-                            transform: 'translateY(-4px)',
-                            boxShadow: '0 8px 30px rgba(0, 0, 0, 0.12)',
-                            cursor: 'pointer',
-                          },
-                          p: 2,
-                        }}
-                      >
-                        <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                          <Box
-                            sx={{
-                              bgcolor: `${card.color}15`,
-                              p: 1.5,
-                              borderRadius: '50%',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                            }}
-                          >
-                            {card.icon}
-                          </Box>
-                          <Box>
-                            <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 500 }}>
-                              {card.title}
-                            </Typography>
-                            <Typography variant="h5" sx={{ fontWeight: 700, color: '#1e293b' }}>
-                              {card.value}
-                            </Typography>
-                          </Box>
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                  ))}
-                </Grid>
+     <Box sx={{ bgcolor: '#f8fafc', borderRadius: 3, p: 3, mb: 4 }}>
+  <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b', mb: 2 }}>
+    Quick Summary
+  </Typography>
+  <Grid container spacing={3}>
+    {[
+      {
+        title: 'Total Revenue',
+        value: `$${dashboardData?.total_sales?.toLocaleString() || '0'}`,
+        icon: <MonetizationOnIcon sx={{ fontSize: 32, color: '#3b82f6' }} />,
+        growth: '+12.5%',
+        growthColor: '#22c55e',
+        growthText: 'vs last period',
+      },
+      {
+        title: 'Total Orders',
+        value: dashboardData?.order_count?.toLocaleString() || '0',
+        icon: <ShoppingCartIcon sx={{ fontSize: 32, color: '#22d3ee' }} />,
+        growth: '+8.2%',
+        growthColor: '#22c55e',
+        growthText: 'vs last period',
+      },
+      {
+        title: 'Active Customers',
+        value: dashboardData?.dealer_count?.toLocaleString() || '0',
+        icon: <PeopleIcon sx={{ fontSize: 32, color: '#a78bfa' }} />,
+        growth: '+15.3%',
+        growthColor: '#22c55e',
+        growthText: 'vs last period',
+      },
+      {
+        title: 'Average Order Value',
+        value: `$${dashboardData?.average_order_value?.toLocaleString() || '0'}`,
+        icon: <RepeatIcon sx={{ fontSize: 32, color: '#818cf8' }} />,
+        growth: '+5.7%',
+        growthColor: '#22c55e',
+        growthText: 'vs last period',
+      },
+    ].map((card, idx) => (
+      <Grid item xs={12} sm={6} md={3} key={idx}>
+        <Box
+          sx={{
+            bgcolor: '#fff',
+            borderRadius: 2,
+            p: 3,
+            boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            minHeight: 140,
+          }}
+        >
+          <Typography variant="subtitle2" sx={{ color: '#64748b', fontWeight: 600, mb: 1 }}>
+            {card.title}
+          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Typography variant="h4" sx={{ fontWeight: 700, color: '#1e293b' }}>
+              {card.value}
+            </Typography>
+            <Box
+              sx={{
+                bgcolor: '#f1f5f9',
+                borderRadius: '50%',
+                p: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              {card.icon}
+            </Box>
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
+            <Typography variant="body2" sx={{ color: card.growthColor, fontWeight: 600, mr: 1 }}>
+              {card.growth}
+            </Typography>
+            <Typography variant="caption" sx={{ color: '#64748b' }}>
+              {card.growthText}
+            </Typography>
+          </Box>
+        </Box>
+      </Grid>
+    ))}
+  </Grid>
+</Box>
 
                 {/* Charts */}
                 <Grid container spacing={3} sx={{ mb: 4 }}>
