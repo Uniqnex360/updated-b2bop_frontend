@@ -1184,7 +1184,7 @@ const ManufacturerHome = () => {
     <TableRow hover>
         <TableCell>
             <Box sx={{ width: 44, height: 44, borderRadius: 2, overflow: 'hidden', border: '1px solid #e2e8f0', bgcolor: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=64&q=80" alt="SKU67890" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <img src="https://images.unsplash.com/photo-1756908604030-04861dc79820?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw5fHx8ZW58MHx8fHx8" alt="SKU67890" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </Box>
         </TableCell>
         <TableCell sx={{ fontWeight: 600, color: '#212121', fontSize: 15 }}>
@@ -1199,7 +1199,7 @@ const ManufacturerHome = () => {
         <TableCell sx={{ fontWeight: 500, color: '#6366f1', fontSize: 14 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Box sx={{ width: 28, height: 28, borderRadius: '50%', overflow: 'hidden', border: '1px solid #e2e8f0', mr: 1 }}>
-                    <img src="https://www.thorlabs.com/images/Thorlabs_Logo_2019.svg" alt="Thorlabs" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a6/Logo_NIKE.svg" alt="Thorlabs" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </Box>
                 Thorlabs
             </Box>
@@ -1235,7 +1235,7 @@ const ManufacturerHome = () => {
         <TableCell sx={{ fontWeight: 500, color: '#6366f1', fontSize: 14 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Box sx={{ width: 28, height: 28, borderRadius: '50%', overflow: 'hidden', border: '1px solid #e2e8f0', mr: 1 }}>
-                    <img src="https://aymcdonald.com/images/logo.png" alt="A.Y. McDonald" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a6/Logo_NIKE.svg" alt="A.Y. McDonald" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </Box>
                 A.Y. McDonald
             </Box>
@@ -1256,7 +1256,7 @@ const ManufacturerHome = () => {
     <TableRow hover>
         <TableCell>
             <Box sx={{ width: 44, height: 44, borderRadius: 2, overflow: 'hidden', border: '1px solid #e2e8f0', bgcolor: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <img src="https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=64&q=80" alt="SKU98765" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <img src="https://images.unsplash.com/photo-1670850664664-d8ed42d767fa?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8YnJhbmQlMjBOQU1FfGVufDB8fDB8fHww" alt="SKU98765" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </Box>
         </TableCell>
         <TableCell sx={{ fontWeight: 600, color: '#212121', fontSize: 15 }}>
@@ -1271,7 +1271,7 @@ const ManufacturerHome = () => {
         <TableCell sx={{ fontWeight: 500, color: '#6366f1', fontSize: 14 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Box sx={{ width: 28, height: 28, borderRadius: '50%', overflow: 'hidden', border: '1px solid #e2e8f0', mr: 1 }}>
-                    <img src="https://www.mohawkgroup.com/themes/custom/mohawkgroup/logo.svg" alt="Mohawkgroup" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <img src="https://images.unsplash.com/photo-1548364538-60b952c308b9?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fEJSQU5EfGVufDB8fDB8fHww" alt="Mohawkgroup" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </Box>
                 Mohawkgroup
             </Box>
@@ -1307,7 +1307,7 @@ const ManufacturerHome = () => {
         <TableCell sx={{ fontWeight: 500, color: '#6366f1', fontSize: 14 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Box sx={{ width: 28, height: 28, borderRadius: '50%', overflow: 'hidden', border: '1px solid #e2e8f0', mr: 1 }}>
-                    <img src="https://www.irwin.com/-/media/Project/Irwin/Irwin/Irwin/Irwin-logo.svg" alt="Irwin" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <img src="https://images.unsplash.com/photo-1670850664664-d8ed42d767fa?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8YnJhbmQlMjBOQU1FfGVufDB8fDB8fHww" alt="Irwin" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </Box>
                 Irwin
             </Box>
