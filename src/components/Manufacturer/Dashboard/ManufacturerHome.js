@@ -27,7 +27,7 @@ import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { Bar, Line } from "react-chartjs-2";
+import { Bar, Line, Pie } from "react-chartjs-2"; // Import Pie component
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
@@ -36,6 +36,7 @@ import {
     LinearScale,
     BarElement,
     LineElement,
+    ArcElement, // Import ArcElement for Pie Chart
     Title,
     Tooltip,
     Legend,
@@ -67,6 +68,7 @@ ChartJS.register(
     BarElement,
     LineElement,
     PointElement,
+    ArcElement, // Register ArcElement
     Title,
     Tooltip,
     Legend,
@@ -455,7 +457,7 @@ const ManufacturerHome = () => {
         navigate(`/manufacturer/dealer-details/${username}`);
     };
 
-    // --- UPDATED BAR CHART DATA OBJECT ---
+    // --- BAR CHART DATA OBJECT ---
     const barChartLabels = ['Air Brake Hoses', 'Adhesives', 'Solar Lanterns', 'Bushings', 'Capacitors'];
     const barChartDataValues = [250, 190, 175, 150, 140];
     const barChartData = {
@@ -553,7 +555,7 @@ const ManufacturerHome = () => {
         },
     };
 
-    // --- NEW STATIC DATA FOR LINE CHART ---
+    // --- LINE CHART DATA OBJECT ---
     const trendsLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const revenueData = [15000, 18000, 17000, 22000, 24000, 26000, 25000, 27000, 29000, 31000, 34000, 38000];
     
@@ -655,6 +657,61 @@ const ManufacturerHome = () => {
             duration: 1200,
             easing: "easeOutQuart"
         }
+    };
+
+    // --- PIE CHART DATA OBJECT (NEW) ---
+    const pieChartData = {
+        labels: ['Electrical Supplies', 'Hardware Supplies', 'Plumbing Supplies', 'Cleaning Supplies', 'Safety Supplies'],
+        datasets: [
+            {
+                label: 'Sales by Category',
+                data: [35, 25, 15, 10, 15], // Static percentage data
+                backgroundColor: [
+                    'rgba(59, 130, 246, 0.8)', // Blue
+                    'rgba(16, 185, 129, 0.8)', // Green
+                    'rgba(245, 158, 11, 0.8)', // Yellow/Orange
+                    'rgba(239, 68, 68, 0.8)', // Red
+                    'rgba(139, 92, 246, 0.8)', // Purple
+                ],
+                borderColor: '#ffffff',
+                borderWidth: 2,
+            },
+        ],
+    };
+
+    const pieChartOptions = {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'right',
+                labels: {
+                    color: '#1e293b',
+                    font: { size: 14, weight: '600' },
+                    padding: 20,
+                },
+            },
+            title: {
+                display: true,
+                text: 'Sales Distribution by Category',
+                color: '#1e293b',
+                font: { size: 18, weight: '700' },
+                padding: { top: 10, bottom: 20 },
+            },
+            tooltip: {
+                callbacks: {
+                    label: function (context) {
+                        const label = context.label || '';
+                        const value = context.raw || 0;
+                        return `${label}: ${value}%`;
+                    },
+                },
+            },
+        },
+        maintainAspectRatio: false,
+        animation: {
+            animateScale: true,
+            animateRotate: true,
+        },
     };
 
     const cardData = [
@@ -1123,25 +1180,6 @@ const ManufacturerHome = () => {
             <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b' }}>
                 Top Selling Products
             </Typography>
-            {/* <FormControl size="small" sx={{ minWidth: 200 }}>
-                <Select
-                    value={selectedCategory}
-                    onChange={handleDashboardCategoryChange}
-                    displayEmpty
-                    sx={{
-                        '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e2e8f0' },
-                        '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#3b82f6' },
-                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#3b82f6' },
-                    }}
-                >
-                    <MenuItem value="">All Categories</MenuItem>
-                    {dashboardCategory?.map((category) => (
-                        <MenuItem key={category.id} value={category.id}>
-                            {category.name}
-                        </MenuItem>
-                    ))}
-                </Select>
-            </FormControl> */}
         </Box>
 
         <TableContainer component={Paper} sx={{ borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
@@ -1365,7 +1403,7 @@ const ManufacturerHome = () => {
 </Box>
 
 
-                    {/* Two-column container */}
+                    {/* Two-column container for Top Buyers and new Pie Chart */}
 <Grid container spacing={3}>
     {/* Column 1 - Top Buyers */}
     <Grid item xs={12} md={6}>
@@ -1514,6 +1552,31 @@ const ManufacturerHome = () => {
                     </Button>
                 </Box>
             )}
+        </Paper>
+    </Grid>
+
+    {/* Column 2 - Sales Distribution Pie Chart (NEW) */}
+    <Grid item xs={12} md={6}>
+        <Paper
+            elevation={0}
+            sx={{
+                bgcolor: '#ffffff',
+                borderRadius: '12px',
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+                p: 3,
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+            }}
+        >
+            <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b', mb: 2, alignSelf: 'flex-start' }}>
+                Sales Distribution
+            </Typography>
+            <Box sx={{ width: "100%", height: 350, display: 'flex', justifyContent: 'center' }}>
+                <Pie data={pieChartData} options={pieChartOptions} plugins={[backgroundPlugin]} />
+            </Box>
         </Paper>
     </Grid>
 </Grid>
