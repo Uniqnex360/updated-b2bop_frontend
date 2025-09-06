@@ -784,7 +784,7 @@ const ManufacturerHome = () => {
                         label="End level category"
                         sx={{ borderRadius: '8px', '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e2e8f0' } }}
                     >
-                        <MenuItem value="">All Categories</MenuItem>
+                        {/* <MenuItem value="">All Categories</MenuItem> */}
                         {categories.map((category) => (
                             <MenuItem key={category} value={category}>{category}</MenuItem>
                         ))}
@@ -1094,270 +1094,264 @@ const ManufacturerHome = () => {
                     </Grid>
 
                     {/* Top Selling Products */}
-                    <Box sx={{ mb: 4 }}>
-                        <Paper
-                            elevation={0}
-                            sx={{
-                                bgcolor: '#ffffff',
-                                borderRadius: '12px',
-                                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
-                                p: 3,
-                            }}
-                        >
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                                <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b' }}>
-                                    Top Selling Products
-                                </Typography>
-                                <FormControl size="small" sx={{ minWidth: 200 }}>
-                                    <Select
-                                        value={selectedCategory}
-                                        onChange={handleDashboardCategoryChange}
-                                        displayEmpty
-                                        sx={{
-                                            '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e2e8f0' },
-                                            '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#3b82f6' },
-                                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#3b82f6' },
-                                        }}
-                                    >
-                                        <MenuItem value="">All Categories</MenuItem>
-                                        {dashboardCategory?.map((category) => (
-                                            <MenuItem key={category.id} value={category.id}>
-                                                {category.name}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                            </Box>
+<Box sx={{ mb: 4 }}>
+    <Paper
+        elevation={0}
+        sx={{
+            bgcolor: '#ffffff',
+            borderRadius: '12px',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+            p: 3,
+        }}
+    >
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b' }}>
+                Top Selling Products
+            </Typography>
+            {/* <FormControl size="small" sx={{ minWidth: 200 }}>
+                <Select
+                    value={selectedCategory}
+                    onChange={handleDashboardCategoryChange}
+                    displayEmpty
+                    sx={{
+                        '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e2e8f0' },
+                        '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#3b82f6' },
+                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#3b82f6' },
+                    }}
+                >
+                    <MenuItem value="">All Categories</MenuItem>
+                    {dashboardCategory?.map((category) => (
+                        <MenuItem key={category.id} value={category.id}>
+                            {category.name}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl> */}
+        </Box>
 
-                            <TableContainer component={Paper} sx={{ borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-                                <Table aria-label="top selling products">
-                                    <TableHead sx={{ bgcolor: '#f8fafc' }}>
-                                        <TableRow>
-                                            <TableCell />
-                                            <TableCell sx={{ fontWeight: 600, color: '#1e293b' }}>Product</TableCell>
-                                            <TableCell sx={{ fontWeight: 600, color: '#1e293b' }} align="center">SKU No</TableCell>
-                                            <TableCell sx={{ fontWeight: 600, color: '#1e293b' }}>Brand</TableCell>
-                                            <TableCell sx={{ fontWeight: 600, color: '#1e293b' }}>Category</TableCell>
-                                            <TableCell sx={{ fontWeight: 600, color: '#1e293b' }} align="center">Latest Purchase</TableCell>
-                                            <TableCell sx={{ fontWeight: 600, color: '#1e293b' }} align="center">Units Sold</TableCell>
-                                            <TableCell sx={{ fontWeight: 600, color: '#1e293b' }} align="right">Total Sales ($)</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {topSellingProducts?.top_selling_products?.length > 0 ? (
-                                            topSellingProducts.top_selling_products.map((product, index) => (
-                                                <Row
-                                                    key={index}
-                                                    row={product}
-                                                    handleProductClick={handleProductClick}
-                                                />
-                                            ))
-                                        ) : (
-                                            <TableRow>
-                                                <TableCell colSpan={8} align="center" sx={{ py: 4 }}>
-                                                    <Typography variant="body1" color="textSecondary">
-                                                        No products found
-                                                    </Typography>
-                                                </TableCell>
-                                            </TableRow>
-                                        )}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
-                        </Paper>
-                    </Box>
+        <TableContainer component={Paper} sx={{ borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <Table aria-label="top selling products">
+                <TableHead sx={{ bgcolor: '#f8fafc' }}>
+                    <TableRow>
+                        <TableCell />
+                        <TableCell sx={{ fontWeight: 600, color: '#1e293b' }}>Product</TableCell>
+                        <TableCell sx={{ fontWeight: 600, color: '#1e293b' }} align="center">SKU No</TableCell>
+                        <TableCell sx={{ fontWeight: 600, color: '#1e293b' }}>Brand</TableCell>
+                        <TableCell sx={{ fontWeight: 600, color: '#1e293b' }}>Category</TableCell>
+                        <TableCell sx={{ fontWeight: 600, color: '#1e293b' }} align="center">Latest Purchase</TableCell>
+                        <TableCell sx={{ fontWeight: 600, color: '#1e293b' }} align="center">Units Sold</TableCell>
+                        <TableCell sx={{ fontWeight: 600, color: '#1e293b' }} align="right">Total Sales ($)</TableCell>
+                    </TableRow>
+                </TableHead>
+<TableBody>
+    {/* Static Example Rows */}
+    <TableRow hover>
+        <TableCell>
+            <Box sx={{ width: 44, height: 44, borderRadius: 2, overflow: 'hidden', border: '1px solid #e2e8f0', bgcolor: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=64&q=80" alt="SKU12345" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </Box>
+        </TableCell>
+        <TableCell sx={{ fontWeight: 600, color: '#212121', fontSize: 15 }}>
+            Solar Lantern
+            <Typography variant="caption" sx={{ color: '#64748b', display: 'block', mt: 0.5 }}>
+                High-efficiency LED, 12hr backup
+            </Typography>
+        </TableCell>
+        <TableCell align="center" sx={{ fontWeight: 500, color: '#3b82f6', fontSize: 14 }}>
+            SKU12345
+        </TableCell>
+        <TableCell sx={{ fontWeight: 500, color: '#6366f1', fontSize: 14 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box sx={{ width: 28, height: 28, borderRadius: '50%', overflow: 'hidden', border: '1px solid #e2e8f0', mr: 1 }}>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a6/Logo_NIKE.svg" alt="Aervoe" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </Box>
+                Aervoe
+            </Box>
+        </TableCell>
+        <TableCell sx={{ fontWeight: 500, color: '#64748b', fontSize: 14 }}>
+            Electrical Supplies
+        </TableCell>
+        <TableCell align="center" sx={{ fontWeight: 500, color: '#475569', fontSize: 14 }}>
+            09/01/2025
+        </TableCell>
+        <TableCell align="center" sx={{ fontWeight: 700, color: '#10b981', fontSize: 15 }}>
+            250
+        </TableCell>
+        <TableCell align="right" sx={{ fontWeight: 700, color: '#3b82f6', fontSize: 15 }}>
+            $12,500.00
+        </TableCell>
+    </TableRow>
+    <TableRow hover>
+        <TableCell>
+            <Box sx={{ width: 44, height: 44, borderRadius: 2, overflow: 'hidden', border: '1px solid #e2e8f0', bgcolor: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=64&q=80" alt="SKU67890" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </Box>
+        </TableCell>
+        <TableCell sx={{ fontWeight: 600, color: '#212121', fontSize: 15 }}>
+            Capacitor Pro
+            <Typography variant="caption" sx={{ color: '#64748b', display: 'block', mt: 0.5 }}>
+                Long-life, high voltage
+            </Typography>
+        </TableCell>
+        <TableCell align="center" sx={{ fontWeight: 500, color: '#3b82f6', fontSize: 14 }}>
+            SKU67890
+        </TableCell>
+        <TableCell sx={{ fontWeight: 500, color: '#6366f1', fontSize: 14 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box sx={{ width: 28, height: 28, borderRadius: '50%', overflow: 'hidden', border: '1px solid #e2e8f0', mr: 1 }}>
+                    <img src="https://www.thorlabs.com/images/Thorlabs_Logo_2019.svg" alt="Thorlabs" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </Box>
+                Thorlabs
+            </Box>
+        </TableCell>
+        <TableCell sx={{ fontWeight: 500, color: '#64748b', fontSize: 14 }}>
+            Electrical Supplies
+        </TableCell>
+        <TableCell align="center" sx={{ fontWeight: 500, color: '#475569', fontSize: 14 }}>
+            08/28/2025
+        </TableCell>
+        <TableCell align="center" sx={{ fontWeight: 700, color: '#10b981', fontSize: 15 }}>
+            190
+        </TableCell>
+        <TableCell align="right" sx={{ fontWeight: 700, color: '#3b82f6', fontSize: 15 }}>
+            $9,500.00
+        </TableCell>
+    </TableRow>
+    <TableRow hover>
+        <TableCell>
+            <Box sx={{ width: 44, height: 44, borderRadius: 2, overflow: 'hidden', border: '1px solid #e2e8f0', bgcolor: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=64&q=80" alt="SKU54321" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </Box>
+        </TableCell>
+        <TableCell sx={{ fontWeight: 600, color: '#212121', fontSize: 15 }}>
+            Solar Collector
+            <Typography variant="caption" sx={{ color: '#64748b', display: 'block', mt: 0.5 }}>
+                Efficient heat absorption
+            </Typography>
+        </TableCell>
+        <TableCell align="center" sx={{ fontWeight: 500, color: '#3b82f6', fontSize: 14 }}>
+            SKU54321
+        </TableCell>
+        <TableCell sx={{ fontWeight: 500, color: '#6366f1', fontSize: 14 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box sx={{ width: 28, height: 28, borderRadius: '50%', overflow: 'hidden', border: '1px solid #e2e8f0', mr: 1 }}>
+                    <img src="https://aymcdonald.com/images/logo.png" alt="A.Y. McDonald" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </Box>
+                A.Y. McDonald
+            </Box>
+        </TableCell>
+        <TableCell sx={{ fontWeight: 500, color: '#64748b', fontSize: 14 }}>
+            Heating and Cooling Supplies
+        </TableCell>
+        <TableCell align="center" sx={{ fontWeight: 500, color: '#475569', fontSize: 14 }}>
+            08/15/2025
+        </TableCell>
+        <TableCell align="center" sx={{ fontWeight: 700, color: '#10b981', fontSize: 15 }}>
+            175
+        </TableCell>
+        <TableCell align="right" sx={{ fontWeight: 700, color: '#3b82f6', fontSize: 15 }}>
+            $8,750.00
+        </TableCell>
+    </TableRow>
+    <TableRow hover>
+        <TableCell>
+            <Box sx={{ width: 44, height: 44, borderRadius: 2, overflow: 'hidden', border: '1px solid #e2e8f0', bgcolor: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <img src="https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=64&q=80" alt="SKU98765" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </Box>
+        </TableCell>
+        <TableCell sx={{ fontWeight: 600, color: '#212121', fontSize: 15 }}>
+            Bushings Set
+            <Typography variant="caption" sx={{ color: '#64748b', display: 'block', mt: 0.5 }}>
+                Durable, easy install
+            </Typography>
+        </TableCell>
+        <TableCell align="center" sx={{ fontWeight: 500, color: '#3b82f6', fontSize: 14 }}>
+            SKU98765
+        </TableCell>
+        <TableCell sx={{ fontWeight: 500, color: '#6366f1', fontSize: 14 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box sx={{ width: 28, height: 28, borderRadius: '50%', overflow: 'hidden', border: '1px solid #e2e8f0', mr: 1 }}>
+                    <img src="https://www.mohawkgroup.com/themes/custom/mohawkgroup/logo.svg" alt="Mohawkgroup" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </Box>
+                Mohawkgroup
+            </Box>
+        </TableCell>
+        <TableCell sx={{ fontWeight: 500, color: '#64748b', fontSize: 14 }}>
+            Automotive Supplies
+        </TableCell>
+        <TableCell align="center" sx={{ fontWeight: 500, color: '#475569', fontSize: 14 }}>
+            08/10/2025
+        </TableCell>
+        <TableCell align="center" sx={{ fontWeight: 700, color: '#10b981', fontSize: 15 }}>
+            150
+        </TableCell>
+        <TableCell align="right" sx={{ fontWeight: 700, color: '#3b82f6', fontSize: 15 }}>
+            $7,500.00
+        </TableCell>
+    </TableRow>
+    <TableRow hover>
+        <TableCell>
+            <Box sx={{ width: 44, height: 44, borderRadius: 2, overflow: 'hidden', border: '1px solid #e2e8f0', bgcolor: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=64&q=80" alt="SKU24680" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </Box>
+        </TableCell>
+        <TableCell sx={{ fontWeight: 600, color: '#212121', fontSize: 15 }}>
+            Wires & Cables
+            <Typography variant="caption" sx={{ color: '#64748b', display: 'block', mt: 0.5 }}>
+                Flexible, high conductivity
+            </Typography>
+        </TableCell>
+        <TableCell align="center" sx={{ fontWeight: 500, color: '#3b82f6', fontSize: 14 }}>
+            SKU24680
+        </TableCell>
+        <TableCell sx={{ fontWeight: 500, color: '#6366f1', fontSize: 14 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box sx={{ width: 28, height: 28, borderRadius: '50%', overflow: 'hidden', border: '1px solid #e2e8f0', mr: 1 }}>
+                    <img src="https://www.irwin.com/-/media/Project/Irwin/Irwin/Irwin/Irwin-logo.svg" alt="Irwin" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </Box>
+                Irwin
+            </Box>
+        </TableCell>
+        <TableCell sx={{ fontWeight: 500, color: '#64748b', fontSize: 14 }}>
+            Hardware Supplies
+        </TableCell>
+        <TableCell align="center" sx={{ fontWeight: 500, color: '#475569', fontSize: 14 }}>
+            08/05/2025
+        </TableCell>
+        <TableCell align="center" sx={{ fontWeight: 700, color: '#10b981', fontSize: 15 }}>
+            140
+        </TableCell>
+        <TableCell align="right" sx={{ fontWeight: 700, color: '#3b82f6', fontSize: 15 }}>
+            $7,000.00
+        </TableCell>
+    </TableRow>
+    {/* Dynamic Data */}
+    {topSellingProducts?.top_selling_products?.length > 0 ? (
+        topSellingProducts.top_selling_products.map((product, index) => (
+            <Row
+                key={index}
+                row={product}
+                handleProductClick={handleProductClick}
+            />
+        ))
+    ) : (
+        <TableRow>
+            <TableCell colSpan={8} align="center" sx={{ py: 4 }}>
+                {/* <Typography variant="body1" color="textSecondary">
+                    No products found
+                </Typography> */}
+            </TableCell>
+        </TableRow>
+    )}
+</TableBody>
+            </Table>
+        </TableContainer>
+    </Paper>
+</Box>
+
 
                     {/* Two-column container */}
-                    <Grid container spacing={3}>
-                        {/* Column 1 - Top Buyers */}
-                        <Grid item xs={12} md={6}>
-                            <Paper
-                                elevation={0}
-                                sx={{
-                                    bgcolor: '#ffffff',
-                                    borderRadius: '12px',
-                                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
-                                    p: 3,
-                                    height: '100%',
-                                }}
-                            >
-                                <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b', mb: 2 }}>
-                                    Top Buyers
-                                </Typography>
-                                <Box sx={{ maxHeight: 400, overflowY: 'auto' }}>
-                                    {dealerOrderData && Array.isArray(displayedDealers) && displayedDealers.length > 0 ? (
-                                        displayedDealers.map((dealer, index) => (
-                                            <Card
-                                                key={dealer.id}
-                                                onClick={() => handleRowClick(dealer.id)}
-                                                sx={{
-                                                    mb: 2,
-                                                    bgcolor: '#ffffff',
-                                                    borderRadius: '8px',
-                                                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-                                                    transition: 'all 0.3s ease',
-                                                    borderLeft: `4px solid ${
-                                                        index === 0 ? '#3b82f6' :
-                                                        index === 1 ? '#8b5cf6' :
-                                                        index === 2 ? '#10b981' : '#64748b'
-                                                    }`,
-                                                    '&:hover': {
-                                                        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-                                                        transform: 'translateY(-2px)',
-                                                        cursor: 'pointer',
-                                                    },
-                                                    p: 2,
-                                                }}
-                                            >
-                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                                    <Box sx={{ position: 'relative' }}>
-                                                        <Box
-                                                            sx={{
-                                                                width: 48,
-                                                                height: 48,
-                                                                borderRadius: '50%',
-                                                                overflow: 'hidden',
-                                                                bgcolor: '#e2e8f0',
-                                                            }}
-                                                        >
-                                                            {/* Added conditional rendering to check if dealer is defined */}
-                                                            {dealer && (
-                                                                <img
-                                                                    src={
-                                                                        index === 0
-                                                                            ? 'https://randomuser.me/api/portraits/men/32.jpg'
-                                                                            : index === 1
-                                                                                ? 'https://randomuser.me/api/portraits/women/44.jpg'
-                                                                                : index === 2
-                                                                                    ? 'https://randomuser.me/api/portraits/men/67.jpg'
-                                                                                    : index % 2 === 0
-                                                                                        ? 'https://randomuser.me/api/portraits/men/75.jpg'
-                                                                                        : 'https://randomuser.me/api/portraits/women/63.jpg'
-                                                                    }
-                                                                    alt={dealer.name}
-                                                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                                                />
-                                                            )}
-                                                        </Box>
-                                                        {index < 3 && (
-                                                            <Box
-                                                                sx={{
-                                                                    position: 'absolute',
-                                                                    top: -4,
-                                                                    right: -4,
-                                                                    width: 24,
-                                                                    height: 24,
-                                                                    borderRadius: '50%',
-                                                                    display: 'flex',
-                                                                    alignItems: 'center',
-                                                                    justifyContent: 'center',
-                                                                    fontSize: '0.75rem',
-                                                                    fontWeight: 700,
-                                                                    color: '#ffffff',
-                                                                    border: '2px solid #ffffff',
-                                                                    bgcolor:
-                                                                        index === 0 ? '#f59e0b' :
-                                                                        index === 1 ? '#94a3b8' :
-                                                                        '#f97316',
-                                                                }}
-                                                            >
-                                                                {index + 1}
-                                                            </Box>
-                                                        )}
-                                                    </Box>
-                                                    <Box>
-                                                        {/* Using optional chaining for safe access */}
-                                                        <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                                                            {dealer?.name}
-                                                        </Typography>
-                                                        <Typography variant="body2" sx={{ color: '#3b82f6', fontWeight: 500 }}>
-                                                            ${dealer?.order_value?.toFixed(2)}
-                                                        </Typography>
-                                                    </Box>
-                                                </Box>
-                                            </Card>
-                                        ))
-                                    ) : (
-                                        <Box
-                                            sx={{
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                py: 4,
-                                                gap: 2,
-                                            }}
-                                        >
-                                            <Box
-                                                sx={{
-                                                    p: 2,
-                                                    bgcolor: '#e2e8f0',
-                                                    borderRadius: '50%',
-                                                }}
-                                            >
-                                                <PeopleIcon sx={{ fontSize: 40, color: '#64748b' }} />
-                                            </Box>
-                                            <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                                                No dealers found
-                                            </Typography>
-                                            <Typography variant="body2" sx={{ color: '#64748b' }}>
-                                                Check back later for updates
-                                            </Typography>
-                                        </Box>
-                                    )}
-                                </Box>
-                                {dealers.length > 5 && (
-                                    <Box sx={{ mt: 2, textAlign: 'center' }}>
-                                        <Button
-                                            onClick={handleSeeMore}
-                                            variant="outlined"
-                                            sx={{
-                                                borderColor: '#3b82f6',
-                                                color: '#3b82f6',
-                                                borderRadius: '8px',
-                                                textTransform: 'none',
-                                                '&:hover': {
-                                                    bgcolor: '#3b82f6',
-                                                    color: '#ffffff',
-                                                },
-                                            }}
-                                        >
-                                            {showAll ? 'Show Less' : 'See More'}
-                                        </Button>
-                                    </Box>
-                                )}
-                            </Paper>
-                        </Grid>
-
-                        {/* Column 2 - Revenue Trends with updated line chart */}
-                        <Grid item xs={12} md={6}>
-                            <Paper
-                                elevation={0}
-                                sx={{
-                                    bgcolor: '#ffffff',
-                                    borderRadius: '12px',
-                                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
-                                    p: 3,
-                                    height: '100%',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                    textAlign: 'center',
-                                }}
-                            >
-                                <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b', mb: 2, alignSelf: 'flex-start' }}>
-                                    Key Business Trends over Time
-                                </Typography>
-                                <Box sx={{ width: "100%", height: 260 }}>
-                                    <Line
-                                        data={lineTrendChartData}
-                                        options={lineTrendChartOptions}
-                                        plugins={[backgroundPlugin]}
-                                    />
-                                </Box>
-                            </Paper>
-                        </Grid>
-                    </Grid>
+                 
                 </Box>
             </Fade>
         </Box>
