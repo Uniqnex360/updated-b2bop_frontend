@@ -21,7 +21,8 @@ import {
     Fade,
     Collapse,
     IconButton,
-    InputLabel
+    InputLabel,
+    TextField
 } from "@mui/material";
 import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -258,6 +259,12 @@ const ManufacturerHome = () => {
     const [fromDate, setFromDate] = useState(null);
     const [toDate, setToDate] = useState(null);
 
+    // Search states for dropdowns
+    const [industrySearch, setIndustrySearch] = useState('');
+    const [categorySearch, setCategorySearch] = useState('');
+    const [brandSearch, setBrandSearch] = useState('');
+    const [buyerSearch, setBuyerSearch] = useState('');
+
     const staticData = [
         { industry: "Electrical Supplies", category: "Solar Lanterns", brand: "Aervoe", buyer: "John" },
         { industry: "Electrical Supplies", category: "Capacitors", brand: "Thorlabs", buyer: "Christopher Brown" },
@@ -280,7 +287,7 @@ const ManufacturerHome = () => {
         { industry: "Material Handling Supplies", category: "Cooking Appliances", brand: "Nibco", buyer: "Cable Ties & Straps" },
         { industry: "Plumbing Supplies", category: "Accessories", brand: "Harcofittings", buyer: "C-Clamps" },
         { industry: "Electrical Supplies", category: "Bars", brand: "Avdel", buyer: "Clamps" },
-        { industry: "Heating and Cooling Supplies", category: "Connectors", brand: "Masterfix", buyer: "Coupler" },
+        { industry: "Heating and Cooling Supplies", category: "Connectors", brand: "Masterfix", "buyer": "Coupler" },
         { industry: "Safety Supplies", category: "Controllers", brand: "POP", buyer: "Fastener Accessories" },
         { industry: "Hardware Supplies", category: "Couplers & Splitters", brand: "Spiralock", buyer: "Nuts" },
         { industry: "Cleaning Supplies", category: "Electric Actuators", brand: "Tucker", buyer: "Screw" },
@@ -300,7 +307,25 @@ const ManufacturerHome = () => {
     const industries = [...new Set(staticData.map(item => item.industry))];
     const categories = [...new Set(staticData.map(item => item.category))];
     const brands = [...new Set(staticData.map(item => item.brand))];
-    const buyers = [...new Set(staticData.map(item => item.buyer))];
+    // This is the updated list of buyer names
+    const buyers = [
+        "John",
+        "Christopher Brown",
+        "Sophia Taylor",
+        "Isabella Harris",
+        "William Anderson",
+        "Emily Davis",
+        "James Miller",
+        "Michael Johnson",
+        "Olivia Wilson",
+        "Ava Thompson",
+    ];
+
+    // Filter dropdown options by search
+    const filteredIndustries = industries.filter(ind => ind.toLowerCase().includes(industrySearch.toLowerCase()));
+    const filteredCategories = categories.filter(cat => cat.toLowerCase().includes(categorySearch.toLowerCase()));
+    const filteredBrands = brands.filter(br => br.toLowerCase().includes(brandSearch.toLowerCase()));
+    const filteredBuyers = buyers.filter(buy => buy.toLowerCase().includes(buyerSearch.toLowerCase()));
 
     const handleIndustryChange = (event) => {
         setSelectedIndustry(event.target.value);
@@ -808,42 +833,73 @@ const ManufacturerHome = () => {
     ];
 
     return (
-<Box sx={{ bgcolor: '#f5f7fa', minHeight: '100vh', p: { xs: 2, md: 4 } }}>
-    {/* Sticky filter row */}
-<Box
-    sx={{
-        bgcolor: '#ffffff',
-        borderRadius: '12px',
-        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
-        p: 2,
-        mb: 4,
-        display: 'flex',
-        flexDirection: { xs: 'column', md: 'row' },
-        gap: 2,
-        alignItems: 'center',
-        position: 'sticky',
-        top: 72, // <-- Increase top value (e.g. 72px) for more gap below NotificationBar
-        zIndex: 1100, // <-- Increase zIndex above NotificationBar if needed
-        width: '100%',
-        backgroundClip: 'padding-box', // helps with shadow visibility
-    }}
->
+        <Box sx={{ bgcolor: '#f5f7fa', minHeight: '100vh', p: { xs: 2, md: 4 } }}>
+            {/* Sticky filter row */}
+            <Box
+                sx={{
+                    bgcolor: '#ffffff',
+                    borderRadius: '12px',
+                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+                    p: 2,
+                    mb: 4,
+                    display: 'flex',
+                    flexDirection: { xs: 'column', md: 'row' },
+                    gap: 2,
+                    alignItems: 'center',
+                    position: 'sticky',
+                    top: 72, 
+                    zIndex: 1100, 
+                    width: '100%',
+                    backgroundClip: 'padding-box', 
+                }}
+            >
+                {/* Industry Dropdown with Search */}
+            
+<FormControl size="small" sx={{ minWidth: 210 }}>
+    <InputLabel>Industry</InputLabel>
+    <Select
+        value={selectedIndustry}
+        onChange={handleIndustryChange}
+        label="Industry"
+        sx={{ borderRadius: '8px', '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e2e8f0' } }}
+        MenuProps={{
+            PaperProps: {
+                style: { maxHeight: 320 }
+            }
+        }}
+        renderValue={(selected) => selected || "All Industries"}
+    >
+        <Box sx={{ px: 2, py: 1 }}>
+            <TextField
+                size="small"
+                placeholder="Search Industry"
+                value={industrySearch}
+                onChange={e => setIndustrySearch(e.target.value)}
+                fullWidth
+                variant="outlined"
+                InputProps={{
+                    sx: {
+                        bgcolor: '#fff',
+                        color: '#212121',
+                        fontWeight: 500,
+                        borderRadius: 1,
+                        '& input': {
+                            bgcolor: '#fff',
+                            color: '#212121',
+                        }
+                    }
+                }}
+            />
+        </Box>
+        <MenuItem value="">All Industries</MenuItem>
+        {filteredIndustries.map((industry) => (
+            <MenuItem key={industry} value={industry}>{industry}</MenuItem>
+        ))}
+    </Select>
+</FormControl>
 
-                <FormControl size="small" sx={{ minWidth: 210 }}>
-                    <InputLabel>Industry</InputLabel>
-                    <Select
-                        value={selectedIndustry}
-                        onChange={handleIndustryChange}
-                        label="Industry"
-                        sx={{ borderRadius: '8px', '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e2e8f0' } }}
-                    >
-                        <MenuItem value="">All Industries</MenuItem>
-                        {industries.map((industry) => (
-                            <MenuItem key={industry} value={industry}>{industry}</MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
 
+                {/* Category Dropdown with Search */}
                 <FormControl size="small" sx={{ minWidth: 210 }}>
                     <InputLabel>End level category</InputLabel>
                     <Select
@@ -851,14 +907,31 @@ const ManufacturerHome = () => {
                         onChange={handleCategoryChange}
                         label="End level category"
                         sx={{ borderRadius: '8px', '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e2e8f0' } }}
+                        MenuProps={{
+                            PaperProps: {
+                                style: { maxHeight: 320 }
+                            }
+                        }}
+                        renderValue={(selected) => selected || "All Categories"}
                     >
+                        <Box sx={{ px: 2, py: 1 }}>
+                            <TextField
+                                size="small"
+                                placeholder="Search Category"
+                                value={categorySearch}
+                                onChange={e => setCategorySearch(e.target.value)}
+                                fullWidth
+                                variant="outlined"
+                            />
+                        </Box>
                         <MenuItem value="">All Categories</MenuItem>
-                        {categories.map((category) => (
+                        {filteredCategories.map((category) => (
                             <MenuItem key={category} value={category}>{category}</MenuItem>
                         ))}
                     </Select>
                 </FormControl>
 
+                {/* Brand Dropdown with Search */}
                 <FormControl size="small" sx={{ minWidth: 210 }}>
                     <InputLabel>Brand Name</InputLabel>
                     <Select
@@ -866,14 +939,31 @@ const ManufacturerHome = () => {
                         onChange={handleBrandChange}
                         label="Brand Name"
                         sx={{ borderRadius: '8px', '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e2e8f0' } }}
+                        MenuProps={{
+                            PaperProps: {
+                                style: { maxHeight: 320 }
+                            }
+                        }}
+                        renderValue={(selected) => selected || "All Brands"}
                     >
+                        <Box sx={{ px: 2, py: 1 }}>
+                            <TextField
+                                size="small"
+                                placeholder="Search Brand"
+                                value={brandSearch}
+                                onChange={e => setBrandSearch(e.target.value)}
+                                fullWidth
+                                variant="outlined"
+                            />
+                        </Box>
                         <MenuItem value="">All Brands</MenuItem>
-                        {brands.map((brand) => (
+                        {filteredBrands.map((brand) => (
                             <MenuItem key={brand} value={brand}>{brand}</MenuItem>
                         ))}
                     </Select>
                 </FormControl>
 
+                {/* Buyer Dropdown with Search */}
                 <FormControl size="small" sx={{ minWidth: 210 }}>
                     <InputLabel>Buyer Name</InputLabel>
                     <Select
@@ -881,9 +971,25 @@ const ManufacturerHome = () => {
                         onChange={handleBuyerChange}
                         label="Buyer Name"
                         sx={{ borderRadius: '8px', '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e2e8f0' } }}
+                        MenuProps={{
+                            PaperProps: {
+                                style: { maxHeight: 320 }
+                            }
+                        }}
+                        renderValue={(selected) => selected || "All Buyers"}
                     >
+                        <Box sx={{ px: 2, py: 1 }}>
+                            <TextField
+                                size="small"
+                                placeholder="Search Buyer"
+                                value={buyerSearch}
+                                onChange={e => setBuyerSearch(e.target.value)}
+                                fullWidth
+                                variant="outlined"
+                            />
+                        </Box>
                         <MenuItem value="">All Buyers</MenuItem>
-                        {buyers.map((buyer) => (
+                        {filteredBuyers.map((buyer) => (
                             <MenuItem key={buyer} value={buyer}>{buyer}</MenuItem>
                         ))}
                     </Select>
@@ -926,7 +1032,7 @@ const ManufacturerHome = () => {
                             />
                         </Grid>
                     </Grid>
-                </LocalizationProvider>
+                 </LocalizationProvider>
             </Box>
 
 
@@ -1165,420 +1271,420 @@ const ManufacturerHome = () => {
                     </Grid>
 
                     {/* Top Selling Products */}
-<Box sx={{ mb: 4 }}>
-    <Paper
-        elevation={0}
-        sx={{
-            bgcolor: '#ffffff',
-            borderRadius: '12px',
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
-            p: 3,
-        }}
-    >
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-            <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b' }}>
-                Top Selling Products
-            </Typography>
-        </Box>
+                    <Box sx={{ mb: 4 }}>
+                        <Paper
+                            elevation={0}
+                            sx={{
+                                bgcolor: '#ffffff',
+                                borderRadius: '12px',
+                                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+                                p: 3,
+                            }}
+                        >
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                                <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b' }}>
+                                    Top Selling Products
+                                </Typography>
+                            </Box>
 
-        <TableContainer component={Paper} sx={{ borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <Table aria-label="top selling products">
-                <TableHead sx={{ bgcolor: '#f8fafc' }}>
-                    <TableRow>
-                        <TableCell />
-                        <TableCell sx={{ fontWeight: 600, color: '#1e293b' }}>Product</TableCell>
-                        <TableCell sx={{ fontWeight: 600, color: '#1e293b' }} align="center">SKU No</TableCell>
-                        <TableCell sx={{ fontWeight: 600, color: '#1e293b' }}>Brand</TableCell>
-                        <TableCell sx={{ fontWeight: 600, color: '#1e293b' }}>Category</TableCell>
-                        <TableCell sx={{ fontWeight: 600, color: '#1e293b' }} align="center">Latest Purchase</TableCell>
-                        <TableCell sx={{ fontWeight: 600, color: '#1e293b' }} align="center">Units Sold</TableCell>
-                        <TableCell sx={{ fontWeight: 600, color: '#1e293b' }} align="right">Total Sales ($)</TableCell>
-                    </TableRow>
-                </TableHead>
-<TableBody>
-    {/* Static Example Rows */}
-    <TableRow hover>
-        <TableCell>
-            <Box sx={{ width: 44, height: 44, borderRadius: 2, overflow: 'hidden', border: '1px solid #e2e8f0', bgcolor: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=64&q=80" alt="SKU12345" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            </Box>
-        </TableCell>
-        <TableCell sx={{ fontWeight: 600, color: '#212121', fontSize: 15 }}>
-            Solar Lantern
-            <Typography variant="caption" sx={{ color: '#64748b', display: 'block', mt: 0.5 }}>
-                High-efficiency LED, 12hr backup
-            </Typography>
-        </TableCell>
-        <TableCell align="center" sx={{ fontWeight: 500, color: '#3b82f6', fontSize: 14 }}>
-            SKU12345
-        </TableCell>
-        <TableCell sx={{ fontWeight: 500, color: '#6366f1', fontSize: 14 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Box sx={{ width: 28, height: 28, borderRadius: '50%', overflow: 'hidden', border: '1px solid #e2e8f0', mr: 1 }}>
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a6/Logo_NIKE.svg" alt="Aervoe" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                </Box>
-                Aervoe
-            </Box>
-        </TableCell>
-        <TableCell sx={{ fontWeight: 500, color: '#64748b', fontSize: 14 }}>
-            Electrical Supplies
-        </TableCell>
-        <TableCell align="center" sx={{ fontWeight: 500, color: '#475569', fontSize: 14 }}>
-            09/01/2025
-        </TableCell>
-        <TableCell align="center" sx={{ fontWeight: 700, color: '#10b981', fontSize: 15 }}>
-            250
-        </TableCell>
-        <TableCell align="right" sx={{ fontWeight: 700, color: '#3b82f6', fontSize: 15 }}>
-            $12,500.00
-        </TableCell>
-    </TableRow>
-    <TableRow hover>
-        <TableCell>
-            <Box sx={{ width: 44, height: 44, borderRadius: 2, overflow: 'hidden', border: '1px solid #e2e8f0', bgcolor: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <img src="https://images.unsplash.com/photo-1756908604030-04861dc79820?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw5fHx8ZW58MHx8fHx8" alt="SKU67890" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            </Box>
-        </TableCell>
-        <TableCell sx={{ fontWeight: 600, color: '#212121', fontSize: 15 }}>
-            Capacitor Pro
-            <Typography variant="caption" sx={{ color: '#64748b', display: 'block', mt: 0.5 }}>
-                Long-life, high voltage
-            </Typography>
-        </TableCell>
-        <TableCell align="center" sx={{ fontWeight: 500, color: '#3b82f6', fontSize: 14 }}>
-            SKU67890
-        </TableCell>
-        <TableCell sx={{ fontWeight: 500, color: '#6366f1', fontSize: 14 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Box sx={{ width: 28, height: 28, borderRadius: '50%', overflow: 'hidden', border: '1px solid #e2e8f0', mr: 1 }}>
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a6/Logo_NIKE.svg" alt="Thorlabs" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                </Box>
-                Thorlabs
-            </Box>
-        </TableCell>
-        <TableCell sx={{ fontWeight: 500, color: '#64748b', fontSize: 14 }}>
-            Electrical Supplies
-        </TableCell>
-        <TableCell align="center" sx={{ fontWeight: 500, color: '#475569', fontSize: 14 }}>
-            08/28/2025
-        </TableCell>
-        <TableCell align="center" sx={{ fontWeight: 700, color: '#10b981', fontSize: 15 }}>
-            190
-        </TableCell>
-        <TableCell align="right" sx={{ fontWeight: 700, color: '#3b82f6', fontSize: 15 }}>
-            $9,500.00
-        </TableCell>
-    </TableRow>
-    <TableRow hover>
-        <TableCell>
-            <Box sx={{ width: 44, height: 44, borderRadius: 2, overflow: 'hidden', border: '1px solid #e2e8f0', bgcolor: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=64&q=80" alt="SKU54321" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            </Box>
-        </TableCell>
-        <TableCell sx={{ fontWeight: 600, color: '#212121', fontSize: 15 }}>
-            Solar Collector
-            <Typography variant="caption" sx={{ color: '#64748b', display: 'block', mt: 0.5 }}>
-                Efficient heat absorption
-            </Typography>
-        </TableCell>
-        <TableCell align="center" sx={{ fontWeight: 500, color: '#3b82f6', fontSize: 14 }}>
-            SKU54321
-        </TableCell>
-        <TableCell sx={{ fontWeight: 500, color: '#6366f1', fontSize: 14 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Box sx={{ width: 28, height: 28, borderRadius: '50%', overflow: 'hidden', border: '1px solid #e2e8f0', mr: 1 }}>
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a6/Logo_NIKE.svg" alt="A.Y. McDonald" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                </Box>
-                A.Y. McDonald
-            </Box>
-        </TableCell>
-        <TableCell sx={{ fontWeight: 500, color: '#64748b', fontSize: 14 }}>
-            Heating and Cooling Supplies
-        </TableCell>
-        <TableCell align="center" sx={{ fontWeight: 500, color: '#475569', fontSize: 14 }}>
-            08/15/2025
-        </TableCell>
-        <TableCell align="center" sx={{ fontWeight: 700, color: '#10b981', fontSize: 15 }}>
-            175
-        </TableCell>
-        <TableCell align="right" sx={{ fontWeight: 700, color: '#3b82f6', fontSize: 15 }}>
-            $8,750.00
-        </TableCell>
-    </TableRow>
-    <TableRow hover>
-        <TableCell>
-            <Box sx={{ width: 44, height: 44, borderRadius: 2, overflow: 'hidden', border: '1px solid #e2e8f0', bgcolor: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <img src="https://images.unsplash.com/photo-1670850664664-d8ed42d767fa?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8YnJhbmQlMjBOQU1FfGVufDB8fDB8fHww" alt="SKU98765" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            </Box>
-        </TableCell>
-        <TableCell sx={{ fontWeight: 600, color: '#212121', fontSize: 15 }}>
-            Bushings Set
-            <Typography variant="caption" sx={{ color: '#64748b', display: 'block', mt: 0.5 }}>
-                Durable, easy install
-            </Typography>
-        </TableCell>
-        <TableCell align="center" sx={{ fontWeight: 500, color: '#3b82f6', fontSize: 14 }}>
-            SKU98765
-        </TableCell>
-        <TableCell sx={{ fontWeight: 500, color: '#6366f1', fontSize: 14 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Box sx={{ width: 28, height: 28, borderRadius: '50%', overflow: 'hidden', border: '1px solid #e2e8f0', mr: 1 }}>
-                    <img src="https://images.unsplash.com/photo-1548364538-60b952c308b9?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fEJSQU5EfGVufDB8fDB8fHww" alt="Mohawkgroup" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                </Box>
-                Mohawkgroup
-            </Box>
-        </TableCell>
-        <TableCell sx={{ fontWeight: 500, color: '#64748b', fontSize: 14 }}>
-            Automotive Supplies
-        </TableCell>
-        <TableCell align="center" sx={{ fontWeight: 500, color: '#475569', fontSize: 14 }}>
-            08/10/2025
-        </TableCell>
-        <TableCell align="center" sx={{ fontWeight: 700, color: '#10b981', fontSize: 15 }}>
-            150
-        </TableCell>
-        <TableCell align="right" sx={{ fontWeight: 700, color: '#3b82f6', fontSize: 15 }}>
-            $7,500.00
-        </TableCell>
-    </TableRow>
-    <TableRow hover>
-        <TableCell>
-            <Box sx={{ width: 44, height: 44, borderRadius: 2, overflow: 'hidden', border: '1px solid #e2e8f0', bgcolor: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=64&q=80" alt="SKU24680" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            </Box>
-        </TableCell>
-        <TableCell sx={{ fontWeight: 600, color: '#212121', fontSize: 15 }}>
-            Wires & Cables
-            <Typography variant="caption" sx={{ color: '#64748b', display: 'block', mt: 0.5 }}>
-                Flexible, high conductivity
-            </Typography>
-        </TableCell>
-        <TableCell align="center" sx={{ fontWeight: 500, color: '#3b82f6', fontSize: 14 }}>
-            SKU24680
-        </TableCell>
-        <TableCell sx={{ fontWeight: 500, color: '#6366f1', fontSize: 14 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Box sx={{ width: 28, height: 28, borderRadius: '50%', overflow: 'hidden', border: '1px solid #e2e8f0', mr: 1 }}>
-                    <img src="https://images.unsplash.com/photo-1670850664664-d8ed42d767fa?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8YnJhbmQlMjBOQU1FfGVufDB8fDB8fHww" alt="Irwin" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                </Box>
-                Irwin
-            </Box>
-        </TableCell>
-        <TableCell sx={{ fontWeight: 500, color: '#64748b', fontSize: 14 }}>
-            Hardware Supplies
-        </TableCell>
-        <TableCell align="center" sx={{ fontWeight: 500, color: '#475569', fontSize: 14 }}>
-            08/05/2025
-        </TableCell>
-        <TableCell align="center" sx={{ fontWeight: 700, color: '#10b981', fontSize: 15 }}>
-            140
-        </TableCell>
-        <TableCell align="right" sx={{ fontWeight: 700, color: '#3b82f6', fontSize: 15 }}>
-            $7,000.00
-        </TableCell>
-    </TableRow>
-    {/* Dynamic Data */}
-    {topSellingProducts?.top_selling_products?.length > 0 ? (
-        topSellingProducts.top_selling_products.map((product, index) => (
-            <Row
-                key={index}
-                row={product}
-                handleProductClick={handleProductClick}
-            />
-        ))
-    ) : (
-        <TableRow>
-            <TableCell colSpan={8} align="center" sx={{ py: 4 }}>
-                {/* <Typography variant="body1" color="textSecondary">
-                    No products found
-                </Typography> */}
-            </TableCell>
-        </TableRow>
-    )}
-</TableBody>
-            </Table>
-        </TableContainer>
-    </Paper>
-</Box>
+                            <TableContainer component={Paper} sx={{ borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+                                <Table aria-label="top selling products">
+                                    <TableHead sx={{ bgcolor: '#f8fafc' }}>
+                                        <TableRow>
+                                            <TableCell />
+                                            <TableCell sx={{ fontWeight: 600, color: '#1e293b' }}>Product</TableCell>
+                                            <TableCell sx={{ fontWeight: 600, color: '#1e293b' }} align="center">SKU No</TableCell>
+                                            <TableCell sx={{ fontWeight: 600, color: '#1e293b' }}>Brand</TableCell>
+                                            <TableCell sx={{ fontWeight: 600, color: '#1e293b' }}>Category</TableCell>
+                                            <TableCell sx={{ fontWeight: 600, color: '#1e293b' }} align="center">Latest Purchase</TableCell>
+                                            <TableCell sx={{ fontWeight: 600, color: '#1e293b' }} align="center">Units Sold</TableCell>
+                                            <TableCell sx={{ fontWeight: 600, color: '#1e293b' }} align="right">Total Sales ($)</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {/* Static Example Rows */}
+                                        <TableRow hover>
+                                            <TableCell>
+                                                <Box sx={{ width: 44, height: 44, borderRadius: 2, overflow: 'hidden', border: '1px solid #e2e8f0', bgcolor: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                    <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=64&q=80" alt="SKU12345" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                </Box>
+                                            </TableCell>
+                                            <TableCell sx={{ fontWeight: 600, color: '#212121', fontSize: 15 }}>
+                                                Solar Lantern
+                                                <Typography variant="caption" sx={{ color: '#64748b', display: 'block', mt: 0.5 }}>
+                                                    High-efficiency LED, 12hr backup
+                                                </Typography>
+                                            </TableCell>
+                                            <TableCell align="center" sx={{ fontWeight: 500, color: '#3b82f6', fontSize: 14 }}>
+                                                SKU12345
+                                            </TableCell>
+                                            <TableCell sx={{ fontWeight: 500, color: '#6366f1', fontSize: 14 }}>
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                    <Box sx={{ width: 28, height: 28, borderRadius: '50%', overflow: 'hidden', border: '1px solid #e2e8f0', mr: 1 }}>
+                                                        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a6/Logo_NIKE.svg" alt="Aervoe" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                    </Box>
+                                                    Aervoe
+                                                </Box>
+                                            </TableCell>
+                                            <TableCell sx={{ fontWeight: 500, color: '#64748b', fontSize: 14 }}>
+                                                Electrical Supplies
+                                            </TableCell>
+                                            <TableCell align="center" sx={{ fontWeight: 500, color: '#475569', fontSize: 14 }}>
+                                                09/01/2025
+                                            </TableCell>
+                                            <TableCell align="center" sx={{ fontWeight: 700, color: '#10b981', fontSize: 15 }}>
+                                                250
+                                            </TableCell>
+                                            <TableCell align="right" sx={{ fontWeight: 700, color: '#3b82f6', fontSize: 15 }}>
+                                                $12,500.00
+                                            </TableCell>
+                                        </TableRow>
+                                        <TableRow hover>
+                                            <TableCell>
+                                                <Box sx={{ width: 44, height: 44, borderRadius: 2, overflow: 'hidden', border: '1px solid #e2e8f0', bgcolor: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                    <img src="https://images.unsplash.com/photo-1756908604030-04861dc79820?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw5fHx8ZW58MHx8fHx8" alt="SKU67890" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                </Box>
+                                            </TableCell>
+                                            <TableCell sx={{ fontWeight: 600, color: '#212121', fontSize: 15 }}>
+                                                Capacitor Pro
+                                                <Typography variant="caption" sx={{ color: '#64748b', display: 'block', mt: 0.5 }}>
+                                                    Long-life, high voltage
+                                                </Typography>
+                                            </TableCell>
+                                            <TableCell align="center" sx={{ fontWeight: 500, color: '#3b82f6', fontSize: 14 }}>
+                                                SKU67890
+                                            </TableCell>
+                                            <TableCell sx={{ fontWeight: 500, color: '#6366f1', fontSize: 14 }}>
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                    <Box sx={{ width: 28, height: 28, borderRadius: '50%', overflow: 'hidden', border: '1px solid #e2e8f0', mr: 1 }}>
+                                                        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a6/Logo_NIKE.svg" alt="Thorlabs" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                    </Box>
+                                                    Thorlabs
+                                                </Box>
+                                            </TableCell>
+                                            <TableCell sx={{ fontWeight: 500, color: '#64748b', fontSize: 14 }}>
+                                                Electrical Supplies
+                                            </TableCell>
+                                            <TableCell align="center" sx={{ fontWeight: 500, color: '#475569', fontSize: 14 }}>
+                                                08/28/2025
+                                            </TableCell>
+                                            <TableCell align="center" sx={{ fontWeight: 700, color: '#10b981', fontSize: 15 }}>
+                                                190
+                                            </TableCell>
+                                            <TableCell align="right" sx={{ fontWeight: 700, color: '#3b82f6', fontSize: 15 }}>
+                                                $9,500.00
+                                            </TableCell>
+                                        </TableRow>
+                                        <TableRow hover>
+                                            <TableCell>
+                                                <Box sx={{ width: 44, height: 44, borderRadius: 2, overflow: 'hidden', border: '1px solid #e2e8f0', bgcolor: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                    <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=64&q=80" alt="SKU54321" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                </Box>
+                                            </TableCell>
+                                            <TableCell sx={{ fontWeight: 600, color: '#212121', fontSize: 15 }}>
+                                                Solar Collector
+                                                <Typography variant="caption" sx={{ color: '#64748b', display: 'block', mt: 0.5 }}>
+                                                    Efficient heat absorption
+                                                </Typography>
+                                            </TableCell>
+                                            <TableCell align="center" sx={{ fontWeight: 500, color: '#3b82f6', fontSize: 14 }}>
+                                                SKU54321
+                                            </TableCell>
+                                            <TableCell sx={{ fontWeight: 500, color: '#6366f1', fontSize: 14 }}>
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                    <Box sx={{ width: 28, height: 28, borderRadius: '50%', overflow: 'hidden', border: '1px solid #e2e8f0', mr: 1 }}>
+                                                        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a6/Logo_NIKE.svg" alt="A.Y. McDonald" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                    </Box>
+                                                    A.Y. McDonald
+                                                </Box>
+                                            </TableCell>
+                                            <TableCell sx={{ fontWeight: 500, color: '#64748b', fontSize: 14 }}>
+                                                Heating and Cooling Supplies
+                                            </TableCell>
+                                            <TableCell align="center" sx={{ fontWeight: 500, color: '#475569', fontSize: 14 }}>
+                                                08/15/2025
+                                            </TableCell>
+                                            <TableCell align="center" sx={{ fontWeight: 700, color: '#10b981', fontSize: 15 }}>
+                                                175
+                                            </TableCell>
+                                            <TableCell align="right" sx={{ fontWeight: 700, color: '#3b82f6', fontSize: 15 }}>
+                                                $8,750.00
+                                            </TableCell>
+                                        </TableRow>
+                                        <TableRow hover>
+                                            <TableCell>
+                                                <Box sx={{ width: 44, height: 44, borderRadius: 2, overflow: 'hidden', border: '1px solid #e2e8f0', bgcolor: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                    <img src="https://images.unsplash.com/photo-1670850664664-d8ed42d767fa?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8YnJhbmQlMjBOQU1FfGVufDB8fDB8fHww" alt="SKU98765" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                </Box>
+                                            </TableCell>
+                                            <TableCell sx={{ fontWeight: 600, color: '#212121', fontSize: 15 }}>
+                                                Bushings Set
+                                                <Typography variant="caption" sx={{ color: '#64748b', display: 'block', mt: 0.5 }}>
+                                                    Durable, easy install
+                                                </Typography>
+                                            </TableCell>
+                                            <TableCell align="center" sx={{ fontWeight: 500, color: '#3b82f6', fontSize: 14 }}>
+                                                SKU98765
+                                            </TableCell>
+                                            <TableCell sx={{ fontWeight: 500, color: '#6366f1', fontSize: 14 }}>
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                    <Box sx={{ width: 28, height: 28, borderRadius: '50%', overflow: 'hidden', border: '1px solid #e2e8f0', mr: 1 }}>
+                                                        <img src="https://images.unsplash.com/photo-1548364538-60b952c308b9?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fEJSQU5EfGVufDB8fDB8fHww" alt="Mohawkgroup" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                    </Box>
+                                                    Mohawkgroup
+                                                </Box>
+                                            </TableCell>
+                                            <TableCell sx={{ fontWeight: 500, color: '#64748b', fontSize: 14 }}>
+                                                Automotive Supplies
+                                            </TableCell>
+                                            <TableCell align="center" sx={{ fontWeight: 500, color: '#475569', fontSize: 14 }}>
+                                                08/10/2025
+                                            </TableCell>
+                                            <TableCell align="center" sx={{ fontWeight: 700, color: '#10b981', fontSize: 15 }}>
+                                                150
+                                            </TableCell>
+                                            <TableCell align="right" sx={{ fontWeight: 700, color: '#3b82f6', fontSize: 15 }}>
+                                                $7,500.00
+                                            </TableCell>
+                                        </TableRow>
+                                        <TableRow hover>
+                                            <TableCell>
+                                                <Box sx={{ width: 44, height: 44, borderRadius: 2, overflow: 'hidden', border: '1px solid #e2e8f0', bgcolor: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                    <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=64&q=80" alt="SKU24680" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                </Box>
+                                            </TableCell>
+                                            <TableCell sx={{ fontWeight: 600, color: '#212121', fontSize: 15 }}>
+                                                Wires & Cables
+                                                <Typography variant="caption" sx={{ color: '#64748b', display: 'block', mt: 0.5 }}>
+                                                    Flexible, high conductivity
+                                                </Typography>
+                                            </TableCell>
+                                            <TableCell align="center" sx={{ fontWeight: 500, color: '#3b82f6', fontSize: 14 }}>
+                                                SKU24680
+                                            </TableCell>
+                                            <TableCell sx={{ fontWeight: 500, color: '#6366f1', fontSize: 14 }}>
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                    <Box sx={{ width: 28, height: 28, borderRadius: '50%', overflow: 'hidden', border: '1px solid #e2e8f0', mr: 1 }}>
+                                                        <img src="https://images.unsplash.com/photo-1670850664664-d8ed42d767fa?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8YnJhbmQlMjBOQU1FfGVufDB8fDB8fHww" alt="Irwin" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                    </Box>
+                                                    Irwin
+                                                </Box>
+                                            </TableCell>
+                                            <TableCell sx={{ fontWeight: 500, color: '#64748b', fontSize: 14 }}>
+                                                Hardware Supplies
+                                            </TableCell>
+                                            <TableCell align="center" sx={{ fontWeight: 500, color: '#475569', fontSize: 14 }}>
+                                                08/05/2025
+                                            </TableCell>
+                                            <TableCell align="center" sx={{ fontWeight: 700, color: '#10b981', fontSize: 15 }}>
+                                                140
+                                            </TableCell>
+                                            <TableCell align="right" sx={{ fontWeight: 700, color: '#3b82f6', fontSize: 15 }}>
+                                                $7,000.00
+                                            </TableCell>
+                                        </TableRow>
+                                        {/* Dynamic Data */}
+                                        {topSellingProducts?.top_selling_products?.length > 0 ? (
+                                            topSellingProducts.top_selling_products.map((product, index) => (
+                                                <Row
+                                                    key={index}
+                                                    row={product}
+                                                    handleProductClick={handleProductClick}
+                                                />
+                                            ))
+                                        ) : (
+                                            <TableRow>
+                                                <TableCell colSpan={8} align="center" sx={{ py: 4 }}>
+                                                    {/* <Typography variant="body1" color="textSecondary">
+                                                        No products found
+                                                    </Typography> */}
+                                                </TableCell>
+                                            </TableRow>
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </Paper>
+                    </Box>
 
 
                     {/* Two-column container for Top Buyers and new Pie Chart */}
-<Grid container spacing={3}>
-    {/* Column 1 - Top Buyers */}
-    <Grid item xs={12} md={6}>
-        <Paper
-            elevation={0}
-            sx={{
-                bgcolor: '#ffffff',
-                borderRadius: '12px',
-                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
-                p: 3,
-                height: '100%',
-            }}
-        >
-            <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b', mb: 2 }}>
-                Top Buyers
-            </Typography>
-            <Box sx={{ maxHeight: 400, overflowY: 'auto' }}>
-                {displayedDealers && displayedDealers.length > 0 ? (
-                    displayedDealers.map((dealer, index) => (
-                        <Card
-                            key={dealer.id}
-                            onClick={() => handleRowClick(dealer.id)}
-                            sx={{
-                                mb: 2,
-                                bgcolor: '#ffffff',
-                                borderRadius: '8px',
-                                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-                                transition: 'all 0.3s ease',
-                                borderLeft: `4px solid ${
-                                    index === 0 ? '#3b82f6' :
-                                    index === 1 ? '#8b5cf6' :
-                                    index === 2 ? '#10b981' :
-                                    index === 3 ? '#f59e0b' :
-                                    '#64748b'
-                                }`,
-                                '&:hover': {
-                                    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-                                    transform: 'translateY(-2px)',
-                                    cursor: 'pointer',
-                                },
-                                p: 2,
-                            }}
-                        >
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                <Box sx={{ position: 'relative' }}>
-                                    <Box
-                                        sx={{
-                                            width: 48,
-                                            height: 48,
-                                            borderRadius: '50%',
-                                            overflow: 'hidden',
-                                            bgcolor: '#e2e8f0',
-                                        }}
-                                    >
-                                        {dealer.imageUrl && (
-                                            <img
-                                                src={dealer.imageUrl}
-                                                alt={dealer.name}
-                                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                            />
-                                        )}
-                                    </Box>
-                                    <Box
-                                        sx={{
-                                            position: 'absolute',
-                                            top: -4,
-                                            right: -4,
-                                            width: 24,
-                                            height: 24,
-                                            borderRadius: '50%',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            fontSize: '0.75rem',
-                                            fontWeight: 700,
-                                            color: '#ffffff',
-                                            border: '2px solid #ffffff',
-                                            bgcolor:
-                                                index === 0 ? '#f59e0b' :
-                                                index === 1 ? '#94a3b8' :
-                                                index === 2 ? '#f97316' :
-                                                index === 3 ? '#3b82f6' :
-                                                '#8b5cf6',
-                                        }}
-                                    >
-                                        {index + 1}
-                                    </Box>
+                    <Grid container spacing={3}>
+                        {/* Column 1 - Top Buyers */}
+                        <Grid item xs={12} md={6}>
+                            <Paper
+                                elevation={0}
+                                sx={{
+                                    bgcolor: '#ffffff',
+                                    borderRadius: '12px',
+                                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+                                    p: 3,
+                                    height: '100%',
+                                }}
+                            >
+                                <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b', mb: 2 }}>
+                                    Top Buyers
+                                </Typography>
+                                <Box sx={{ maxHeight: 400, overflowY: 'auto' }}>
+                                    {displayedDealers && displayedDealers.length > 0 ? (
+                                        displayedDealers.map((dealer, index) => (
+                                            <Card
+                                                key={dealer.id}
+                                                onClick={() => handleRowClick(dealer.id)}
+                                                sx={{
+                                                    mb: 2,
+                                                    bgcolor: '#ffffff',
+                                                    borderRadius: '8px',
+                                                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                                                    transition: 'all 0.3s ease',
+                                                    borderLeft: `4px solid ${
+                                                        index === 0 ? '#3b82f6' :
+                                                        index === 1 ? '#8b5cf6' :
+                                                        index === 2 ? '#10b981' :
+                                                        index === 3 ? '#f59e0b' :
+                                                        '#64748b'
+                                                    }`,
+                                                    '&:hover': {
+                                                        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                                                        transform: 'translateY(-2px)',
+                                                        cursor: 'pointer',
+                                                    },
+                                                    p: 2,
+                                                }}
+                                            >
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                                    <Box sx={{ position: 'relative' }}>
+                                                        <Box
+                                                            sx={{
+                                                                width: 48,
+                                                                height: 48,
+                                                                borderRadius: '50%',
+                                                                overflow: 'hidden',
+                                                                bgcolor: '#e2e8f0',
+                                                            }}
+                                                        >
+                                                            {dealer.imageUrl && (
+                                                                <img
+                                                                    src={dealer.imageUrl}
+                                                                    alt={dealer.name}
+                                                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                                />
+                                                            )}
+                                                        </Box>
+                                                        <Box
+                                                            sx={{
+                                                                position: 'absolute',
+                                                                top: -4,
+                                                                right: -4,
+                                                                width: 24,
+                                                                height: 24,
+                                                                borderRadius: '50%',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                fontSize: '0.75rem',
+                                                                fontWeight: 700,
+                                                                color: '#ffffff',
+                                                                border: '2px solid #ffffff',
+                                                                bgcolor:
+                                                                    index === 0 ? '#f59e0b' :
+                                                                    index === 1 ? '#94a3b8' :
+                                                                    index === 2 ? '#f97316' :
+                                                                    index === 3 ? '#3b82f6' :
+                                                                    '#8b5cf6',
+                                                            }}
+                                                        >
+                                                            {index + 1}
+                                                        </Box>
+                                                    </Box>
+                                                    <Box>
+                                                        <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                                                            {dealer.name}
+                                                        </Typography>
+                                                        <Typography variant="body2" sx={{ color: '#3b82f6', fontWeight: 500 }}>
+                                                            ${dealer.order_value.toFixed(2)}
+                                                        </Typography>
+                                                    </Box>
+                                                </Box>
+                                            </Card>
+                                        ))
+                                    ) : (
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                py: 4,
+                                                gap: 2,
+                                            }}
+                                        >
+                                            <Box
+                                                sx={{
+                                                    p: 2,
+                                                    bgcolor: '#e2e8f0',
+                                                    borderRadius: '50%',
+                                                }}
+                                            >
+                                                <PeopleIcon sx={{ fontSize: 40, color: '#64748b' }} />
+                                            </Box>
+                                            <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                                                No dealers found
+                                            </Typography>
+                                            <Typography variant="body2" sx={{ color: '#64748b' }}>
+                                                Check back later for updates
+                                            </Typography>
+                                        </Box>
+                                    )}
                                 </Box>
-                                <Box>
-                                    <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                                        {dealer.name}
-                                    </Typography>
-                                    <Typography variant="body2" sx={{ color: '#3b82f6', fontWeight: 500 }}>
-                                        ${dealer.order_value.toFixed(2)}
-                                    </Typography>
-                                </Box>
-                            </Box>
-                        </Card>
-                    ))
-                ) : (
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            py: 4,
-                            gap: 2,
-                        }}
-                    >
-                        <Box
-                            sx={{
-                                p: 2,
-                                bgcolor: '#e2e8f0',
-                                borderRadius: '50%',
-                            }}
-                        >
-                            <PeopleIcon sx={{ fontSize: 40, color: '#64748b' }} />
-                        </Box>
-                        <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                            No dealers found
-                        </Typography>
-                        <Typography variant="body2" sx={{ color: '#64748b' }}>
-                            Check back later for updates
-                        </Typography>
-                    </Box>
-                )}
-            </Box>
-            {dealers.length > 5 && (
-                <Box sx={{ mt: 2, textAlign: 'center' }}>
-                    <Button
-                        onClick={handleSeeMore}
-                        variant="outlined"
-                        sx={{
-                            borderColor: '#3b82f6',
-                            color: '#3b82f6',
-                            borderRadius: '8px',
-                            textTransform: 'none',
-                            '&:hover': {
-                                bgcolor: '#3b82f6',
-                                color: '#ffffff',
-                            },
-                        }}
-                    >
-                        {showAll ? 'Show Less' : 'See More'}
-                    </Button>
-                </Box>
-            )}
-        </Paper>
-    </Grid>
+                                {dealers.length > 5 && (
+                                    <Box sx={{ mt: 2, textAlign: 'center' }}>
+                                        <Button
+                                            onClick={handleSeeMore}
+                                            variant="outlined"
+                                            sx={{
+                                                borderColor: '#3b82f6',
+                                                color: '#3b82f6',
+                                                borderRadius: '8px',
+                                                textTransform: 'none',
+                                                '&:hover': {
+                                                    bgcolor: '#3b82f6',
+                                                    color: '#ffffff',
+                                                },
+                                            }}
+                                        >
+                                            {showAll ? 'Show Less' : 'See More'}
+                                        </Button>
+                                    </Box>
+                                )}
+                            </Paper>
+                        </Grid>
 
-    {/* Column 2 - Sales Distribution Pie Chart (NEW) */}
-    <Grid item xs={12} md={6}>
-        <Paper
-            elevation={0}
-            sx={{
-                bgcolor: '#ffffff',
-                borderRadius: '12px',
-                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
-                p: 3,
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-            }}
-        >
-            <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b', mb: 2, alignSelf: 'flex-start' }}>
-                Sales Distribution
-            </Typography>
-            <Box sx={{ width: "100%", height: 350, display: 'flex', justifyContent: 'center' }}>
-                <Pie data={pieChartData} options={pieChartOptions} plugins={[backgroundPlugin]} />
-            </Box>
-        </Paper>
-    </Grid>
-</Grid>
+                        {/* Column 2 - Sales Distribution Pie Chart (NEW) */}
+                        <Grid item xs={12} md={6}>
+                            <Paper
+                                elevation={0}
+                                sx={{
+                                    bgcolor: '#ffffff',
+                                    borderRadius: '12px',
+                                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+                                    p: 3,
+                                    height: '100%',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                }}
+                            >
+                                <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b', mb: 2, alignSelf: 'flex-start' }}>
+                                    Sales Distribution
+                                </Typography>
+                                <Box sx={{ width: "100%", height: 350, display: 'flex', justifyContent: 'center' }}>
+                                    <Pie data={pieChartData} options={pieChartOptions} plugins={[backgroundPlugin]} />
+                                </Box>
+                            </Paper>
+                        </Grid>
+                    </Grid>
                     
                 </Box>
             </Fade>
