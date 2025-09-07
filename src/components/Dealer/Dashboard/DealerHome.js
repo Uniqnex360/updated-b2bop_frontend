@@ -400,7 +400,8 @@ const DashboardHome = () => {
   return (
     <Box sx={{ bgcolor: '#f5f7fa', minHeight: '100vh', p: { xs: 2, md: 4 } }}>
       {/* Filter Dropdowns */}
-      <Box sx={{
+<Box
+    sx={{
         bgcolor: '#ffffff',
         borderRadius: '12px',
         boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
@@ -410,7 +411,13 @@ const DashboardHome = () => {
         flexDirection: { xs: 'column', md: 'row' },
         gap: 2,
         alignItems: 'center',
-      }}>
+        position: 'sticky',
+        top: 72, // <-- Increase top value (e.g. 72px) for more gap below NotificationBar
+        zIndex: 1100, // <-- Increase zIndex above NotificationBar if needed
+        width: '100%',
+        backgroundClip: 'padding-box', // helps with shadow visibility
+    }}
+>
         <FormControl size="small" sx={{ flexGrow: 1, minWidth: 280 }}>
           <InputLabel>Order Status</InputLabel>
           <Select

@@ -810,23 +810,25 @@ const ManufacturerHome = () => {
     return (
 <Box sx={{ bgcolor: '#f5f7fa', minHeight: '100vh', p: { xs: 2, md: 4 } }}>
     {/* Sticky filter row */}
-    <Box
-        sx={{
-            bgcolor: '#ffffff',
-            borderRadius: '12px',
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
-            p: 2,
-            mb: 4,
-            display: 'flex',
-            flexDirection: { xs: 'column', md: 'row' },
-            gap: 2,
-            alignItems: 'center',
-            position: 'sticky',
-            top: 0,
-            zIndex: 100,
-            width: '100%',
-        }}
-    >
+<Box
+    sx={{
+        bgcolor: '#ffffff',
+        borderRadius: '12px',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+        p: 2,
+        mb: 4,
+        display: 'flex',
+        flexDirection: { xs: 'column', md: 'row' },
+        gap: 2,
+        alignItems: 'center',
+        position: 'sticky',
+        top: 72, // <-- Increase top value (e.g. 72px) for more gap below NotificationBar
+        zIndex: 1100, // <-- Increase zIndex above NotificationBar if needed
+        width: '100%',
+        backgroundClip: 'padding-box', // helps with shadow visibility
+    }}
+>
+
                 <FormControl size="small" sx={{ minWidth: 210 }}>
                     <InputLabel>Industry</InputLabel>
                     <Select
@@ -1580,9 +1582,7 @@ const ManufacturerHome = () => {
                     
                 </Box>
             </Fade>
-            {/* ...rest of the code unchanged... */}
-            {/* All dashboard cards, charts, tables, etc. */}
-            {/* ...existing code... */}
+
         </Box>
     );
 };
