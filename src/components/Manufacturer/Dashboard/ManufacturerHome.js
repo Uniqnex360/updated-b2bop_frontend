@@ -887,8 +887,8 @@ const ManufacturerHome = () => {
                             color: '#212121',
                             fontWeight: 500,
                             borderRadius: 1,
-                            width: 196,
-                            minWidth: 196,
+                            width: 180,
+                            minWidth: 180,
                             '& input': {
                                 bgcolor: '#fff',
                                 color: '#212121',
@@ -937,8 +937,8 @@ const ManufacturerHome = () => {
                             color: '#212121',
                             fontWeight: 500,
                             borderRadius: 1,
-                            width: 196,
-                            minWidth: 196,
+                            width: 180,
+                            minWidth: 180,
                             '& input': {
                                 bgcolor: '#fff',
                                 color: '#212121',
@@ -987,8 +987,8 @@ const ManufacturerHome = () => {
                             color: '#212121',
                             fontWeight: 500,
                             borderRadius: 1,
-                            width: 196,
-                            minWidth: 196,
+                            width: 180,
+                            minWidth: 180,
                             '& input': {
                                 bgcolor: '#fff',
                                 color: '#212121',
@@ -1037,8 +1037,8 @@ const ManufacturerHome = () => {
                             color: '#212121',
                             fontWeight: 500,
                             borderRadius: 1,
-                            width: 196,
-                            minWidth: 196,
+                            width: 180,
+                            minWidth: 180,
                             '& input': {
                                 bgcolor: '#fff',
                                 color: '#212121',
@@ -1054,44 +1054,59 @@ const ManufacturerHome = () => {
         </Select>
     </FormControl>
     {/* ...existing date pickers... */}
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <Grid container spacing={1} sx={{ width: 'auto', flexWrap: 'nowrap' }}>
-            <Grid item>
-                <DatePicker
-                    label="From Date"
-                    value={fromDate}
-                    onChange={(newDate) => setFromDate(newDate)}
-                    slotProps={{
-                        textField: {
-                            size: 'small',
-                            sx: {
-                                minWidth: 120,
-                                maxWidth: 140,
-                                '& .MuiOutlinedInput-root': { borderRadius: '8px', '& fieldset': { borderColor: '#e2e8f0' } }
-                            }
-                        }
-                    }}
-                />
-            </Grid>
-            <Grid item>
-                <DatePicker
-                    label="To Date"
-                    value={toDate}
-                    onChange={(newDate) => setToDate(newDate)}
-                    slotProps={{
-                        textField: {
-                            size: 'small',
-                            sx: {
-                                minWidth: 120,
-                                maxWidth: 140,
-                                '& .MuiOutlinedInput-root': { borderRadius: '8px', '& fieldset': { borderColor: '#e2e8f0' } }
-                            }
-                        }
-                    }}
-                />
-            </Grid>
-        </Grid>
-    </LocalizationProvider>
+<LocalizationProvider dateAdapter={AdapterDayjs}>
+  <Box
+    sx={{
+      display: "inline-block",
+      border: "2px solid #cbd5e1", // visible border color
+      borderRadius: "8px",         // rounded corners
+      p: 1,                        // padding around inputs
+    }}
+  >
+    <Grid container spacing={1} sx={{ flexWrap: "nowrap" }}>
+      <Grid item>
+        <DatePicker
+          label="From Date"
+          value={fromDate}
+          onChange={(newDate) => setFromDate(newDate)}
+          slotProps={{
+            textField: {
+              size: "small",
+              sx: {
+                minWidth: 120,
+                maxWidth: 140,
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: "6px",
+                  "& fieldset": { borderColor: "#e2e8f0" },
+                },
+              },
+            },
+          }}
+        />
+      </Grid>
+      <Grid item>
+        <DatePicker
+          label="To Date"
+          value={toDate}
+          onChange={(newDate) => setToDate(newDate)}
+          slotProps={{
+            textField: {
+              size: "small",
+              sx: {
+                minWidth: 120,
+                maxWidth: 140,
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: "6px",
+                  "& fieldset": { borderColor: "#e2e8f0" },
+                },
+              },
+            },
+          }}
+        />
+      </Grid>
+    </Grid>
+  </Box>
+ </LocalizationProvider>
 </Box>
  <Fade in={!loading} timeout={600}>
                 <Box>
