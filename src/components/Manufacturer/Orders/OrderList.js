@@ -336,6 +336,41 @@ const OrderList = () => {
     fetchOrders();
   }, [location.search, fetchOrders]);
 
+  // Memoize filtered orders based on current filters and search term
+  const filteredOrders = orders.filter((order) => {
+    const matchesSearch =
+      searchTerm === "" ||
+      order.order_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (order.dealer_name && order.dealer_name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (order.address?.city && order.address.city.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (order.address?.country && order.address.country.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      order.delivery_status.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.payment_status.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesDelivery =
+      delivery_status === "all" || order.delivery_status === delivery_status;
+    const matchesFulfillment =
+      fulfilled_status === "all" || order.fulfilled_status === fulfilled_status;
+    const matchesPayment =
+      payment_status === "all" || order.payment_status === payment_status;
+    const matchesReorder =
+      is_reorder === "all" || order.is_reorder === (is_reorder === "Yes");
+    
+    // Add date range filtering
+    const matchesDate = 
+      (!selectedDate || dayjs(order.creation_date).isAfter(selectedDate, 'day') || dayjs(order.creation_date).isSame(selectedDate, 'day')) &&
+      (!endDate || dayjs(order.creation_date).isBefore(endDate, 'day') || dayjs(order.creation_date).isSame(endDate, 'day'));
+
+    return (
+      matchesSearch &&
+      matchesDelivery &&
+      matchesFulfillment &&
+      matchesPayment &&
+      matchesReorder &&
+      matchesDate
+    );
+  });
+
   const handleRowClick = (orderId) => {
     navigate(`/manufacturer/order-details/${orderId}?page=${page}`);
   };
@@ -461,7 +496,7 @@ const OrderList = () => {
     }
   };
 
-  const totalPages = Math.ceil(totalOrders / rowsPerPage);
+  const totalPages = Math.ceil(filteredOrders.length / rowsPerPage);
 
   const breadcrumbs = [
     <Typography key="1" color="text.primary" variant="h3">
@@ -623,7 +658,7 @@ const OrderList = () => {
                   }}
                 >
                   <Typography variant="body2" color="text.secondary">
-                    Total Orders: <strong>{totalOrders}</strong>
+                    Total Orders: <strong>{filteredOrders.length}</strong>
                   </Typography>
                 </Box>
               </Stack>
@@ -638,8 +673,8 @@ const OrderList = () => {
                 {[
                   { id: "order_id", label: "Order ID" },
                   { id: "creation_date", label: "Order Date" },
-                  { id: "destination", label: "Destination" },
                   { id: "dealer_name", label: "Dealer Name" },
+                  { id: "destination", label: "Destination" },
                   { id: "total_items", label: "Total Items" },
                   { id: "amount", label: "Order Value" },
                   { id: "payment_status", label: "Payment Status" },
@@ -684,8 +719,8 @@ const OrderList = () => {
                     <CircularProgress color="primary" />
                   </TableCell>
                 </TableRow>
-              ) : orders.length > 0 ? (
-                orders.map((order) => (
+              ) : filteredOrders.length > 0 ? (
+                filteredOrders.map((order) => (
                   <StyledTableRow key={order._id} onClick={() => handleRowClick(order._id)}>
                     <StyledTableCell
                       align="left"
@@ -701,16 +736,15 @@ const OrderList = () => {
                     <StyledTableCell align="left">
                       {dayjs(order.creation_date).format("YYYY-MM-DD")}
                     </StyledTableCell>
+                    <StyledTableCell align="left">{order.dealer_name}</StyledTableCell>
                     <StyledTableCell align="left">
                       {order.address?.city && order.address?.country
                         ? `${order.address.city}, ${order.address.country}`
                         : "N/A"}
                     </StyledTableCell>
-                    <StyledTableCell align="left">{order.dealer_name}</StyledTableCell>
                     <StyledTableCell align="left">{order.total_items}</StyledTableCell>
                     <StyledTableCell align="left">
-                      {order.currency === 'USD' ? '$' : ''}
-                      {order.amount}
+                      {order.currency} {order.amount}
                     </StyledTableCell>
                     <StyledTableCell align="left">
                       <Chip
