@@ -30,7 +30,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useNavigate } from "react-router-dom";
 import dayjs from 'dayjs';
-import { Bar, Line } from "react-chartjs-2";
+import { Bar, Line, Pie } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -42,9 +42,10 @@ import {
   Legend,
   Title,
   Filler,
+  ArcElement,
 } from "chart.js";
 
-// Register Chart.js components (added Title, Filler to match ManufacturerHome)
+// Register Chart.js components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -54,10 +55,11 @@ ChartJS.register(
   Tooltip,
   Legend,
   Title,
-  Filler
+  Filler,
+  ArcElement
 );
 
-// Custom background plugin (same as ManufacturerHome)
+// Custom background plugin
 const backgroundPlugin = {
   id: 'customCanvasBackgroundColor',
   beforeDraw: (chart, args, options) => {
@@ -117,7 +119,7 @@ const DashboardHome = () => {
       {
         id: 2,
         product_id: "PROD-002",
-        primary_image: "https://images.unsplash.com/photo-1542393545-10b5c8188189?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8ZWxlY3Ryb25pY3N8ZW58MHx8MHx8fDA%3D",
+        primary_image: "https://images.unsplash.com/photo-1549049950-48d5887197a0?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjF8fHByb2R1Y3R8ZW58MHx8MHx8fDA%3D",
         product_name: "Capacitor Set",
         sku_number: "SKU-002",
         brand_name: "Thorlabs",
@@ -130,7 +132,7 @@ const DashboardHome = () => {
       {
         id: 3,
         product_id: "PROD-003",
-        primary_image: "https://images.unsplash.com/photo-1593642702749-bf233634125c?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fHRvb2xzfGVufDB8fDB8fHww",
+        primary_image: "https://images.unsplash.com/photo-1547887537-6158d64c35b3?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NDZ8fHByb2R1Y3R8ZW58MHx8MHx8fDA%3D",
         product_name: "Solar Collector",
         sku_number: "SKU-003",
         brand_name: "A.Y. McDonald",
@@ -143,7 +145,7 @@ const DashboardHome = () => {
       {
         id: 4,
         product_id: "PROD-004",
-        primary_image: "https://images.unsplash.com/photo-1589218659123-c9cf7c40f5a7?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fHNhZmV0eSUyMGdlYXJ8ZW58MHx8MHx8fDA%3D",
+        primary_image: "https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NzV8fHByb2R1Y3R8ZW58MHx8MHx8fDA%3D",
         product_name: "Safety Goggles",
         sku_number: "SKU-004",
         brand_name: "Michigan Pneumatic",
@@ -156,16 +158,7 @@ const DashboardHome = () => {
     ],
   };
 
-  const staticCategories = [
-    { id: '1', name: 'Electrical Supplies' },
-    { id: '2', name: 'Hardware Supplies' },
-    { id: '3', name: 'Plumbing Supplies' },
-    { id: '4', name: 'Cleaning Supplies' },
-    { id: '5', name: 'Safety Supplies' },
-  ];
-
   const [loading] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState("");
   const [orderStatus, setOrderStatus] = useState('');
   const [productCategory, setProductCategory] = useState('');
   const [paymentStatus, setPaymentStatus] = useState('');
@@ -182,12 +175,10 @@ const DashboardHome = () => {
     if (orderStatus && order.order_status !== orderStatus) return false;
     if (productCategory && order.product_category !== productCategory) return false;
     if (paymentStatus && order.payment_status !== paymentStatus) return false;
-    
     // Date range filtering
     const orderDate = dayjs(order.order_date);
     if (fromDate && orderDate.isBefore(dayjs(fromDate), 'day')) return false;
     if (toDate && orderDate.isAfter(dayjs(toDate), 'day')) return false;
-    
     return true;
   });
 
@@ -231,7 +222,6 @@ const DashboardHome = () => {
     },
   ];
 
-  // SAME STATIC CHART DATA/OPTIONS AS ManufacturerHome
   // Bar chart (Top 5 Products by Units Sold)
   const barChartLabels = ['Air Brake Hoses', 'Adhesives', 'Solar Lanterns', 'Bushings', 'Capacitors'];
   const barChartDataValues = [250, 190, 175, 150, 140];
@@ -240,7 +230,7 @@ const DashboardHome = () => {
     labels: barChartLabels,
     datasets: [
       {
-        label: "Units Sold",
+        label: "Units Spend",
         data: barChartDataValues,
         backgroundColor: [
           'rgba(59, 130, 246, 0.8)',
@@ -317,9 +307,8 @@ const DashboardHome = () => {
     animation: { duration: 1000, easing: 'easeOutQuart' },
   };
 
-  // ➡️ MODIFIED: Line/Area chart (Key Business Trends over Time)
+  // Line/Area chart (Key Business Trends over Time)
   const trendsLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  // Changed data to reflect a dealer's total spend over time
   const totalSpendData = [9500, 11000, 10500, 13000, 14500, 15800, 14900, 16200, 17500, 18800, 20100, 22500];
 
   const lineTrendChartData = {
@@ -327,7 +316,7 @@ const DashboardHome = () => {
     datasets: [
       {
         label: "Total Spend",
-        data: totalSpendData, // Use the new data
+        data: totalSpendData,
         borderColor: "#3b82f6",
         backgroundColor: "rgba(59, 130, 246, 0.1)",
         tension: 0.35,
@@ -347,7 +336,7 @@ const DashboardHome = () => {
       },
       title: {
         display: true,
-        text: 'Total Order Value Over Time', // Changed title
+        text: 'Total Order Value Over Time',
         color: '#1e293b',
         font: { size: 18, weight: '700' },
         padding: { top: 10, bottom: 20 },
@@ -366,7 +355,7 @@ const DashboardHome = () => {
           title: (context) => `Month: ${context[0].label}`,
           label: (context) => {
             const value = context.raw;
-            return `Total Spend: $${Number(value).toLocaleString()}`; // Changed label
+            return `Total Spend: $${Number(value).toLocaleString()}`;
           }
         }
       },
@@ -393,6 +382,75 @@ const DashboardHome = () => {
     animation: { duration: 1200, easing: "easeOutQuart" }
   };
 
+  // Pie chart data and options for buyer's perspective
+  const spendingData = [45000, 35000, 25000, 15000, 10000];
+  const totalSpending = spendingData.reduce((sum, value) => sum + value, 0);
+
+  const pieChartData = {
+    labels: staticDashboardData.top_selling_categorys.map(category => category.category_name),
+    datasets: [
+      {
+        label: 'Total Spend',
+        data: spendingData,
+        backgroundColor: [
+          'rgba(59, 130, 246, 0.8)',
+          'rgba(16, 185, 129, 0.8)',
+          'rgba(245, 158, 11, 0.8)',
+          'rgba(239, 68, 68, 0.8)',
+          'rgba(139, 92, 246, 0.8)',
+        ],
+        borderColor: '#ffffff',
+        borderWidth: 2,
+        hoverOffset: 16,
+      },
+    ],
+  };
+
+  const pieChartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'right',
+        labels: {
+          color: '#1e293b',
+          font: { size: 14, weight: '600' },
+          boxWidth: 20,
+          padding: 20,
+        },
+      },
+      title: {
+        display: true,
+        text: 'Spending Distribution by Category',
+        color: '#1e293b',
+        font: { size: 18, weight: '700' },
+        padding: { top: 10, bottom: 20 },
+      },
+      tooltip: {
+        backgroundColor: 'rgba(59, 130, 246, 0.95)',
+        titleFont: { size: 14, weight: '600' },
+        bodyFont: { size: 12 },
+        padding: 12,
+        cornerRadius: 8,
+        titleColor: '#ffffff',
+        bodyColor: '#f8fafc',
+        callbacks: {
+          label: (context) => {
+            const value = context.raw;
+            const percentage = ((value / totalSpending) * 100).toFixed(1);
+            return `${context.label}: $${value.toLocaleString()} (${percentage}%)`;
+          },
+        },
+      },
+    },
+    maintainAspectRatio: false,
+    cutout: '40%',
+    animation: {
+      animateScale: true,
+      animateRotate: true,
+      duration: 1000,
+    },
+  };
+
   const handleProductClick = (productId) => {
     navigate(`/dealer/products/${productId}`);
   };
@@ -400,24 +458,24 @@ const DashboardHome = () => {
   return (
     <Box sx={{ bgcolor: '#f5f7fa', minHeight: '100vh', p: { xs: 2, md: 4 } }}>
       {/* Filter Dropdowns */}
-<Box
-    sx={{
-        bgcolor: '#ffffff',
-        borderRadius: '12px',
-        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
-        p: 2,
-        mb: 4,
-        display: 'flex',
-        flexDirection: { xs: 'column', md: 'row' },
-        gap: 2,
-        alignItems: 'center',
-        position: 'sticky',
-        top: 72, // <-- Increase top value (e.g. 72px) for more gap below NotificationBar
-        zIndex: 1100, // <-- Increase zIndex above NotificationBar if needed
-        width: '100%',
-        backgroundClip: 'padding-box', // helps with shadow visibility
-    }}
->
+      <Box
+        sx={{
+          bgcolor: '#ffffff',
+          borderRadius: '12px',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+          p: 2,
+          mb: 4,
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+          gap: 2,
+          alignItems: 'center',
+          position: 'sticky',
+          top: 72,
+          zIndex: 1100,
+          width: '100%',
+          backgroundClip: 'padding-box',
+        }}
+      >
         <FormControl size="small" sx={{ flexGrow: 1, minWidth: 280 }}>
           <InputLabel>Order Status</InputLabel>
           <Select
@@ -565,7 +623,7 @@ const DashboardHome = () => {
             ))}
           </Grid>
 
-          {/* Charts Section (now same as ManufacturerHome) */}
+          {/* Charts Section */}
           <Grid container spacing={3} sx={{ mb: 4 }}>
             <Grid item xs={12} md={6}>
               <Paper
@@ -600,7 +658,7 @@ const DashboardHome = () => {
                 }}
               >
                 <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b', mb: 2, alignSelf: 'flex-start' }}>
-                  Key Business Trends over Time
+                  Total Order Value Over Time
                 </Typography>
                 <Box sx={{ width: "100%", height: 260 }}>
                   <Line
@@ -613,90 +671,86 @@ const DashboardHome = () => {
             </Grid>
           </Grid>
 
-          {/* Top Selling Products Table & Recent Orders */}
-          <Grid container spacing={3} alignItems="start">
-            <Grid item xs={12} md={8}>
-              <Paper
-                elevation={0}
-                sx={{
-                  bgcolor: '#ffffff',
-                  borderRadius: '12px',
-                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
-                  p: 3,
-                }}
-              >
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b' }}>
-                    Top Selling Products
-                  </Typography>
-                  <FormControl size="small" sx={{ minWidth: 200 }}>
-                    <Select
-                      value={selectedCategory}
-                      onChange={(e) => setSelectedCategory(e.target.value)}
-                      displayEmpty
-                      sx={{
-                        '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e2e8f0' },
-                        '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#3b82f6' },
-                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#3b82f6' },
-                      }}
-                    >
-                      <MenuItem value="">All Categories</MenuItem>
-                      {staticCategories.map((category) => (
-                        <MenuItem key={category.id} value={category.id}>
-                          {category.name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Box>
-                <div className="bg-white rounded-2xl shadow border border-gray-100 overflow-x-auto">
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Product</TableCell>
-                        <TableCell>SKU</TableCell>
-                        <TableCell>Brand</TableCell>
-                        <TableCell>Category</TableCell>
-                        <TableCell>Last Purchase</TableCell>
-                        <TableCell align="center">Sold</TableCell>
-                        <TableCell align="right">Sales ($)</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {staticDashboardData.top_selling_products.length > 0 ? (
-                        staticDashboardData.top_selling_products.map((product) => (
-                          <TableRow
-                            key={product.id}
-                            hover
-                            onClick={() => handleProductClick(product.product_id)}
-                          >
-                            <TableCell>
-                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                <img src={product.primary_image} alt={product.product_name} style={{ width: 48, height: 48, borderRadius: '8px', objectFit: 'cover' }} />
-                                <Typography variant="body2" sx={{ fontWeight: 600 }}>{product.product_name}</Typography>
-                              </Box>
-                            </TableCell>
-                            <TableCell>{product.sku_number}</TableCell>
-                            <TableCell>{product.brand_name}</TableCell>
-                            <TableCell>{product.category_name}</TableCell>
-                            <TableCell>{new Date(product.last_updated).toLocaleDateString()}</TableCell>
-                            <TableCell align="center">{product.units_sold}</TableCell>
-                            <TableCell align="right">${product.total_sales.toFixed(2)}</TableCell>
-                          </TableRow>
-                        ))
-                      ) : (
-                        <TableRow>
-                          <TableCell colSpan={7} align="center">No products found</TableCell>
+          {/* Top Selling Products Table */}
+          <Box sx={{ mb: 4 }}>
+            <Paper
+              elevation={0}
+              sx={{
+                bgcolor: '#ffffff',
+                borderRadius: '12px',
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+                p: 3,
+              }}
+            >
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b' }}>
+                  Top Selling Products
+                </Typography>
+              </Box>
+              <TableContainer component={Paper} sx={{ borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+                <Table aria-label="top selling products">
+                  <TableHead sx={{ bgcolor: '#f8fafc' }}>
+                    <TableRow>
+                      <TableCell />
+                      <TableCell sx={{ fontWeight: 600, color: '#1e293b' }}>Product</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#1e293b' }} align="center">SKU</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#1e293b' }}>Brand</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#1e293b' }}>Category</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#1e293b' }} align="center">Last Purchase</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#1e293b' }} align="center">Units Sold</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#1e293b' }} align="right">Total Sales ($)</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {staticDashboardData.top_selling_products.length > 0 ? (
+                      staticDashboardData.top_selling_products.map((product) => (
+                        <TableRow
+                          key={product.id}
+                          hover
+                          onClick={() => handleProductClick(product.product_id)}
+                        >
+                          <TableCell>
+                            <Box sx={{ width: 44, height: 44, borderRadius: 2, overflow: 'hidden', border: '1px solid #e2e8f0', bgcolor: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <img src={product.primary_image} alt={product.product_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            </Box>
+                          </TableCell>
+                          <TableCell sx={{ fontWeight: 600, color: '#212121', fontSize: 15 }}>
+                            {product.product_name}
+                          </TableCell>
+                          <TableCell align="center" sx={{ fontWeight: 500, color: '#3b82f6', fontSize: 14 }}>
+                            {product.sku_number}
+                          </TableCell>
+                          <TableCell sx={{ fontWeight: 500, color: '#6366f1', fontSize: 14 }}>
+                            {product.brand_name}
+                          </TableCell>
+                          <TableCell sx={{ fontWeight: 500, color: '#64748b', fontSize: 14 }}>
+                            {product.category_name}
+                          </TableCell>
+                          <TableCell align="center" sx={{ fontWeight: 500, color: '#475569', fontSize: 14 }}>
+                            {new Date(product.last_updated).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell align="center" sx={{ fontWeight: 700, color: '#10b981', fontSize: 15 }}>
+                            {product.units_sold}
+                          </TableCell>
+                          <TableCell align="right" sx={{ fontWeight: 700, color: '#3b82f6', fontSize: 15 }}>
+                            ${product.total_sales.toFixed(2)}
+                          </TableCell>
                         </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
-              </Paper>
-            </Grid>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={8} align="center">No products found</TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Paper>
+          </Box>
 
-            {/* Recent Orders */}
-            <Grid item xs={12} md={4}>
+          {/* Next row: Recent Orders and Pie Chart */}
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={6}>
               <Paper
                 elevation={0}
                 sx={{
@@ -705,59 +759,87 @@ const DashboardHome = () => {
                   boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
                   p: 3,
                   height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
                 }}
               >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-                  <ShoppingCartIcon sx={{ color: '#3b82f6' }} />
-                  <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b' }}>
-                    Your Recent Orders
-                  </Typography>
+                <Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+                    <ShoppingCartIcon sx={{ color: '#3b82f6' }} />
+                    <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b' }}>
+                      Your Recent Orders
+                    </Typography>
+                  </Box>
+                  <Box sx={{ maxHeight: 400, overflowY: 'auto' }}>
+                    {filteredRecentOrders.length === 0 ? (
+                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', py: 4 }}>
+                        <Typography variant="body1" color="textSecondary" sx={{ textAlign: 'center' }}>No Recent Orders available</Typography>
+                      </Box>
+                    ) : (
+                      filteredRecentOrders.map((order) => (
+                        <Card
+                          key={order.id}
+                          onClick={() => navigate(`/dealer/OrderDetail/${order.id}`)}
+                          sx={{
+                            mb: 2,
+                            bgcolor: '#f8fafc',
+                            borderRadius: '8px',
+                            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                            borderLeft: '4px solid #3b82f6',
+                            transition: 'all 0.3s ease',
+                            '&:hover': { boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', transform: 'translateY(-2px)', cursor: 'pointer' },
+                            p: 2,
+                          }}
+                        >
+                          <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#1e293b', mb: 1 }}>
+                            Order #{order.order_id}
+                          </Typography>
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Box>
+                              <Typography variant="caption" sx={{ color: '#64748b' }}>
+                                Order Value:
+                                <Typography component="span" sx={{ fontWeight: 700, color: '#1e293b', ml: 0.5 }}>
+                                  ${order.amount.toFixed(2)}
+                                </Typography>
+                              </Typography>
+                            </Box>
+                            <Box>
+                              <Typography variant="caption" sx={{ color: '#64748b' }}>
+                                Date:
+                                <Typography component="span" sx={{ fontWeight: 500, color: '#1e293b', ml: 0.5 }}>
+                                  {new Date(order.order_date).toLocaleDateString()}
+                                </Typography>
+                              </Typography>
+                            </Box>
+                          </Box>
+                        </Card>
+                      ))
+                    )}
+                  </Box>
                 </Box>
-                <Box sx={{ maxHeight: 400, overflowY: 'auto', pr: 1 }}>
-                  {filteredRecentOrders.length === 0 ? (
-                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', py: 4 }}>
-                      <Typography variant="body1" color="textSecondary" sx={{ textAlign: 'center' }}>No Recent Orders available</Typography>
-                    </Box>
-                  ) : (
-                    filteredRecentOrders.map((order) => (
-                      <Card
-                        key={order.id}
-                        onClick={() => navigate(`/dealer/OrderDetail/${order.id}`)}
-                        sx={{
-                          mb: 2,
-                          bgcolor: '#f8fafc',
-                          borderRadius: '8px',
-                          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-                          borderLeft: '4px solid #3b82f6',
-                          transition: 'all 0.3s ease',
-                          '&:hover': { boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', transform: 'translateY(-2px)', cursor: 'pointer' },
-                          p: 2,
-                        }}
-                      >
-                        <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#1e293b', mb: 1 }}>
-                          Order #{order.order_id}
-                        </Typography>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <Box>
-                            <Typography variant="caption" sx={{ color: '#64748b' }}>
-                              Order Value:
-                              <Typography component="span" sx={{ fontWeight: 700, color: '#1e293b', ml: 0.5 }}>
-                                ${order.amount.toFixed(2)}
-                              </Typography>
-                            </Typography>
-                          </Box>
-                          <Box>
-                            <Typography variant="caption" sx={{ color: '#64748b' }}>
-                              Date:
-                              <Typography component="span" sx={{ fontWeight: 500, color: '#1e293b', ml: 0.5 }}>
-                                {new Date(order.order_date).toLocaleDateString()}
-                              </Typography>
-                            </Typography>
-                          </Box>
-                        </Box>
-                      </Card>
-                    ))
-                  )}
+              </Paper>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Paper
+                elevation={0}
+                sx={{
+                  bgcolor: '#ffffff',
+                  borderRadius: '12px',
+                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+                  p: 3,
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b', mb: 2, alignSelf: 'flex-start' }}>
+                  Spending Distribution by Category
+                </Typography>
+                <Box sx={{ width: "100%", height: 350, display: 'flex', justifyContent: 'center' }}>
+                  <Pie data={pieChartData} options={pieChartOptions} plugins={[backgroundPlugin]} />
                 </Box>
               </Paper>
             </Grid>

@@ -281,7 +281,7 @@ function PaymentPage() {
                           label={
                             <Box sx={{ display: 'flex', alignItems: 'center' }}>
                               <PhoneIphoneIcon sx={{ mr: 1, color: 'primary.main' }} />
-                              <Typography>UPI / QR Code</Typography>
+                              <Typography>QR Code</Typography>
                             </Box>
                           }
                           sx={{ '& .MuiSvgIcon-root': { fontSize: 24 } }}
