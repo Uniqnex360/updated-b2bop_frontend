@@ -835,208 +835,265 @@ const ManufacturerHome = () => {
     return (
         <Box sx={{ bgcolor: '#f5f7fa', minHeight: '100vh', p: { xs: 2, md: 4 } }}>
             {/* Sticky filter row */}
-            <Box
-                sx={{
-                    bgcolor: '#ffffff',
-                    borderRadius: '12px',
-                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
-                    p: 2,
-                    mb: 4,
-                    display: 'flex',
-                    flexDirection: { xs: 'column', md: 'row' },
-                    gap: 2,
-                    alignItems: 'center',
-                    position: 'sticky',
-                    top: 72, 
-                    zIndex: 1100, 
-                    width: '100%',
-                    backgroundClip: 'padding-box', 
-                }}
-            >
-                {/* Industry Dropdown with Search */}
-            
-<FormControl size="small" sx={{ minWidth: 210 }}>
-    <InputLabel>Industry</InputLabel>
-    <Select
-        value={selectedIndustry}
-        onChange={handleIndustryChange}
-        label="Industry"
-        sx={{ borderRadius: '8px', '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e2e8f0' } }}
-        MenuProps={{
-            PaperProps: {
-                style: { maxHeight: 320 }
-            }
-        }}
-        renderValue={(selected) => selected || "All Industries"}
-    >
-        <Box sx={{ px: 2, py: 1 }}>
-            <TextField
-                size="small"
-                placeholder="Search Industry"
-                value={industrySearch}
-                onChange={e => setIndustrySearch(e.target.value)}
-                fullWidth
-                variant="outlined"
-                InputProps={{
-                    sx: {
-                        bgcolor: '#fff',
-                        color: '#212121',
-                        fontWeight: 500,
-                        borderRadius: 1,
-                        '& input': {
+<Box
+    sx={{
+        bgcolor: '#ffffff',
+        borderRadius: '12px',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+        p: 2,
+        mb: 4,
+        display: 'flex',
+        flexDirection: { xs: 'column', md: 'row' },
+        gap: 2,
+        alignItems: 'center',
+        position: 'sticky',
+        top: 72,
+        zIndex: 1100,
+        width: '100%',
+        backgroundClip: 'padding-box',
+    }}
+>
+    {/* Fixed width for all filter dropdowns */}
+    <FormControl size="small" sx={{ width: 220, minWidth: 220 }}>
+        <InputLabel>Industry</InputLabel>
+        <Select
+            value={selectedIndustry}
+            onChange={handleIndustryChange}
+            label="Industry"
+            sx={{
+                borderRadius: '8px',
+                '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e2e8f0' },
+                width: 220,
+                minWidth: 220,
+            }}
+            MenuProps={{
+                PaperProps: {
+                    style: { maxHeight: 320, width: 220, minWidth: 220 }
+                }
+            }}
+            renderValue={(selected) => selected || "All Industries"}
+        >
+            <Box sx={{ px: 2, py: 1 }}>
+                <TextField
+                    size="small"
+                    placeholder="Search Industry"
+                    value={industrySearch}
+                    onChange={e => setIndustrySearch(e.target.value)}
+                    fullWidth
+                    variant="outlined"
+                    InputProps={{
+                        sx: {
                             bgcolor: '#fff',
                             color: '#212121',
+                            fontWeight: 500,
+                            borderRadius: 1,
+                            width: 196,
+                            minWidth: 196,
+                            '& input': {
+                                bgcolor: '#fff',
+                                color: '#212121',
+                            }
                         }
-                    }
-                }}
-            />
-        </Box>
-        <MenuItem value="">All Industries</MenuItem>
-        {filteredIndustries.map((industry) => (
-            <MenuItem key={industry} value={industry}>{industry}</MenuItem>
-        ))}
-    </Select>
-</FormControl>
-
-
-                {/* Category Dropdown with Search */}
-                <FormControl size="small" sx={{ minWidth: 210 }}>
-                    <InputLabel>End level category</InputLabel>
-                    <Select
-                        value={selectedCategoryName}
-                        onChange={handleCategoryChange}
-                        label="End level category"
-                        sx={{ borderRadius: '8px', '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e2e8f0' } }}
-                        MenuProps={{
-                            PaperProps: {
-                                style: { maxHeight: 320 }
-                            }
-                        }}
-                        renderValue={(selected) => selected || "All Categories"}
-                    >
-                        <Box sx={{ px: 2, py: 1 }}>
-                            <TextField
-                                size="small"
-                                placeholder="Search Category"
-                                value={categorySearch}
-                                onChange={e => setCategorySearch(e.target.value)}
-                                fullWidth
-                                variant="outlined"
-                            />
-                        </Box>
-                        <MenuItem value="">All Categories</MenuItem>
-                        {filteredCategories.map((category) => (
-                            <MenuItem key={category} value={category}>{category}</MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-
-                {/* Brand Dropdown with Search */}
-                <FormControl size="small" sx={{ minWidth: 210 }}>
-                    <InputLabel>Brand Name</InputLabel>
-                    <Select
-                        value={selectedBrand}
-                        onChange={handleBrandChange}
-                        label="Brand Name"
-                        sx={{ borderRadius: '8px', '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e2e8f0' } }}
-                        MenuProps={{
-                            PaperProps: {
-                                style: { maxHeight: 320 }
-                            }
-                        }}
-                        renderValue={(selected) => selected || "All Brands"}
-                    >
-                        <Box sx={{ px: 2, py: 1 }}>
-                            <TextField
-                                size="small"
-                                placeholder="Search Brand"
-                                value={brandSearch}
-                                onChange={e => setBrandSearch(e.target.value)}
-                                fullWidth
-                                variant="outlined"
-                            />
-                        </Box>
-                        <MenuItem value="">All Brands</MenuItem>
-                        {filteredBrands.map((brand) => (
-                            <MenuItem key={brand} value={brand}>{brand}</MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-
-                {/* Buyer Dropdown with Search */}
-                <FormControl size="small" sx={{ minWidth: 210 }}>
-                    <InputLabel>Buyer Name</InputLabel>
-                    <Select
-                        value={selectedBuyer}
-                        onChange={handleBuyerChange}
-                        label="Buyer Name"
-                        sx={{ borderRadius: '8px', '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e2e8f0' } }}
-                        MenuProps={{
-                            PaperProps: {
-                                style: { maxHeight: 320 }
-                            }
-                        }}
-                        renderValue={(selected) => selected || "All Buyers"}
-                    >
-                        <Box sx={{ px: 2, py: 1 }}>
-                            <TextField
-                                size="small"
-                                placeholder="Search Buyer"
-                                value={buyerSearch}
-                                onChange={e => setBuyerSearch(e.target.value)}
-                                fullWidth
-                                variant="outlined"
-                            />
-                        </Box>
-                        <MenuItem value="">All Buyers</MenuItem>
-                        {filteredBuyers.map((buyer) => (
-                            <MenuItem key={buyer} value={buyer}>{buyer}</MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <Grid container spacing={1} sx={{ width: 'auto', flexWrap: 'nowrap' }}>
-                        <Grid item>
-                            <DatePicker
-                                label="From Date"
-                                value={fromDate}
-                                onChange={(newDate) => setFromDate(newDate)}
-                                slotProps={{
-                                    textField: {
-                                        size: 'small',
-                                        sx: {
-                                            minWidth: 120,
-                                            maxWidth: 140,
-                                            '& .MuiOutlinedInput-root': { borderRadius: '8px', '& fieldset': { borderColor: '#e2e8f0' } }
-                                        }
-                                    }
-                                }}
-                            />
-                        </Grid>
-                        <Grid item>
-                            <DatePicker
-                                label="To Date"
-                                value={toDate}
-                                onChange={(newDate) => setToDate(newDate)}
-                                slotProps={{
-                                    textField: {
-                                        size: 'small',
-                                        sx: {
-                                            minWidth: 120,
-                                            maxWidth: 140,
-                                            '& .MuiOutlinedInput-root': { borderRadius: '8px', '& fieldset': { borderColor: '#e2e8f0' } }
-                                        }
-                                    }
-                                }}
-                            />
-                        </Grid>
-                    </Grid>
-                 </LocalizationProvider>
+                    }}
+                />
             </Box>
+            <MenuItem value="">All Industries</MenuItem>
+            {filteredIndustries.map((industry) => (
+                <MenuItem key={industry} value={industry}>{industry}</MenuItem>
+            ))}
+        </Select>
+    </FormControl>
 
+    <FormControl size="small" sx={{ width: 220, minWidth: 220 }}>
+        <InputLabel>End level category</InputLabel>
+        <Select
+            value={selectedCategoryName}
+            onChange={handleCategoryChange}
+            label="End level category"
+            sx={{
+                borderRadius: '8px',
+                '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e2e8f0' },
+                width: 220,
+                minWidth: 220,
+            }}
+            MenuProps={{
+                PaperProps: {
+                    style: { maxHeight: 320, width: 220, minWidth: 220 }
+                }
+            }}
+            renderValue={(selected) => selected || "All Categories"}
+        >
+            <Box sx={{ px: 2, py: 1 }}>
+                <TextField
+                    size="small"
+                    placeholder="Search Category"
+                    value={categorySearch}
+                    onChange={e => setCategorySearch(e.target.value)}
+                    fullWidth
+                    variant="outlined"
+                    InputProps={{
+                        sx: {
+                            bgcolor: '#fff',
+                            color: '#212121',
+                            fontWeight: 500,
+                            borderRadius: 1,
+                            width: 196,
+                            minWidth: 196,
+                            '& input': {
+                                bgcolor: '#fff',
+                                color: '#212121',
+                            }
+                        }
+                    }}
+                />
+            </Box>
+            <MenuItem value="">All Categories</MenuItem>
+            {filteredCategories.map((category) => (
+                <MenuItem key={category} value={category}>{category}</MenuItem>
+            ))}
+        </Select>
+    </FormControl>
 
-            <Fade in={!loading} timeout={600}>
+    <FormControl size="small" sx={{ width: 220, minWidth: 220 }}>
+        <InputLabel>Brand Name</InputLabel>
+        <Select
+            value={selectedBrand}
+            onChange={handleBrandChange}
+            label="Brand Name"
+            sx={{
+                borderRadius: '8px',
+                '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e2e8f0' },
+                width: 220,
+                minWidth: 220,
+            }}
+            MenuProps={{
+                PaperProps: {
+                    style: { maxHeight: 320, width: 220, minWidth: 220 }
+                }
+            }}
+            renderValue={(selected) => selected || "All Brands"}
+        >
+            <Box sx={{ px: 2, py: 1 }}>
+                <TextField
+                    size="small"
+                    placeholder="Search Brand"
+                    value={brandSearch}
+                    onChange={e => setBrandSearch(e.target.value)}
+                    fullWidth
+                    variant="outlined"
+                    InputProps={{
+                        sx: {
+                            bgcolor: '#fff',
+                            color: '#212121',
+                            fontWeight: 500,
+                            borderRadius: 1,
+                            width: 196,
+                            minWidth: 196,
+                            '& input': {
+                                bgcolor: '#fff',
+                                color: '#212121',
+                            }
+                        }
+                    }}
+                />
+            </Box>
+            <MenuItem value="">All Brands</MenuItem>
+            {filteredBrands.map((brand) => (
+                <MenuItem key={brand} value={brand}>{brand}</MenuItem>
+            ))}
+        </Select>
+    </FormControl>
+
+    <FormControl size="small" sx={{ width: 220, minWidth: 220 }}>
+        <InputLabel>Buyer Name</InputLabel>
+        <Select
+            value={selectedBuyer}
+            onChange={handleBuyerChange}
+            label="Buyer Name"
+            sx={{
+                borderRadius: '8px',
+                '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e2e8f0' },
+                width: 220,
+                minWidth: 220,
+            }}
+            MenuProps={{
+                PaperProps: {
+                    style: { maxHeight: 320, width: 220, minWidth: 220 }
+                }
+            }}
+            renderValue={(selected) => selected || "All Buyers"}
+        >
+            <Box sx={{ px: 2, py: 1 }}>
+                <TextField
+                    size="small"
+                    placeholder="Search Buyer"
+                    value={buyerSearch}
+                    onChange={e => setBuyerSearch(e.target.value)}
+                    fullWidth
+                    variant="outlined"
+                    InputProps={{
+                        sx: {
+                            bgcolor: '#fff',
+                            color: '#212121',
+                            fontWeight: 500,
+                            borderRadius: 1,
+                            width: 196,
+                            minWidth: 196,
+                            '& input': {
+                                bgcolor: '#fff',
+                                color: '#212121',
+                            }
+                        }
+                    }}
+                />
+            </Box>
+            <MenuItem value="">All Buyers</MenuItem>
+            {filteredBuyers.map((buyer) => (
+                <MenuItem key={buyer} value={buyer}>{buyer}</MenuItem>
+            ))}
+        </Select>
+    </FormControl>
+    {/* ...existing date pickers... */}
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <Grid container spacing={1} sx={{ width: 'auto', flexWrap: 'nowrap' }}>
+            <Grid item>
+                <DatePicker
+                    label="From Date"
+                    value={fromDate}
+                    onChange={(newDate) => setFromDate(newDate)}
+                    slotProps={{
+                        textField: {
+                            size: 'small',
+                            sx: {
+                                minWidth: 120,
+                                maxWidth: 140,
+                                '& .MuiOutlinedInput-root': { borderRadius: '8px', '& fieldset': { borderColor: '#e2e8f0' } }
+                            }
+                        }
+                    }}
+                />
+            </Grid>
+            <Grid item>
+                <DatePicker
+                    label="To Date"
+                    value={toDate}
+                    onChange={(newDate) => setToDate(newDate)}
+                    slotProps={{
+                        textField: {
+                            size: 'small',
+                            sx: {
+                                minWidth: 120,
+                                maxWidth: 140,
+                                '& .MuiOutlinedInput-root': { borderRadius: '8px', '& fieldset': { borderColor: '#e2e8f0' } }
+                            }
+                        }
+                    }}
+                />
+            </Grid>
+        </Grid>
+    </LocalizationProvider>
+</Box>
+ <Fade in={!loading} timeout={600}>
                 <Box>
                     {error && (
                         <Typography
