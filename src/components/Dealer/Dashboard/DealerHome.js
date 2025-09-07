@@ -282,7 +282,7 @@ const DashboardHome = () => {
       },
       title: {
         display: true,
-        text: 'Top 5 Products Purchased',
+        text: 'Top 5 Products Brands',
         color: '#1e293b',
         font: { size: 18, weight: '700' },
         padding: { top: 10, bottom: 20 },
@@ -317,16 +317,17 @@ const DashboardHome = () => {
     animation: { duration: 1000, easing: 'easeOutQuart' },
   };
 
-  // Line/Area chart (Key Business Trends over Time)
+  // ➡️ MODIFIED: Line/Area chart (Key Business Trends over Time)
   const trendsLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const revenueData = [15000, 18000, 17000, 22000, 24000, 26000, 25000, 27000, 29000, 31000, 34000, 38000];
+  // Changed data to reflect a dealer's total spend over time
+  const totalSpendData = [9500, 11000, 10500, 13000, 14500, 15800, 14900, 16200, 17500, 18800, 20100, 22500];
 
   const lineTrendChartData = {
     labels: trendsLabels,
     datasets: [
       {
-        label: "Revenue",
-        data: revenueData,
+        label: "Total Spend",
+        data: totalSpendData, // Use the new data
         borderColor: "#3b82f6",
         backgroundColor: "rgba(59, 130, 246, 0.1)",
         tension: 0.35,
@@ -346,7 +347,7 @@ const DashboardHome = () => {
       },
       title: {
         display: true,
-        text: 'Key Business Trends over Time',
+        text: 'Total Order Value Over Time', // Changed title
         color: '#1e293b',
         font: { size: 18, weight: '700' },
         padding: { top: 10, bottom: 20 },
@@ -365,7 +366,7 @@ const DashboardHome = () => {
           title: (context) => `Month: ${context[0].label}`,
           label: (context) => {
             const value = context.raw;
-            return `Revenue: $${Number(value).toLocaleString()}`;
+            return `Total Spend: $${Number(value).toLocaleString()}`; // Changed label
           }
         }
       },
@@ -410,7 +411,7 @@ const DashboardHome = () => {
         gap: 2,
         alignItems: 'center',
       }}>
-        <FormControl size="small" sx={{ flexGrow: 1, minWidth: 150 }}>
+        <FormControl size="small" sx={{ flexGrow: 1, minWidth: 280 }}>
           <InputLabel>Order Status</InputLabel>
           <Select
             value={orderStatus}
@@ -425,7 +426,7 @@ const DashboardHome = () => {
           </Select>
         </FormControl>
 
-        <FormControl size="small" sx={{ flexGrow: 1, minWidth: 150 }}>
+        <FormControl size="small" sx={{ flexGrow: 1, minWidth: 280 }}>
           <InputLabel>Product Category</InputLabel>
           <Select
             value={productCategory}
@@ -442,7 +443,7 @@ const DashboardHome = () => {
           </Select>
         </FormControl>
 
-        <FormControl size="small" sx={{ flexGrow: 1, minWidth: 150 }}>
+        <FormControl size="small" sx={{ flexGrow: 1, minWidth: 280 }}>
           <InputLabel>Payment Status</InputLabel>
           <Select
             value={paymentStatus}
@@ -467,7 +468,7 @@ const DashboardHome = () => {
                 size: 'small',
                 sx: {
                   flexGrow: 1,
-                  minWidth: 150,
+                  minWidth: 40,
                   '& .MuiOutlinedInput-root': { borderRadius: '8px', '& fieldset': { borderColor: '#e2e8f0' } }
                 }
               }
@@ -486,7 +487,7 @@ const DashboardHome = () => {
                 size: 'small',
                 sx: {
                   flexGrow: 1,
-                  minWidth: 150,
+                  minWidth: 40,
                   '& .MuiOutlinedInput-root': { borderRadius: '8px', '& fieldset': { borderColor: '#e2e8f0' } }
                 }
               }

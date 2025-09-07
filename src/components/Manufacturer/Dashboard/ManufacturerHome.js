@@ -27,7 +27,7 @@ import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { Bar, Line, Pie } from "react-chartjs-2"; // Import Pie component
+import { Bar, Line, Pie } from "react-chartjs-2";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
@@ -36,7 +36,7 @@ import {
     LinearScale,
     BarElement,
     LineElement,
-    ArcElement, // Import ArcElement for Pie Chart
+    ArcElement,
     Title,
     Tooltip,
     Legend,
@@ -68,7 +68,7 @@ ChartJS.register(
     BarElement,
     LineElement,
     PointElement,
-    ArcElement, // Register ArcElement
+    ArcElement,
     Title,
     Tooltip,
     Legend,
@@ -296,27 +296,22 @@ const ManufacturerHome = () => {
         { industry: "Hardware Supplies", category: "Gasket", brand: "Nibco", buyer: "Wall Base and Molding" },
     ];
 
+    // All dropdowns open by default, no dependency
     const industries = [...new Set(staticData.map(item => item.industry))];
-    const categories = selectedIndustry ? [...new Set(staticData.filter(item => item.industry === selectedIndustry).map(item => item.category))] : [];
-    const brands = selectedCategoryName ? [...new Set(staticData.filter(item => item.category === selectedCategoryName).map(item => item.brand))] : [];
-    const buyers = selectedBrand ? [...new Set(staticData.filter(item => item.brand === selectedBrand).map(item => item.buyer))] : [];
+    const categories = [...new Set(staticData.map(item => item.category))];
+    const brands = [...new Set(staticData.map(item => item.brand))];
+    const buyers = [...new Set(staticData.map(item => item.buyer))];
 
     const handleIndustryChange = (event) => {
         setSelectedIndustry(event.target.value);
-        setSelectedCategoryName('');
-        setSelectedBrand('');
-        setSelectedBuyer('');
     };
 
     const handleCategoryChange = (event) => {
         setSelectedCategoryName(event.target.value);
-        setSelectedBrand('');
-        setSelectedBuyer('');
     };
 
     const handleBrandChange = (event) => {
         setSelectedBrand(event.target.value);
-        setSelectedBuyer('');
     };
 
     const handleBuyerChange = (event) => {
@@ -395,7 +390,6 @@ const ManufacturerHome = () => {
         fetchDashboardCategory();
     }, [fetchDashboardCategory]);
 
-    // Added more static data to the dealers array
     const expandedDealersData = [
         { id: 1, name: 'Christopher Brown', order_value: 125000.75, imageUrl: 'https://randomuser.me/api/portraits/men/32.jpg' },
         { id: 2, name: 'John Doe', order_value: 98000.50, imageUrl: 'https://randomuser.me/api/portraits/women/44.jpg' },
@@ -408,26 +402,21 @@ const ManufacturerHome = () => {
         { id: 9, name: 'Olivia Wilson', order_value: 29500.90, imageUrl: 'https://randomuser.me/api/portraits/women/55.jpg' },
         { id: 10, name: 'Ava Thompson', order_value: 27000.60, imageUrl: 'https://randomuser.me/api/portraits/women/77.jpg' },
     ];
-    
-    // Instead of using the fetched data, we'll use our static data for the demo.
     const dealers = expandedDealersData;
     const displayedDealers = showAll ? dealers : dealers.slice(0, 5);
 
-    // eslint-disable-next-line
     const handleTotalSpendingsClick = () => {
         navigate("/manufacturer/orders", {
             state: { filter: { payment_status: "Completed" } },
         });
     };
 
-    // eslint-disable-next-line
     const handlePendingClick = () => {
         navigate("/manufacturer/orders", {
             state: { filter: { payment_status: "Pending" } },
         });
     };
 
-    // eslint-disable-next-line
     const handleReorderClick = () => {
         navigate("/manufacturer/orders", {
             state: { filter: { is_reorder: "yes" } },
@@ -448,7 +437,6 @@ const ManufacturerHome = () => {
         fetchTopSellingProducts(categoryId);
     };
 
-    // eslint-disable-next-line
     const handleActiveBuyerClick = () => {
         navigate(`/manufacturer/dealerList`);
     };
@@ -665,13 +653,13 @@ const ManufacturerHome = () => {
         datasets: [
             {
                 label: 'Sales by Category',
-                data: [35, 25, 15, 10, 15], // Static percentage data
+                data: [35, 25, 15, 10, 15],
                 backgroundColor: [
-                    'rgba(59, 130, 246, 0.8)', // Blue
-                    'rgba(16, 185, 129, 0.8)', // Green
-                    'rgba(245, 158, 11, 0.8)', // Yellow/Orange
-                    'rgba(239, 68, 68, 0.8)', // Red
-                    'rgba(139, 92, 246, 0.8)', // Purple
+                    'rgba(59, 130, 246, 0.8)',
+                    'rgba(16, 185, 129, 0.8)',
+                    'rgba(245, 158, 11, 0.8)',
+                    'rgba(239, 68, 68, 0.8)',
+                    'rgba(139, 92, 246, 0.8)',
                 ],
                 borderColor: '#ffffff',
                 borderWidth: 2,
@@ -820,20 +808,26 @@ const ManufacturerHome = () => {
     ];
 
     return (
-        <Box sx={{ bgcolor: '#f5f7fa', minHeight: '100vh', p: { xs: 2, md: 4 } }}>
-            {/* Search Bar & Filter Dropdowns */}
-            <Box sx={{
-                bgcolor: '#ffffff',
-                borderRadius: '12px',
-                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
-                p: 2,
-                mb: 4,
-                display: 'flex',
-                flexDirection: { xs: 'column', md: 'row' },
-                gap: 2,
-                alignItems: 'center',
-            }}>
-                <FormControl size="small" sx={{ flexGrow: 1, minWidth: 150 }}>
+<Box sx={{ bgcolor: '#f5f7fa', minHeight: '100vh', p: { xs: 2, md: 4 } }}>
+    {/* Sticky filter row */}
+    <Box
+        sx={{
+            bgcolor: '#ffffff',
+            borderRadius: '12px',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+            p: 2,
+            mb: 4,
+            display: 'flex',
+            flexDirection: { xs: 'column', md: 'row' },
+            gap: 2,
+            alignItems: 'center',
+            position: 'sticky',
+            top: 0,
+            zIndex: 100,
+            width: '100%',
+        }}
+    >
+                <FormControl size="small" sx={{ minWidth: 210 }}>
                     <InputLabel>Industry</InputLabel>
                     <Select
                         value={selectedIndustry}
@@ -848,7 +842,7 @@ const ManufacturerHome = () => {
                     </Select>
                 </FormControl>
 
-                <FormControl size="small" sx={{ flexGrow: 1, minWidth: 150 }} disabled={!selectedIndustry}>
+                <FormControl size="small" sx={{ minWidth: 210 }}>
                     <InputLabel>End level category</InputLabel>
                     <Select
                         value={selectedCategoryName}
@@ -856,14 +850,14 @@ const ManufacturerHome = () => {
                         label="End level category"
                         sx={{ borderRadius: '8px', '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e2e8f0' } }}
                     >
-                        {/* <MenuItem value="">All Categories</MenuItem> */}
+                        <MenuItem value="">All Categories</MenuItem>
                         {categories.map((category) => (
                             <MenuItem key={category} value={category}>{category}</MenuItem>
                         ))}
                     </Select>
                 </FormControl>
 
-                <FormControl size="small" sx={{ flexGrow: 1, minWidth: 150 }} disabled={!selectedCategoryName}>
+                <FormControl size="small" sx={{ minWidth: 210 }}>
                     <InputLabel>Brand Name</InputLabel>
                     <Select
                         value={selectedBrand}
@@ -878,7 +872,7 @@ const ManufacturerHome = () => {
                     </Select>
                 </FormControl>
 
-                <FormControl size="small" sx={{ flexGrow: 1, minWidth: 150 }} disabled={!selectedBrand}>
+                <FormControl size="small" sx={{ minWidth: 210 }}>
                     <InputLabel>Buyer Name</InputLabel>
                     <Select
                         value={selectedBuyer}
@@ -894,8 +888,8 @@ const ManufacturerHome = () => {
                 </FormControl>
 
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <Grid container spacing={2} flexGrow={1}>
-                        <Grid item xs={12} sm={6}>
+                    <Grid container spacing={1} sx={{ width: 'auto', flexWrap: 'nowrap' }}>
+                        <Grid item>
                             <DatePicker
                                 label="From Date"
                                 value={fromDate}
@@ -903,15 +897,16 @@ const ManufacturerHome = () => {
                                 slotProps={{
                                     textField: {
                                         size: 'small',
-                                        fullWidth: true,
                                         sx: {
+                                            minWidth: 120,
+                                            maxWidth: 140,
                                             '& .MuiOutlinedInput-root': { borderRadius: '8px', '& fieldset': { borderColor: '#e2e8f0' } }
                                         }
                                     }
                                 }}
                             />
                         </Grid>
-                        <Grid item xs={12} sm={6}>
+                        <Grid item>
                             <DatePicker
                                 label="To Date"
                                 value={toDate}
@@ -919,8 +914,9 @@ const ManufacturerHome = () => {
                                 slotProps={{
                                     textField: {
                                         size: 'small',
-                                        fullWidth: true,
                                         sx: {
+                                            minWidth: 120,
+                                            maxWidth: 140,
                                             '& .MuiOutlinedInput-root': { borderRadius: '8px', '& fieldset': { borderColor: '#e2e8f0' } }
                                         }
                                     }
@@ -930,6 +926,7 @@ const ManufacturerHome = () => {
                     </Grid>
                 </LocalizationProvider>
             </Box>
+
 
             <Fade in={!loading} timeout={600}>
                 <Box>
@@ -1583,6 +1580,9 @@ const ManufacturerHome = () => {
                     
                 </Box>
             </Fade>
+            {/* ...rest of the code unchanged... */}
+            {/* All dashboard cards, charts, tables, etc. */}
+            {/* ...existing code... */}
         </Box>
     );
 };
