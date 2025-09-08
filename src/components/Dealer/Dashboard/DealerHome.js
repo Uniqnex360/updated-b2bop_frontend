@@ -95,12 +95,13 @@ const DashboardHome = () => {
       { category_name: "Cleaning Supplies", units_sold: 1100 },
       { category_name: "Safety Supplies", units_sold: 900 },
     ],
+    // The `recent_orders` data is modified to include a `brand_name` for filtering.
     recent_orders: [
-      { id: 1, order_id: "ORD-98765", amount: 2500.50, order_date: "2025-09-01T10:00:00Z", payment_status: "Paid", order_status: "Delivered", product_category: "Electrical Supplies" },
-      { id: 2, order_id: "ORD-98764", amount: 1200.00, order_date: "2025-08-30T15:30:00Z", payment_status: "Pending", order_status: "Pending", product_category: "Hardware Supplies" },
-      { id: 3, order_id: "ORD-98763", amount: 500.25, order_date: "2025-08-28T11:45:00Z", payment_status: "Paid", order_status: "Delivered", product_category: "Plumbing Supplies" },
-      { id: 4, order_id: "ORD-98762", amount: 3000.75, order_date: "2025-08-25T09:10:00Z", payment_status: "Overdue", order_status: "Cancelled", product_category: "Cleaning Supplies" },
-      { id: 5, order_id: "ORD-98761", amount: 850.00, order_date: "2025-08-22T14:20:00Z", payment_status: "Paid", order_status: "Delivered", product_category: "Safety Supplies" },
+      { id: 1, order_id: "ORD-98765", amount: 2500.50, order_date: "2025-09-01T10:00:00Z", payment_status: "Paid", order_status: "Delivered", product_category: "Electrical Supplies", brand_name: "Aervoe" },
+      { id: 2, order_id: "ORD-98764", amount: 1200.00, order_date: "2025-08-30T15:30:00Z", payment_status: "Pending", order_status: "Pending", product_category: "Hardware Supplies", brand_name: "Stanley" },
+      { id: 3, order_id: "ORD-98763", amount: 500.25, order_date: "2025-08-28T11:45:00Z", payment_status: "Paid", order_status: "Delivered", product_category: "Plumbing Supplies", brand_name: "A.Y. McDonald" },
+      { id: 4, order_id: "ORD-98762", amount: 3000.75, order_date: "2025-08-25T09:10:00Z", payment_status: "Overdue", order_status: "Cancelled", product_category: "Cleaning Supplies", brand_name: "Michigan Pneumatic" },
+      { id: 5, order_id: "ORD-98761", amount: 850.00, order_date: "2025-08-22T14:20:00Z", payment_status: "Paid", order_status: "Delivered", product_category: "Safety Supplies", brand_name: "Irwin" },
     ],
     top_selling_products: [
       {
@@ -161,20 +162,23 @@ const DashboardHome = () => {
   const [loading] = useState(false);
   const [orderStatus, setOrderStatus] = useState('');
   const [productCategory, setProductCategory] = useState('');
-  const [paymentStatus, setPaymentStatus] = useState('');
+  // Renamed state variable from 'paymentStatus' to 'brandName'
+  const [brandName, setBrandName] = useState('');
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
 
   const handleOrderStatusChange = (event) => setOrderStatus(event.target.value);
   const handleProductCategoryChange = (event) => setProductCategory(event.target.value);
-  const handlePaymentStatusChange = (event) => setPaymentStatus(event.target.value);
+  // Renamed handler function from 'handlePaymentStatusChange' to 'handleBrandNameChange'
+  const handleBrandNameChange = (event) => setBrandName(event.target.value);
   const handleFromDateChange = (newDate) => setFromDate(newDate);
   const handleToDateChange = (newDate) => setToDate(newDate);
 
   const filteredRecentOrders = staticDashboardData.recent_orders.filter(order => {
     if (orderStatus && order.order_status !== orderStatus) return false;
     if (productCategory && order.product_category !== productCategory) return false;
-    if (paymentStatus && order.payment_status !== paymentStatus) return false;
+    // Updated the filter logic to use 'brand_name' instead of 'payment_status'
+    if (brandName && order.brand_name !== brandName) return false;
     // Date range filtering
     const orderDate = dayjs(order.order_date);
     if (fromDate && orderDate.isBefore(dayjs(fromDate), 'day')) return false;
@@ -508,17 +512,20 @@ const DashboardHome = () => {
           </Select>
         </FormControl>
 
+        {/* This is the updated dropdown for brand names, now limited to 5 brands */}
         <FormControl size="small" sx={{ flexGrow: 1, minWidth: 280 }}>
-          <InputLabel>Payment Status</InputLabel>
+          <InputLabel>Brand Name</InputLabel>
           <Select
-            value={paymentStatus}
-            onChange={handlePaymentStatusChange}
-            label="Payment Status"
+            value={brandName}
+            onChange={handleBrandNameChange}
+            label="Brand Name"
             sx={{ borderRadius: '8px', '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e2e8f0' } }}
           >
-            <MenuItem value="">All Status</MenuItem>
-            {['Paid', 'Pending', 'Overdue'].map((status) => (
-              <MenuItem key={status} value={status}>{status}</MenuItem>
+            <MenuItem value="">All Brands</MenuItem>
+            {[
+              "Aervoe", "A.Y. McDonald", "Thorlabs", "Michigan Pneumatic", "Irwin"
+            ].map((brand) => (
+              <MenuItem key={brand} value={brand}>{brand}</MenuItem>
             ))}
           </Select>
         </FormControl>
