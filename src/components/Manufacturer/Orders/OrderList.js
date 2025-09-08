@@ -40,7 +40,7 @@ import dayjs from "dayjs";
 const staticOrders = [
   {
     _id: "1",
-    order_id: "101-09-2025",
+    order_id: "3",
     creation_date: "2025-09-09",
     dealer_name: "John",
     address: { city: "Texas", country: "US" },
@@ -54,7 +54,7 @@ const staticOrders = [
   },
   {
     _id: "2",
-    order_id: "102-09-2025",
+    order_id: "4",
     creation_date: "2025-09-09",
     dealer_name: "Sophia Taylor",
     address: { city: "New York", country: "US" },
@@ -68,7 +68,7 @@ const staticOrders = [
   },
   {
     _id: "3",
-    order_id: "103-09-2025",
+    order_id: "5",
     creation_date: "2025-09-09",
     dealer_name: "Christopher Brown",
     address: { city: "California", country: "US" },
@@ -82,7 +82,7 @@ const staticOrders = [
   },
   {
     _id: "4",
-    order_id: "104-09-2025",
+    order_id: "6",
     creation_date: "2025-09-09",
     dealer_name: "Isabella Harris",
     address: { city: "Arizona", country: "US" },
@@ -97,7 +97,7 @@ const staticOrders = [
   },
   {
     _id: "5",
-    order_id: "105-09-2025",
+    order_id: "7",
     creation_date: "2025-09-09",
     dealer_name: "William Anderson",
     address: { city: "Pennsylvania", country: "US" },
@@ -112,7 +112,7 @@ const staticOrders = [
   },
   {
     _id: "6",
-    order_id: "106-09-2025",
+    order_id: "8",
     creation_date: "2025-09-09",
     dealer_name: "Emily Davis",
     address: { city: "Los Angeles", country: "US" },
@@ -127,7 +127,7 @@ const staticOrders = [
   },
   {
     _id: "7",
-    order_id: "107-09-2025",
+    order_id: "1",
     creation_date: "2025-09-10",
     dealer_name: "James Miller",
     address: { city: "Chicago", country: "US" },
@@ -142,7 +142,7 @@ const staticOrders = [
   },
   {
     _id: "8",
-    order_id: "108-09-2025",
+    order_id: "2",
     creation_date: "2025-09-10",
     dealer_name: "Michael Johnson",
     address: { city: "Illinois", country: "US" },

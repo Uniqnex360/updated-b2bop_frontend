@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useLocation, useNavigate, Link as RouterLink } from "react-router-dom";
 import {
   Box,
@@ -23,6 +23,9 @@ import {
   Typography,
   Stack,
   Pagination,
+  createTheme,
+  ThemeProvider,
+  Grid,
 } from "@mui/material";
 import axios from "axios";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -32,6 +35,119 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { styled } from "@mui/material/styles";
+import dayjs from "dayjs";
+
+const theme = createTheme({
+  typography: {
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    fontSize: 14,
+    h3: { fontSize: "1.5rem", fontWeight: 700 },
+    subtitle2: { fontSize: "0.875rem", fontWeight: 600 },
+    body1: { fontSize: "0.9375rem" },
+    body2: { fontSize: "0.875rem" },
+  },
+  palette: {
+    primary: { main: "#1976d2" },
+    grey: {
+      50: "#f9fafb",
+      100: "#f2f4f7",
+      200: "#e4e7ec",
+      400: "#98a2b3",
+      500: "#667085",
+      800: "#1d2939",
+    },
+    success: { main: "#12b76a" },
+    error: { main: "#f04438" },
+    warning: { main: "#f79009" },
+  },
+  components: {
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          "& .MuiOutlinedInput-root": {
+            borderRadius: "8px",
+            fontSize: "0.875rem",
+          },
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: "capitalize",
+          fontWeight: 600,
+          borderRadius: "8px",
+          fontSize: "0.875rem",
+        },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: { fontWeight: 500, fontSize: "0.75rem", height: "24px" },
+      },
+    },
+    MuiTableHead: {
+      styleOverrides: {
+        root: {
+          "& .MuiTableCell-head": {
+            fontWeight: 600,
+            color: "#475467",
+            backgroundColor: "#f9fafb",
+          },
+        },
+      },
+    },
+    MuiTableBody: {
+      styleOverrides: {
+        root: {
+          "& .MuiTableCell-body": { color: "#344054", fontSize: "0.875rem" },
+        },
+      },
+    },
+  },
+});
+
+const FilterPaper = styled(Paper)(({ theme }) => ({
+  borderRadius: "16px",
+  padding: theme.spacing(3),
+  marginBottom: theme.spacing(4),
+  boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.05)",
+}));
+
+const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
+  borderRadius: "16px",
+  boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.05)",
+  maxHeight: 520,
+}));
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  "&.MuiTableCell-head": {
+    backgroundColor: theme.palette.grey[100],
+    color: theme.palette.grey[600],
+    fontWeight: "600",
+    padding: theme.spacing(2),
+    fontSize: "0.875rem",
+    position: "sticky",
+    top: 0,
+    zIndex: 2,
+    whiteSpace: "nowrap",
+  },
+  "&.MuiTableCell-body": {
+    fontSize: "0.875rem",
+    color: theme.palette.grey[800],
+    padding: theme.spacing(1.5, 2),
+    whiteSpace: "nowrap",
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:hover": {
+    backgroundColor: theme.palette.action.hover,
+    cursor: "pointer",
+    transition: "background-color 0.15s ease",
+  },
+}));
 
 const OrderList = () => {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -54,7 +170,6 @@ const OrderList = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [totalPages, setTotalPages] = useState(0);
 
   const initialPage = parseInt(queryParams.get("page"), 10) || 1;
   const [page, setPage] = useState(initialPage);
@@ -73,7 +188,8 @@ const OrderList = () => {
       const sort_by_value = direction === "asc" ? 1 : direction === "desc" ? -1 : "";
 
       const response = await axios.post(
-        `${process.env.REACT_APP_IP}obtainOrderListForDealer/`, {
+        `${process.env.REACT_APP_IP}obtainOrderListForDealer/`,
+        {
           user_id: user?.id,
           sort_by: key || "",
           sort_by_value,
@@ -85,12 +201,12 @@ const OrderList = () => {
           end_date: formattedEndDate,
         }
       );
-      const fetchedOrders = Array.isArray(response?.data?.data) ? response.data.data : [];
+      const fetchedOrders = Array.isArray(response?.data?.data)
+        ? response.data.data
+        : [];
       setOrders(fetchedOrders);
-      setTotalPages(Math.ceil(fetchedOrders.length / rowsPerPage));
     } catch (error) {
       setOrders([]);
-      setTotalPages(0);
     } finally {
       setLoading(false);
     }
@@ -110,6 +226,32 @@ const OrderList = () => {
     sortConfig.key,
     sortConfig.direction,
   ]);
+
+  const filteredOrders = useMemo(() => {
+    let tempOrders = [...orders];
+
+    if (searchTerm) {
+      tempOrders = tempOrders.filter(
+        (order) =>
+          order.order_id?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+          order.payment_status?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          order.delivery_status?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          order.fulfilled_status?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Server-side filtering is already handled by fetchOrderList, but client-side filtering by searchTerm is needed here.
+    // The other filters (statuses, dates, sorting) trigger a new API call, handled by the useEffect.
+
+    return tempOrders;
+  }, [orders, searchTerm]);
+
+  const totalPages = Math.ceil(filteredOrders.length / rowsPerPage);
+
+  const paginatedOrders = filteredOrders.slice(
+    (page - 1) * rowsPerPage,
+    (page - 1) * rowsPerPage + rowsPerPage
+  );
 
   const handlePayment = (orderId) => {
     navigate(`/dealer/paymentConfirm?page=${page}`, { state: { orderId } });
@@ -138,21 +280,6 @@ const OrderList = () => {
     }
   };
 
-  const filteredOrders = orders.filter((order) => {
-    const normalizedSearch = searchTerm.trim().toLowerCase();
-    return (
-      order.order_id?.toString().toLowerCase().includes(normalizedSearch) ||
-      order.payment_status?.toLowerCase().includes(normalizedSearch) ||
-      order.delivery_status?.toLowerCase().includes(normalizedSearch) ||
-      order.fulfilled_status?.toLowerCase().includes(normalizedSearch)
-    );
-  });
-
-  const paginatedOrders = filteredOrders.slice(
-    (page - 1) * rowsPerPage,
-    (page - 1) * rowsPerPage + rowsPerPage
-  );
-
   const handleOpenMenu = (event, column) => {
     setCurrentColumn(column);
     setAnchorEl(event.currentTarget);
@@ -166,29 +293,29 @@ const OrderList = () => {
   };
 
   const handleStatusFilter = (statusType, status) => {
-    if (statusType === "delivery_status") {
-      setDeliveryStatus(status);
-      setFulfilledStatus("all");
-      setPaymentStatus("all");
-      setis_reorder("all");
-    } else if (statusType === "fulfilled_status") {
-      setDeliveryStatus("all");
-      setFulfilledStatus(status);
-      setPaymentStatus("all");
-      setis_reorder("all");
-    } else if (statusType === "payment_status") {
-      setDeliveryStatus("all");
-      setFulfilledStatus("all");
-      setPaymentStatus(status);
-      setis_reorder("all");
-    } else if (statusType === "is_reorder") {
-      setDeliveryStatus("all");
-      setFulfilledStatus("all");
-      setPaymentStatus("all");
-      setis_reorder(status);
+    switch (statusType) {
+      case "delivery_status":
+        setDeliveryStatus(status);
+        break;
+      case "fulfilled_status":
+        setFulfilledStatus(status);
+        break;
+      case "payment_status":
+        setPaymentStatus(status);
+        break;
+      case "is_reorder":
+        setis_reorder(status);
+        break;
+      default:
+        break;
     }
     setPage(1);
     setAnchorEl(null);
+  };
+
+  const handleClearDates = () => {
+    setSelectedDate(null);
+    setEndDate(null);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -196,424 +323,331 @@ const OrderList = () => {
   };
 
   const breadcrumbs = [
-    <Typography key="1" color="text.primary" sx={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
+    <Typography key="1" color="text.primary" variant="h3">
       My Orders
-    </Typography>
+    </Typography>,
   ];
 
   return (
-    <Box sx={{ p: { xs: 2, sm: 3 }, bgcolor: "grey.50", minHeight: "100vh" }}>
-      <Box sx={{ mb: 3 }}>
-        <Breadcrumbs
-          separator={<NavigateNextIcon fontSize="small" />}
-          aria-label="breadcrumb"
-        >
-          {breadcrumbs}
-        </Breadcrumbs>
-      </Box>
-      <Paper
-        elevation={1}
-        sx={{
-          borderRadius: 2,
-          overflow: "hidden",
-          mb: 4,
-          p: { xs: 2, md: 3 },
-        }}
-      >
+    <ThemeProvider theme={theme}>
+      <Box sx={{ p: { xs: 2, sm: 3 }, bgcolor: "grey.50", minHeight: "100vh" }}>
         <Stack
-          direction={{ xs: "column", sm: "row" }}
-          justifyContent="flex-end" // Changed from "space-between" to "flex-end"
+          direction="row"
+          justifyContent="space-between"
           alignItems="center"
-          spacing={{ xs: 2, sm: 4 }}
+          sx={{ mb: 3 }}
         >
-          {/* This stack is now aligned to the right using justifyContent */}
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
-            alignItems="center"
-            spacing={1}
-            sx={{ width: { xs: "100%", sm: "auto" } }}
+          <Breadcrumbs
+            separator={<NavigateNextIcon fontSize="small" />}
+            aria-label="breadcrumb"
           >
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <Stack direction={{ xs: "column", sm: "row" }} alignItems="center" spacing={1}>
-                <DatePicker
-                  label="Start Date"
-                  value={selectedDate}
-                  onChange={(newDate) => setSelectedDate(newDate)}
-                  slotProps={{
-                    textField: {
-                      size: "small",
-                      sx: { width: { xs: "100%", sm: "140px" }, bgcolor: "white" },
-                    },
-                  }}
-                />
-                <DatePicker
-                  label="End Date"
-                  value={endDate}
-                  onChange={(newDate) => setEndDate(newDate)}
-                  slotProps={{
-                    textField: {
-                      size: "small",
-                      sx: { width: { xs: "100%", sm: "140px" }, bgcolor: "white" },
-                    },
-                  }}
-                />
-              </Stack>
-            </LocalizationProvider>
-            <Tooltip title="Clear dates">
-              <IconButton
-                onClick={() => {
-                  setSelectedDate(null);
-                  setEndDate(null);
-                }}
-                sx={{ color: "primary.main", "&:hover": { bgcolor: "primary.light" }, bgcolor: "grey.200" }}
-                aria-label="Clear dates"
-              >
-                <ClearIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-          </Stack>
-
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
-            justifyContent="flex-end"
-            alignItems="center"
-            spacing={2}
-            sx={{ width: { xs: "100%", sm: "auto" } }}
-          >
-            <TextField
-              variant="outlined"
-              value={searchTerm}
-              size="small"
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search by Order ID, Status..."
-              sx={{ width: { xs: "100%", sm: "300px" } }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon sx={{ color: "grey.400" }} />
-                  </InputAdornment>
-                ),
-              }}
-              onKeyPress={(event) => {
-                if (
-                  event.key === " " &&
-                  (searchTerm.trim() === "" ||
-                    searchTerm.startsWith(" ") ||
-                    searchTerm.endsWith(" "))
-                ) {
-                  event.preventDefault();
-                }
-              }}
-            />
-            <Box
-              sx={{
-                px: 1.5,
-                py: 0.5,
-                bgcolor: "grey.100",
-                borderRadius: 1,
-                display: 'flex',
-                alignItems: 'center',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              <Typography variant="body2" sx={{ whiteSpace: 'nowrap' }}>
-                Total Orders: <strong>{filteredOrders.length}</strong>
-              </Typography>
-            </Box>
-          </Stack>
+            {breadcrumbs}
+          </Breadcrumbs>
         </Stack>
-      </Paper>
-
-      <TableContainer
-        component={Paper}
-        sx={{
-          borderRadius: 2,
-          boxShadow: 3,
-          maxHeight: 520,
-          overflowX: "auto",
-        }}
-      >
-        <Table stickyHeader sx={{ minWidth: 800 }}>
-          <TableHead>
-            <TableRow>
-              {[
-                { id: "order_id", label: "Order ID" },
-                { id: "order_date", label: "Order Date" },
-                { id: "total_items", label: "Quantity" },
-                { id: "amount", label: "Order Value" },
-                { id: "payment_status", label: "Payment Status" },
-                { id: "fulfilled_status", label: "Fulfillment Status" },
-                { id: "delivery_status", label: "Delivery Status" },
-                { id: "is_reorder", label: "Reorder" },
-                { id: "make_payment", label: "Actions" },
-              ].map((column) => (
-                <TableCell
-                  key={column.id}
-                  align="left"
-                  sx={{
-                    bgcolor: "grey.100",
-                    color: "grey.600",
-                    fontWeight: "600",
-                    px: 2,
-                    py: 1.5,
-                    whiteSpace: "nowrap",
-                    position: "sticky",
-                    top: 0,
-                    zIndex: 2,
-                    ...(column.id === "order_id" && {
-                      left: 0,
-                      zIndex: 3,
-                      bgcolor: "white",
-                    }),
-                  }}
-                >
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    <Typography variant="subtitle2" sx={{ whiteSpace: "nowrap" }}>
-                      {column.label}
-                    </Typography>
-                    {column.id !== "make_payment" && (
-                      <IconButton
-                        onClick={(e) => handleOpenMenu(e, column.id)}
-                        size="small"
-                        sx={{ color: "grey.500" }}
-                      >
-                        <MoreVertIcon sx={{ width: 16, height: 16 }} />
-                      </IconButton>
-                    )}
-                  </Box>
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-
-          <TableBody>
-            {loading ? (
-              <TableRow>
-                <TableCell colSpan={9} align="center" sx={{ py: 6 }}>
-                  <CircularProgress color="primary" />
-                </TableCell>
-              </TableRow>
-            ) : paginatedOrders.length > 0 ? (
-              paginatedOrders.map((order) => (
-                <TableRow
-                  key={order.order_id}
-                  onClick={() => handleOrderClick(order.id)}
-                  sx={{
-                    "&:hover": {
-                      bgcolor: "primary.lightest",
-                      cursor: "pointer",
-                      transition: "background-color 0.15s ease",
-                    },
-                  }}
-                >
-                  <TableCell
-                    align="left"
-                    sx={{
-                      fontSize: "0.875rem",
-                      color: "grey.800",
-                      px: 2,
-                      py: 1.5,
-                      whiteSpace: "nowrap",
-                      position: "sticky",
-                      left: 0,
-                      zIndex: 1,
-                      bgcolor: "white",
+        <FilterPaper elevation={1}>
+          <Grid container spacing={2} alignItems="center" justifyContent="flex-end">
+            <Grid item xs={12} md={6} lg={4}>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    label="Start Date"
+                    value={selectedDate}
+                    onChange={(newDate) => setSelectedDate(newDate)}
+                    slotProps={{
+                      textField: {
+                        size: "small",
+                        sx: { width: { xs: "50%", sm: "140px" }, bgcolor: "white" },
+                      },
                     }}
-                  >
-                    {order.order_id}
-                  </TableCell>
-                  <TableCell
-                    align="left"
-                    sx={{ fontSize: "0.875rem", color: "grey.800", px: 2, py: 1.5, whiteSpace: "nowrap" }}
-                  >
-                    {order.order_date
-                      ? new Date(order.order_date).toLocaleDateString()
-                      : ""}
-                  </TableCell>
-                  <TableCell
-                    align="left"
-                    sx={{ fontSize: "0.875rem", color: "grey.800", px: 2, py: 1.5, whiteSpace: "nowrap" }}
-                  >
-                    {order.total_items}
-                  </TableCell>
-                  <TableCell
-                    align="left"
-                    sx={{ fontSize: "0.875rem", color: "grey.800", px: 2, py: 1.5, whiteSpace: "nowrap" }}
-                  >
-                    {order.currency}{order.amount}
-                  </TableCell>
-                  <TableCell
-                    align="left"
-                    sx={{ px: 2, py: 1.5, whiteSpace: "nowrap" }}
-                  >
-                    <Chip
-                      label={order.payment_status}
-                      color={getStatusColor(order.payment_status)}
-                      size="small"
-                      sx={{ fontWeight: "medium" }}
-                    />
-                  </TableCell>
-                  <TableCell
-                    align="left"
-                    sx={{ px: 2, py: 1.5, whiteSpace: "nowrap" }}
-                  >
-                    <Chip
-                      label={order.fulfilled_status}
-                      color={getStatusColor(order.fulfilled_status)}
-                      size="small"
-                      sx={{ fontWeight: "medium" }}
-                    />
-                  </TableCell>
-                  <TableCell
-                    align="left"
-                    sx={{ px: 2, py: 1.5, whiteSpace: "nowrap" }}
-                  >
-                    <Chip
-                      label={order.delivery_status}
-                      color={getStatusColor(order.delivery_status)}
-                      size="small"
-                      sx={{ fontWeight: "medium" }}
-                    />
-                  </TableCell>
-                  <TableCell
-                    align="left"
-                    sx={{ fontSize: "0.875rem", color: "grey.800", px: 2, py: 1.5, whiteSpace: "nowrap" }}
-                  >
-                    {order.is_reorder ? "Yes" : "No"}
-                  </TableCell>
-                  <TableCell
-                    align="left"
-                    sx={{ px: 2, py: 1.5, whiteSpace: "nowrap" }}
-                  >
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      size="small"
+                  />
+                  <DatePicker
+                    label="End Date"
+                    value={endDate}
+                    onChange={(newDate) => setEndDate(newDate)}
+                    slotProps={{
+                      textField: {
+                        size: "small",
+                        sx: { width: { xs: "50%", sm: "140px" }, bgcolor: "white" },
+                      },
+                    }}
+                  />
+                  <Tooltip title="Clear dates">
+                    <IconButton
+                      onClick={handleClearDates}
                       sx={{
-                        textTransform: "capitalize",
-                        fontWeight: "600",
-                        borderRadius: "8px",
-                        boxShadow: 1,
+                        color: "primary.main",
+                        "&:hover": { bgcolor: "primary.light" },
+                        bgcolor: "grey.200",
                       }}
-                      disabled={
-                        order.payment_status === "Paid" ||
-                        order.payment_status === "Completed"
-                      }
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handlePayment(order.id);
-                      }}
+                      aria-label="Clear dates"
                     >
-                      Confirm Payment
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={9} align="center" sx={{ py: 6 }}>
-                  <Typography variant="body1" color="text.secondary">
-                    No Orders Available
+                      <ClearIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                </LocalizationProvider>
+              </Stack>
+            </Grid>
+            <Grid item xs={12} md={6} lg={4}>
+              <Stack
+                direction={{ xs: "column", sm: "row" }}
+                spacing={2}
+                alignItems={{ xs: "stretch", sm: "center" }}
+                justifyContent="flex-end"
+              >
+                <TextField
+                  variant="outlined"
+                  value={searchTerm}
+                  size="small"
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Search by Order ID, Status..."
+                  sx={{ width: { xs: "100%", sm: "300px" }, borderRadius: "8px" }}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon sx={{ color: "grey.400" }} />
+                      </InputAdornment>
+                    ),
+                    sx: { borderRadius: "8px" },
+                  }}
+                />
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    px: 1.5,
+                    py: 0.5,
+                    bgcolor: "grey.100",
+                    borderRadius: 1,
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  <Typography variant="body2" color="text.secondary">
+                    Total Orders: <strong>{filteredOrders.length}</strong>
                   </Typography>
-                </TableCell>
+                </Box>
+              </Stack>
+            </Grid>
+          </Grid>
+        </FilterPaper>
+
+        <StyledTableContainer component={Paper}>
+          <Table stickyHeader sx={{ minWidth: 800 }}>
+            <TableHead>
+              <TableRow>
+                {[
+                  { id: "order_id", label: "Order ID" },
+                  { id: "order_date", label: "Order Date" },
+                  { id: "total_items", label: "Quantity" },
+                  { id: "amount", label: "Order Value" },
+                  { id: "payment_status", label: "Payment Status" },
+                  { id: "fulfilled_status", label: "Fulfillment Status" },
+                  { id: "delivery_status", label: "Delivery Status" },
+                  { id: "is_reorder", label: "Reorder" },
+                  { id: "make_payment", label: "Actions" },
+                ].map((column) => (
+                  <StyledTableCell key={column.id} align="left">
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <Typography variant="subtitle2" sx={{ whiteSpace: "nowrap" }}>
+                        {column.label}
+                      </Typography>
+                      {column.id !== "make_payment" && (
+                        <IconButton
+                          onClick={(e) => handleOpenMenu(e, column.id)}
+                          size="small"
+                          sx={{ color: "grey.500" }}
+                        >
+                          <MoreVertIcon sx={{ width: 16, height: 16 }} />
+                        </IconButton>
+                      )}
+                    </Box>
+                  </StyledTableCell>
+                ))}
               </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
 
-      {filteredOrders.length > rowsPerPage && (
-        <Stack
-          spacing={2}
-          sx={{ mt: 3, justifyContent: "center", alignItems: "center" }}
-        >
-          <Pagination
-            count={totalPages}
-            page={page}
-            onChange={handleChangePage}
-            color="primary"
-            shape="rounded"
-            size="large"
-          />
-        </Stack>
-      )}
+            <TableBody>
+              {loading ? (
+                <StyledTableRow>
+                  <StyledTableCell colSpan={9} align="center" sx={{ py: 6 }}>
+                    <CircularProgress color="primary" />
+                  </StyledTableCell>
+                </StyledTableRow>
+              ) : paginatedOrders.length > 0 ? (
+                paginatedOrders.map((order) => (
+                  <StyledTableRow
+                    key={order.order_id}
+                    onClick={() => handleOrderClick(order.id)}
+                  >
+                    <StyledTableCell align="left">
+                      {order.order_id}
+                    </StyledTableCell>
+                    <StyledTableCell align="left">
+                      {order.order_date
+                        ? dayjs(order.order_date).format("YYYY-MM-DD")
+                        : ""}
+                    </StyledTableCell>
+                    <StyledTableCell align="left">
+                      {order.total_items}
+                    </StyledTableCell>
+                    <StyledTableCell align="left">
+                      {order.currency}
+                      {order.amount}
+                    </StyledTableCell>
+                    <StyledTableCell align="left">
+                      <Chip
+                        label={order.payment_status}
+                        color={getStatusColor(order.payment_status)}
+                        size="small"
+                        sx={{ fontWeight: "medium" }}
+                      />
+                    </StyledTableCell>
+                    <StyledTableCell align="left">
+                      <Chip
+                        label={order.fulfilled_status}
+                        color={getStatusColor(order.fulfilled_status)}
+                        size="small"
+                        sx={{ fontWeight: "medium" }}
+                      />
+                    </StyledTableCell>
+                    <StyledTableCell align="left">
+                      <Chip
+                        label={order.delivery_status}
+                        color={getStatusColor(order.delivery_status)}
+                        size="small"
+                        sx={{ fontWeight: "medium" }}
+                      />
+                    </StyledTableCell>
+                    <StyledTableCell align="left">
+                      {order.is_reorder ? "Yes" : "No"}
+                    </StyledTableCell>
+                    <StyledTableCell align="left">
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        sx={{
+                          textTransform: "capitalize",
+                          fontWeight: "600",
+                          borderRadius: "8px",
+                          boxShadow: 1,
+                        }}
+                        disabled={
+                          order.payment_status === "Paid" ||
+                          order.payment_status === "Completed"
+                        }
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePayment(order.id);
+                        }}
+                      >
+                        Confirm Payment
+                      </Button>
+                    </StyledTableCell>
+                  </StyledTableRow>
+                ))
+              ) : (
+                <StyledTableRow>
+                  <StyledTableCell colSpan={9} align="center" sx={{ py: 6 }}>
+                    <Typography variant="body1" color="text.secondary">
+                      No Orders Available
+                    </Typography>
+                  </StyledTableCell>
+                </StyledTableRow>
+              )}
+            </TableBody>
+          </Table>
+        </StyledTableContainer>
 
-      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleCloseMenu}>
-        {currentColumn === "order_id" && (
-          <>
-            <MenuItem onClick={() => handleSelectSort("order_id", "asc")}>
-              Sort Low to High
-            </MenuItem>
-            <MenuItem onClick={() => handleSelectSort("order_id", "desc")}>
-              Sort High to Low
-            </MenuItem>
-          </>
+        {filteredOrders.length > rowsPerPage && (
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 3, mb: 2 }}>
+            <Pagination
+              count={totalPages}
+              page={page}
+              onChange={handleChangePage}
+              color="primary"
+              shape="rounded"
+              size="large"
+            />
+          </Box>
         )}
-        {currentColumn === "total_items" && (
-          <>
-            <MenuItem onClick={() => handleSelectSort("total_items", "asc")}>
-              Sort Low to High
-            </MenuItem>
-            <MenuItem onClick={() => handleSelectSort("total_items", "desc")}>
-              Sort High to Low
-            </MenuItem>
-          </>
-        )}
-        {currentColumn === "amount" && (
-          <>
-            <MenuItem onClick={() => handleSelectSort("amount", "asc")}>
-              Sort Low to High
-            </MenuItem>
-            <MenuItem onClick={() => handleSelectSort("amount", "desc")}>
-              Sort High to Low
-            </MenuItem>
-          </>
-        )}
-        {currentColumn === "order_date" && (
-          <>
-            <MenuItem onClick={() => handleSelectSort("order_date", "asc")}>
-              Lowest
-            </MenuItem>
-            <MenuItem onClick={() => handleSelectSort("order_date", "desc")}>
-              Highest
-            </MenuItem>
-          </>
-        )}
-        {currentColumn === "delivery_status" && (
-          <>
-            <MenuItem onClick={() => handleStatusFilter("delivery_status", "all")}>All</MenuItem>
-            <MenuItem onClick={() => handleStatusFilter("delivery_status", "Pending")}>Pending</MenuItem>
-            <MenuItem onClick={() => handleStatusFilter("delivery_status", "Shipped")}>Shipped</MenuItem>
-            <MenuItem onClick={() => handleStatusFilter("delivery_status", "Completed")}>Completed</MenuItem>
-            <MenuItem onClick={() => handleStatusFilter("delivery_status", "Canceled")}>Canceled</MenuItem>
-          </>
-        )}
-        {currentColumn === "fulfilled_status" && (
-          <>
-            <MenuItem onClick={() => handleStatusFilter("fulfilled_status", "all")}>All</MenuItem>
-            <MenuItem onClick={() => handleStatusFilter("fulfilled_status", "Fulfilled")}>Fulfilled</MenuItem>
-            <MenuItem onClick={() => handleStatusFilter("fulfilled_status", "Unfulfilled")}>Unfulfilled</MenuItem>
-            <MenuItem onClick={() => handleStatusFilter("fulfilled_status", "Partially Fulfilled")}>Partially Fulfilled</MenuItem>
-          </>
-        )}
-        {currentColumn === "payment_status" && (
-          <>
-            <MenuItem onClick={() => handleStatusFilter("payment_status", "all")}>All</MenuItem>
-            <MenuItem onClick={() => handleStatusFilter("payment_status", "Completed")}>Completed</MenuItem>
-            <MenuItem onClick={() => handleStatusFilter("payment_status", "Pending")}>Pending</MenuItem>
-            <MenuItem onClick={() => handleStatusFilter("payment_status", "Paid")}>Paid</MenuItem>
-            <MenuItem onClick={() => handleStatusFilter("payment_status", "Failed")}>Failed</MenuItem>
-          </>
-        )}
-        {currentColumn === "is_reorder" && (
-          <>
-            <MenuItem onClick={() => handleStatusFilter("is_reorder", "all")}>All</MenuItem>
-            <MenuItem onClick={() => handleStatusFilter("is_reorder", "Yes")}>Yes</MenuItem>
-            <MenuItem onClick={() => handleStatusFilter("is_reorder", "No")}>No</MenuItem>
-          </>
-        )}
-      </Menu>
-    </Box>
+
+        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleCloseMenu}>
+          {currentColumn === "order_id" && (
+            <>
+              <MenuItem onClick={() => handleSelectSort("order_id", "asc")}>
+                Sort Low to High
+              </MenuItem>
+              <MenuItem onClick={() => handleSelectSort("order_id", "desc")}>
+                Sort High to Low
+              </MenuItem>
+            </>
+          )}
+          {currentColumn === "total_items" && (
+            <>
+              <MenuItem onClick={() => handleSelectSort("total_items", "asc")}>
+                Sort Low to High
+              </MenuItem>
+              <MenuItem onClick={() => handleSelectSort("total_items", "desc")}>
+                Sort High to Low
+              </MenuItem>
+            </>
+          )}
+          {currentColumn === "amount" && (
+            <>
+              <MenuItem onClick={() => handleSelectSort("amount", "asc")}>
+                Sort Low to High
+              </MenuItem>
+              <MenuItem onClick={() => handleSelectSort("amount", "desc")}>
+                Sort High to Low
+              </MenuItem>
+            </>
+          )}
+          {currentColumn === "order_date" && (
+            <>
+              <MenuItem onClick={() => handleSelectSort("order_date", "asc")}>
+                Oldest
+              </MenuItem>
+              <MenuItem onClick={() => handleSelectSort("order_date", "desc")}>
+                Newest
+              </MenuItem>
+            </>
+          )}
+          {currentColumn === "delivery_status" && (
+            <>
+              <MenuItem onClick={() => handleStatusFilter("delivery_status", "all")}>All</MenuItem>
+              <MenuItem onClick={() => handleStatusFilter("delivery_status", "Pending")}>Pending</MenuItem>
+              <MenuItem onClick={() => handleStatusFilter("delivery_status", "Shipped")}>Shipped</MenuItem>
+              <MenuItem onClick={() => handleStatusFilter("delivery_status", "Completed")}>Completed</MenuItem>
+              <MenuItem onClick={() => handleStatusFilter("delivery_status", "Canceled")}>Canceled</MenuItem>
+            </>
+          )}
+          {currentColumn === "fulfilled_status" && (
+            <>
+              <MenuItem onClick={() => handleStatusFilter("fulfilled_status", "all")}>All</MenuItem>
+              <MenuItem onClick={() => handleStatusFilter("fulfilled_status", "Fulfilled")}>Fulfilled</MenuItem>
+              <MenuItem onClick={() => handleStatusFilter("fulfilled_status", "Unfulfilled")}>Unfulfilled</MenuItem>
+              <MenuItem onClick={() => handleStatusFilter("fulfilled_status", "Partially Fulfilled")}>Partially Fulfilled</MenuItem>
+            </>
+          )}
+          {currentColumn === "payment_status" && (
+            <>
+              <MenuItem onClick={() => handleStatusFilter("payment_status", "all")}>All</MenuItem>
+              <MenuItem onClick={() => handleStatusFilter("payment_status", "Completed")}>Completed</MenuItem>
+              <MenuItem onClick={() => handleStatusFilter("payment_status", "Pending")}>Pending</MenuItem>
+              <MenuItem onClick={() => handleStatusFilter("payment_status", "Paid")}>Paid</MenuItem>
+              <MenuItem onClick={() => handleStatusFilter("payment_status", "Failed")}>Failed</MenuItem>
+            </>
+          )}
+          {currentColumn === "is_reorder" && (
+            <>
+              <MenuItem onClick={() => handleStatusFilter("is_reorder", "all")}>All</MenuItem>
+              <MenuItem onClick={() => handleStatusFilter("is_reorder", "Yes")}>Yes</MenuItem>
+              <MenuItem onClick={() => handleStatusFilter("is_reorder", "No")}>No</MenuItem>
+            </>
+          )}
+        </Menu>
+      </Box>
+    </ThemeProvider>
   );
 };
 
