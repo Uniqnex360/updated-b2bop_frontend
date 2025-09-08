@@ -832,18 +832,20 @@ function ProductList() {
 
   const handleOpenFilter = () => setFilterOpen(true);
   const handleCloseFilter = () => setFilterOpen(false);
+  const isFirstRender = useRef(true);
 
-  useEffect(() => {
-    const applyFilters = () => {
-      fetchData(filters, selectedCategory, industry, selectedBrandIds);
-      setSelectedCategoryChildApply(CategoriesTag);
-      setSelectedCategoryParentApply(CategoriesparentTag);
-      setSelectedIndustryNameApply(IndustryTag);
-      setSelectedBrandApplyNames(selectedBrandNames);
-    };
+useEffect(() => {
+  const applyFilters = () => {
+    fetchData(filters, selectedCategory, industry, selectedBrandIds);
+    setSelectedCategoryChildApply(CategoriesTag);
+    setSelectedCategoryParentApply(CategoriesparentTag);
+    setSelectedIndustryNameApply(IndustryTag);
+    setSelectedBrandApplyNames(selectedBrandNames);
+  };
 
-    const filterTimeout = setTimeout(() => {
-      applyFilters();
+  const filterTimeout = setTimeout(() => {
+    applyFilters();
+    if (!isFirstRender.current) {
       if (
         (selectedCategory && selectedCategory !== "All Categories") ||
         industryIdFor ||
@@ -853,11 +855,12 @@ function ProductList() {
       ) {
         setOpenSnackbar(true);
       }
-    }, 500);
+    }
+    isFirstRender.current = false;
+  }, 500);
 
-    return () => clearTimeout(filterTimeout);
-  }, [selectedCategory, industry, selectedBrandIds, priceRange]);
-
+  return () => clearTimeout(filterTimeout);
+}, [selectedCategory, industry, selectedBrandIds, priceRange]);
 
   const totalPages = Math.ceil(filteredItems.length / rowsPerPage);
 
