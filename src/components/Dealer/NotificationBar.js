@@ -97,7 +97,7 @@ const NotificationBar = ({ cartCount, userData, toggleSidebar }) => {
       }}>
         <Typography 
           variant="h6" 
-          fontSize={20} 
+          fontSize={17} 
           fontWeight="bold" 
           sx={{ letterSpacing: '0.5px', whiteSpace: 'nowrap' }}
         >
