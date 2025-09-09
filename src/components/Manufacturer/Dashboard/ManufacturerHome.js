@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useCallback } from "react";
 import PropTypes from 'prop-types';
 import {
@@ -63,17 +64,10 @@ import {
 } from "@mui/icons-material";
 import './ManufacturerHome.css';
 
+// ChartJS registration and background plugin remain unchanged...
 ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    BarElement,
-    LineElement,
-    PointElement,
-    ArcElement,
-    Title,
-    Tooltip,
-    Legend,
-    Filler
+    CategoryScale, LinearScale, BarElement, LineElement, PointElement,
+    ArcElement, Title, Tooltip, Legend, Filler
 );
 
 const backgroundPlugin = {
@@ -88,144 +82,47 @@ const backgroundPlugin = {
     },
 };
 
+// Row component remains unchanged...
 function Row(props) {
     const { row, handleProductClick } = props;
     const [open, setOpen] = useState(false);
 
     return (
         <React.Fragment>
-            <TableRow
-                hover
-                sx={{
-                    '& > *': { borderBottom: 'unset' },
-                    '&:hover': { cursor: 'pointer', bgcolor: '#f8fafc' }
-                }}
-                onClick={() => handleProductClick(row.product_id)}
-            >
-                <TableCell>
-                    <IconButton
-                        aria-label="expand row"
-                        size="small"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            setOpen(!open);
-                        }}
-                    >
-                        {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-                    </IconButton>
-                </TableCell>
+            <TableRow hover sx={{ '& > *': { borderBottom: 'unset' }, '&:hover': { cursor: 'pointer', bgcolor: '#f8fafc' } }} onClick={() => handleProductClick(row.product_id)} >
+                <TableCell> <IconButton aria-label="expand row" size="small" onClick={(e) => { e.stopPropagation(); setOpen(!open); }} > {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />} </IconButton> </TableCell>
                 <TableCell component="th" scope="row">
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <Box
-                            sx={{
-                                width: 48,
-                                height: 48,
-                                borderRadius: 1,
-                                overflow: 'hidden',
-                                border: '1px solid #e2e8f0'
-                            }}
-                        >
-                            <img
-                                src={row.primary_image}
-                                alt={row.sku_number}
-                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                            />
-                        </Box>
-                        <Box>
-                            <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                                {row.brand_name}
-                            </Typography>
-                            <Typography variant="caption" color="textSecondary">
-                                {row.category_name}
-                            </Typography>
-                        </Box>
+                        <Box sx={{ width: 48, height: 48, borderRadius: 1, overflow: 'hidden', border: '1px solid #e2e8f0' }} > <img src={row.primary_image} alt={row.sku_number} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> </Box>
+                        <Box> <Typography variant="body2" sx={{ fontWeight: 500 }}> {row.brand_name} </Typography> <Typography variant="caption" color="textSecondary"> {row.category_name} </Typography> </Box>
                     </Box>
                 </TableCell>
                 <TableCell align="center">{row.sku_number}</TableCell>
                 <TableCell>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        {row.brand_logo?.startsWith("http") && (
-                            <Box
-                                sx={{
-                                    width: 32,
-                                    height: 32,
-                                    borderRadius: '50%',
-                                    overflow: 'hidden',
-                                    border: '1px solid #e2e8f0'
-                                }}
-                            >
-                                <img
-                                    src={row.brand_logo}
-                                    alt={row.brand_name}
-                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                />
-                            </Box>
-                        )}
+                        {row.brand_logo?.startsWith("http") && (<Box sx={{ width: 32, height: 32, borderRadius: '50%', overflow: 'hidden', border: '1px solid #e2e8f0' }} > <img src={row.brand_logo} alt={row.brand_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> </Box>)}
                         <Typography variant="body2">{row.brand_name}</Typography>
                     </Box>
                 </TableCell>
                 <TableCell>{row.category_name}</TableCell>
-                <TableCell align="center">
-                    {new Date(row.last_updated).toLocaleDateString()}
-                </TableCell>
-                <TableCell align="center" sx={{ fontWeight: 600 }}>
-                    {row.units_sold}
-                </TableCell>
-                <TableCell align="right" sx={{ fontWeight: 700 }}>
-                    ${row.total_sales.toFixed(2)}
-                </TableCell>
+                <TableCell align="center"> {new Date(row.last_updated).toLocaleDateString()} </TableCell>
+                <TableCell align="center" sx={{ fontWeight: 600 }}> {row.units_sold} </TableCell>
+                <TableCell align="right" sx={{ fontWeight: 700 }}> ${row.total_sales.toFixed(2)} </TableCell>
             </TableRow>
             <TableRow>
                 <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <Box sx={{ margin: 1 }}>
-                            <Typography variant="subtitle1" gutterBottom component="div">
-                                Product Details
-                            </Typography>
+                            <Typography variant="subtitle1" gutterBottom component="div"> Product Details </Typography>
                             <Table size="small" aria-label="product-details">
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell>Attribute</TableCell>
-                                        <TableCell>Value</TableCell>
-                                    </TableRow>
-                                </TableHead>
+                                <TableHead> <TableRow> <TableCell>Attribute</TableCell> <TableCell>Value</TableCell> </TableRow> </TableHead>
                                 <TableBody>
-                                    <TableRow>
-                                        <TableCell component="th" scope="row">
-                                            Product ID
-                                        </TableCell>
-                                        <TableCell>{row.product_id}</TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell component="th" scope="row">
-                                            SKU Number
-                                        </TableCell>
-                                        <TableCell>{row.sku_number}</TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell component="th" scope="row">
-                                            Brand
-                                        </TableCell>
-                                        <TableCell>{row.brand_name}</TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell component="th" scope="row">
-                                            Category
-                                        </TableCell>
-                                        <TableCell>{row.category_name}</TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell component="th" scope="row">
-                                            Units Sold
-                                        </TableCell>
-                                        <TableCell>{row.units_sold}</TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell component="th" scope="row">
-                                            Total Sales
-                                        </TableCell>
-                                        <TableCell>${row.total_sales.toFixed(2)}</TableCell>
-                                    </TableRow>
+                                    <TableRow> <TableCell component="th" scope="row"> Product ID </TableCell> <TableCell>{row.product_id}</TableCell> </TableRow>
+                                    <TableRow> <TableCell component="th" scope="row"> SKU Number </TableCell> <TableCell>{row.sku_number}</TableCell> </TableRow>
+                                    <TableRow> <TableCell component="th" scope="row"> Brand </TableCell> <TableCell>{row.brand_name}</TableCell> </TableRow>
+                                    <TableRow> <TableCell component="th" scope="row"> Category </TableCell> <TableCell>{row.category_name}</TableCell> </TableRow>
+                                    <TableRow> <TableCell component="th" scope="row"> Units Sold </TableCell> <TableCell>{row.units_sold}</TableCell> </TableRow>
+                                    <TableRow> <TableCell component="th" scope="row"> Total Sales </TableCell> <TableCell>${row.total_sales.toFixed(2)}</TableCell> </TableRow>
                                 </TableBody>
                             </Table>
                         </Box>
@@ -252,6 +149,7 @@ const ManufacturerHome = () => {
     const [selectedCategory, setSelectedCategory] = useState("");
     const [dashboardCategory, setDashboardCategory] = useState(null);
 
+    // State for selected filter values
     const [selectedIndustry, setSelectedIndustry] = useState('');
     const [selectedCategoryName, setSelectedCategoryName] = useState('');
     const [selectedBrand, setSelectedBrand] = useState('');
@@ -259,115 +157,91 @@ const ManufacturerHome = () => {
     const [fromDate, setFromDate] = useState(null);
     const [toDate, setToDate] = useState(null);
 
+    // State for filter dropdown options from API
+    const [industries, setIndustries] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [brands, setBrands] = useState([]);
+    const [buyers, setBuyers] = useState([]);
+    const [filtersLoading, setFiltersLoading] = useState(true);
+
     // Search states for dropdowns
     const [industrySearch, setIndustrySearch] = useState('');
     const [categorySearch, setCategorySearch] = useState('');
     const [brandSearch, setBrandSearch] = useState('');
     const [buyerSearch, setBuyerSearch] = useState('');
 
-    const staticData = [
-        { industry: "Electrical Supplies", category: "Solar Lanterns", brand: "Aervoe", buyer: "John" },
-        { industry: "Electrical Supplies", category: "Capacitors", brand: "Thorlabs", buyer: "Christopher Brown" },
-        { industry: "Heating and Cooling Supplies", category: "Solar Collectors", brand: "A.Y. McDonald", buyer: "Sophia Taylor" },
-        { industry: "Safety Supplies", category: "Capacitors", brand: "Michigan Pneumatic", buyer: "Isabella Harris" },
-        { industry: "Hardware Supplies", category: "Wires & Cables", brand: "Irwin", buyer: "William Anderson" },
-        { industry: "Cleaning Supplies", category: "Cable Splitters & Signal Amplifiers", brand: "Irwin", buyer: "William Anderson" },
-        { industry: "Automotive Supplies", category: "Bushings", brand: "Mohawkgroup", buyer: "Emily Davis" },
-        { industry: "Building Supplies", category: "Electrical Boxes & Enclosures", brand: "Nelson", buyer: "James Miller" },
-        { industry: "Home Improvement Supplies", category: "Filtration Components", brand: "Midland Industries", buyer: "Michael Johnson" },
-        { industry: "Industrial Supplies", category: "Ventilation Equipment", brand: "Integra", buyer: "Olivia Wilson" },
-        { industry: "Material Handling Supplies", category: "Apron", brand: "Stanley", buyer: "Ava Thompson" },
-        { industry: "Plumbing Supplies", category: "Chalk Reels & Chalk", brand: "Avdel", buyer: "Antislip Tapes" },
-        { industry: "Hardware Supplies", category: "Cleaners & Degreasers", brand: "Dodge", buyer: "Knee Pads" },
-        { industry: "Cleaning Supplies", category: "Cleaning Wipes & Towels", brand: "Masterfix", buyer: "Signs & Facility" },
-        { industry: "Automotive Supplies", category: "Floor Coverings", brand: "POP", buyer: "Adhesives" },
-        { industry: "Building Supplies", category: "Stair Treads and Risers", brand: "Spiralock", buyer: "Aluminum Studs" },
-        { industry: "Home Improvement Supplies", category: "Wall Base and Molding", brand: "Tucker", buyer: "Arc Studs" },
-        { industry: "Industrial Supplies", category: "Cooking Accessories", brand: "Bunting Bearings", buyer: "Bolts & Screws" },
-        { industry: "Material Handling Supplies", category: "Cooking Appliances", brand: "Nibco", buyer: "Cable Ties & Straps" },
-        { industry: "Plumbing Supplies", category: "Accessories", brand: "Harcofittings", buyer: "C-Clamps" },
-        { industry: "Electrical Supplies", category: "Bars", brand: "Avdel", buyer: "Clamps" },
-        { industry: "Heating and Cooling Supplies", category: "Connectors", brand: "Masterfix", "buyer": "Coupler" },
-        { industry: "Safety Supplies", category: "Controllers", brand: "POP", buyer: "Fastener Accessories" },
-        { industry: "Hardware Supplies", category: "Couplers & Splitters", brand: "Spiralock", buyer: "Nuts" },
-        { industry: "Cleaning Supplies", category: "Electric Actuators", brand: "Tucker", buyer: "Screw" },
-        { industry: "Automotive Supplies", category: "Mufflers & Breathers", brand: "Bunting Bearings", buyer: "Rivet Nuts" },
-        { industry: "Building Supplies", category: "Lifting, Pulling & Positioning", brand: "Nibco", buyer: "Cleaners & Degreasers" },
-        { industry: "Home Improvement Supplies", category: "Step Stools", brand: "Harcofittings", buyer: "Cleaning Wipes & Towels" },
-        { industry: "Industrial Supplies", category: "Adapters", brand: "Avdel", buyer: "Fittings" },
-        { industry: "Material Handling Supplies", category: "Barb", brand: "Masterfix", buyer: "Air Brake Hoses" },
-        { industry: "Plumbing Supplies", category: "Ball Valves", brand: "POP", buyer: "Pneumatic Tools" },
-        { industry: "Electrical Supplies", category: "Butterfly Valves", brand: "Spiralock", buyer: "Adhesives, Glues and Sundries" },
-        { industry: "Heating and Cooling Supplies", category: "Elbow", brand: "Tucker", buyer: "Floor Coverings" },
-        { industry: "Safety Supplies", category: "Gasket", brand: "Bunting Bearings", buyer: "Stair Treads and Risers" },
-        { industry: "Hardware Supplies", category: "Gasket", brand: "Nibco", buyer: "Wall Base and Molding" },
-    ];
-
-    // All dropdowns open by default, no dependency
-    const industries = [...new Set(staticData.map(item => item.industry))];
-    const categories = [...new Set(staticData.map(item => item.category))];
-    const brands = [...new Set(staticData.map(item => item.brand))];
-    // This is the updated list of buyer names
-    const buyers = [
-        "John",
-        "Christopher Brown",
-        "Sophia Taylor",
-        "Isabella Harris",
-        "William Anderson",
-        "Emily Davis",
-        "James Miller",
-        "Michael Johnson",
-        "Olivia Wilson",
-        "Ava Thompson",
-    ];
-
-    // Filter dropdown options by search
-    const filteredIndustries = industries.filter(ind => ind.toLowerCase().includes(industrySearch.toLowerCase()));
-    const filteredCategories = categories.filter(cat => cat.toLowerCase().includes(categorySearch.toLowerCase()));
-    const filteredBrands = brands.filter(br => br.toLowerCase().includes(brandSearch.toLowerCase()));
-    const filteredBuyers = buyers.filter(buy => buy.toLowerCase().includes(buyerSearch.toLowerCase()));
-
-    const handleIndustryChange = (event) => {
-        setSelectedIndustry(event.target.value);
-    };
-
-    const handleCategoryChange = (event) => {
-        setSelectedCategoryName(event.target.value);
-    };
-
-    const handleBrandChange = (event) => {
-        setSelectedBrand(event.target.value);
-    };
-
-    const handleBuyerChange = (event) => {
-        setSelectedBuyer(event.target.value);
-    };
+    // Filter dropdown options based on search input
+    const filteredIndustries = industries.filter(ind => ind.name.toLowerCase().includes(industrySearch.toLowerCase()));
+    const filteredCategories = categories.filter(cat => cat.name.toLowerCase().includes(categorySearch.toLowerCase()));
+    const filteredBrands = brands.filter(br => br.name.toLowerCase().includes(brandSearch.toLowerCase()));
+    const filteredBuyers = buyers.filter(buy => buy.name.toLowerCase().includes(buyerSearch.toLowerCase()));
+    
+    // Handlers for filter changes remain the same
+    const handleIndustryChange = (event) => { setSelectedIndustry(event.target.value); };
+    const handleCategoryChange = (event) => { setSelectedCategoryName(event.target.value); };
+    const handleBrandChange = (event) => { setSelectedBrand(event.target.value); };
+    const handleBuyerChange = (event) => { setSelectedBuyer(event.target.value); };
 
     const user = JSON.parse(localStorage.getItem("user"));
 
-    const handleSeeMore = () => {
-        setShowAll(!showAll);
-    };
+    // --- REFACTORED: useEffect to fetch all filter data using the new single endpoint ---
+    useEffect(() => {
+        const fetchFilterData = async () => {
+            const manufactureUnitId = user?.manufacture_unit_id;
+            if (!manufactureUnitId) {
+                setError("User data not found. Cannot load filters.");
+                setFiltersLoading(false);
+                return;
+            }
+
+            try {
+                setFiltersLoading(true);
+                // Use a single POST request to the new consolidated endpoint
+                const response = await axios.post(
+                    `${process.env.REACT_APP_IP}getIndustryCategoryBrand/`,
+                    { manufacture_unit_id: manufactureUnitId } // Pass ID in the request body
+                );
+
+                // Check for a successful response from the backend
+                if (response.data && response.data.status) {
+                    const data = response.data;
+                    // Populate state from the single response object
+                    setIndustries(data.industries || []);
+                    setCategories(data.end_level_categories || []); // Mapped from 'end_level_categories'
+                    setBrands(data.brands || []);
+                    setBuyers(data.dealers || []); // Mapped from 'dealers'
+                } else {
+                    // Handle API-level errors (e.g., status: false)
+                    throw new Error(response.data.message || "Failed to fetch filter data");
+                }
+
+            } catch (err) {
+                console.error("Error fetching filter data:", err);
+                setError("Failed to load filter options. Please try again later.");
+            } finally {
+                setFiltersLoading(false);
+            }
+        };
+
+        if (user?.manufacture_unit_id) {
+            fetchFilterData();
+        }
+    }, [user?.manufacture_unit_id]); // Dependency on user ID
+
+    // ... (rest of the component logic, including other fetchData functions, handlers, and chart data, remains unchanged) ...
+
+    const handleSeeMore = () => { setShowAll(!showAll); };
 
     const fetchData = useCallback(async () => {
         try {
             const userData = localStorage.getItem("user");
             const parsedUserData = userData ? JSON.parse(userData) : null;
             const manufactureUnitId = parsedUserData?.manufacture_unit_id;
-
-            if (!parsedUserData || !manufactureUnitId) {
-                throw new Error("Invalid or missing manufacture unit ID.");
-            }
-
+            if (!parsedUserData || !manufactureUnitId) { throw new Error("Invalid or missing manufacture unit ID."); }
             const [dashboardResponse, dealerOrderResponse] = await Promise.all([
-                axios.get(
-                    `${process.env.REACT_APP_IP}obtainDashboardDetailsForManufactureAdmin/?manufacture_unit_id=${manufactureUnitId}`
-                ),
-                axios.get(
-                    `${process.env.REACT_APP_IP}manufactureDashboardEachDealerOrderValue/?manufacture_unit_id=${manufactureUnitId}`
-                ),
+                axios.get(`${process.env.REACT_APP_IP}obtainDashboardDetailsForManufactureAdmin/?manufacture_unit_id=${manufactureUnitId}`),
+                axios.get(`${process.env.REACT_APP_IP}manufactureDashboardEachDealerOrderValue/?manufacture_unit_id=${manufactureUnitId}`),
             ]);
-
             setDashboardData(dashboardResponse.data?.data || {});
             setDealerOrderData(dealerOrderResponse.data?.data || {});
         } catch (err) {
@@ -381,9 +255,7 @@ const ManufacturerHome = () => {
     const fetchTopSellingProducts = useCallback(async (categoryId = "") => {
         try {
             setLoading(true);
-            const response = await axios.get(
-                `${process.env.REACT_APP_IP}topSellingProductsForDashBoard/?manufacture_unit_id=${user.manufacture_unit_id}&product_category_id=${categoryId}`
-            );
+            const response = await axios.get(`${process.env.REACT_APP_IP}topSellingProductsForDashBoard/?manufacture_unit_id=${user.manufacture_unit_id}&product_category_id=${categoryId}`);
             setTopSellingProducts(response.data.data);
         } catch (error) {
             console.error("Error fetching top selling products:", error);
@@ -391,12 +263,10 @@ const ManufacturerHome = () => {
             setLoading(false);
         }
     }, [user.manufacture_unit_id]);
-
+    
     const fetchDashboardCategory = useCallback(async () => {
         try {
-            const response = await axios.get(
-                `${process.env.REACT_APP_IP}obtainEndlevelcategoryList/?manufacture_unit_id=${user.manufacture_unit_id}`
-            );
+            const response = await axios.get(`${process.env.REACT_APP_IP}obtainEndlevelcategoryList/?manufacture_unit_id=${user.manufacture_unit_id}`);
             setDashboardCategory(response.data.data || []);
         } catch (error) {
             console.error("Error fetching category data:", error);
@@ -405,710 +275,100 @@ const ManufacturerHome = () => {
 
     useEffect(() => {
         fetchData();
-    }, [fetchData]);
-
-    useEffect(() => {
         fetchTopSellingProducts();
-    }, [fetchTopSellingProducts]);
-
-    useEffect(() => {
         fetchDashboardCategory();
-    }, [fetchDashboardCategory]);
+    }, [fetchData, fetchTopSellingProducts, fetchDashboardCategory]);
 
-    const expandedDealersData = [
-        { id: 1, name: 'Christopher Brown', order_value: 125000.75, imageUrl: 'https://randomuser.me/api/portraits/men/32.jpg' },
-        { id: 2, name: 'John Doe', order_value: 98000.50, imageUrl: 'https://randomuser.me/api/portraits/women/44.jpg' },
-        { id: 3, name: 'Sophia Taylor', order_value: 76000.25, imageUrl: 'https://randomuser.me/api/portraits/men/67.jpg' },
-        { id: 4, name: 'Isabella Harris', order_value: 55000.00, imageUrl: 'https://randomuser.me/api/portraits/women/63.jpg' },
-        { id: 5, name: 'William Anderson', order_value: 42000.10, imageUrl: 'https://randomuser.me/api/portraits/men/75.jpg' },
-        { id: 6, name: 'Emily Davis', order_value: 38000.45, imageUrl: 'https://randomuser.me/api/portraits/women/21.jpg' },
-        { id: 7, name: 'James Miller', order_value: 34500.80, imageUrl: 'https://randomuser.me/api/portraits/men/19.jpg' },
-        { id: 8, name: 'Michael Johnson', order_value: 31000.30, imageUrl: 'https://randomuser.me/api/portraits/men/88.jpg' },
-        { id: 9, name: 'Olivia Wilson', order_value: 29500.90, imageUrl: 'https://randomuser.me/api/portraits/women/55.jpg' },
-        { id: 10, name: 'Ava Thompson', order_value: 27000.60, imageUrl: 'https://randomuser.me/api/portraits/women/77.jpg' },
-    ];
+    const expandedDealersData = [ { id: 1, name: 'Christopher Brown', order_value: 125000.75, imageUrl: 'https://randomuser.me/api/portraits/men/32.jpg' }, { id: 2, name: 'John Doe', order_value: 98000.50, imageUrl: 'https://randomuser.me/api/portraits/women/44.jpg' }, { id: 3, name: 'Sophia Taylor', order_value: 76000.25, imageUrl: 'https://randomuser.me/api/portraits/men/67.jpg' }, { id: 4, name: 'Isabella Harris', order_value: 55000.00, imageUrl: 'https://randomuser.me/api/portraits/women/63.jpg' }, { id: 5, name: 'William Anderson', order_value: 42000.10, imageUrl: 'https://randomuser.me/api/portraits/men/75.jpg' }, { id: 6, name: 'Emily Davis', order_value: 38000.45, imageUrl: 'https://randomuser.me/api/portraits/women/21.jpg' }, { id: 7, name: 'James Miller', order_value: 34500.80, imageUrl: 'https://randomuser.me/api/portraits/men/19.jpg' }, { id: 8, name: 'Michael Johnson', order_value: 31000.30, imageUrl: 'https://randomuser.me/api/portraits/men/88.jpg' }, { id: 9, name: 'Olivia Wilson', order_value: 29500.90, imageUrl: 'https://randomuser.me/api/portraits/women/55.jpg' }, { id: 10, name: 'Ava Thompson', order_value: 27000.60, imageUrl: 'https://randomuser.me/api/portraits/women/77.jpg' }, ];
     const dealers = expandedDealersData;
     const displayedDealers = showAll ? dealers : dealers.slice(0, 5);
-
-    const handleTotalSpendingsClick = () => {
-        navigate("/manufacturer/orders", {
-            state: { filter: { payment_status: "Completed" } },
-        });
-    };
-
-    const handlePendingClick = () => {
-        navigate("/manufacturer/orders", {
-            state: { filter: { payment_status: "Pending" } },
-        });
-    };
-
-    const handleReorderClick = () => {
-        navigate("/manufacturer/orders", {
-            state: { filter: { is_reorder: "yes" } },
-        });
-    };
-
-    const handleProductClick = (productId) => {
-        if (!productId) {
-            console.error("Invalid productId");
-            return;
-        }
-        navigate(`/manufacturer/products/details/${productId}`);
-    };
-
-    const handleDashboardCategoryChange = (event) => {
-        const categoryId = event.target.value;
-        setSelectedCategory(categoryId);
-        fetchTopSellingProducts(categoryId);
-    };
-
-    const handleActiveBuyerClick = () => {
-        navigate(`/manufacturer/dealerList`);
-    };
-
-    const handleRowClick = (username) => {
-        navigate(`/manufacturer/dealer-details/${username}`);
-    };
-
-    // --- BAR CHART DATA OBJECT ---
-    const barChartLabels = ['Air Brake Hoses', 'Adhesives', 'Solar Lanterns', 'Bushings', 'Capacitors'];
-    const barChartDataValues = [250, 190, 175, 150, 140];
-    const barChartData = {
-        labels: barChartLabels,
-        datasets: [
-            {
-                label: "Units Sold",
-                data: barChartDataValues,
-                backgroundColor: [
-                    'rgba(59, 130, 246, 0.8)',
-                    'rgba(147, 197, 253, 0.8)',
-                    'rgba(191, 219, 254, 0.8)',
-                    'rgba(219, 234, 254, 0.8)',
-                    'rgba(239, 246, 255, 0.8)',
-                ],
-                borderColor: [
-                    'rgba(29, 78, 216, 1)',
-                    'rgba(59, 130, 246, 1)',
-                    'rgba(147, 197, 253, 1)',
-                    'rgba(191, 219, 254, 1)',
-                    'rgba(219, 234, 254, 1)',
-                ],
-                borderWidth: 1,
-                borderRadius: 8,
-                hoverBackgroundColor: [
-                    'rgba(29, 78, 216, 0.9)',
-                    'rgba(59, 130, 246, 0.9)',
-                    'rgba(147, 197, 253, 0.9)',
-                    'rgba(191, 219, 254, 0.9)',
-                    'rgba(219, 234, 254, 0.9)',
-                ],
-            },
-        ],
-    };
-
-    const barChartOptions = {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'top',
-                labels: {
-                    color: '#1e293b',
-                    font: { size: 14, weight: '600' },
-                    padding: 20,
-                },
-            },
-            title: {
-                display: true,
-                text: 'Top 5 Products by Units Sold',
-                color: '#1e293b',
-                font: { size: 18, weight: '700' },
-                padding: { top: 10, bottom: 20 },
-            },
-            tooltip: {
-                backgroundColor: 'rgba(59, 130, 246, 0.95)',
-                titleFont: { size: 14, weight: '600' },
-                bodyFont: { size: 12 },
-                padding: 12,
-                cornerRadius: 8,
-                titleColor: '#ffffff',
-                bodyColor: '#f8fafc',
-                callbacks: {
-                    label: (context) => {
-                        return `${context.label}: ${context.raw} units`;
-                    },
-                },
-            },
-        },
-        scales: {
-            x: {
-                grid: { display: false },
-                ticks: {
-                    color: '#475569',
-                    font: { size: 12, weight: '500' },
-                    maxRotation: 45,
-                    minRotation: 0,
-                },
-                offset: true,
-            },
-            y: {
-                grid: { color: 'rgba(203, 213, 225, 0.5)', drawBorder: false },
-                ticks: {
-                    color: '#475569',
-                    font: { size: 12, weight: '500' },
-                    stepSize: 1,
-                },
-                beginAtZero: true,
-            },
-        },
-        layout: { padding: 20 },
-        maintainAspectRatio: false,
-        animation: {
-            duration: 1000,
-            easing: 'easeOutQuart',
-        },
-    };
-
-    // --- LINE CHART DATA OBJECT ---
-    const trendsLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const revenueData = [15000, 18000, 17000, 22000, 24000, 26000, 25000, 27000, 29000, 31000, 34000, 38000];
-    
-    const lineTrendChartData = {
-        labels: trendsLabels,
-        datasets: [
-            {
-                label: "Revenue",
-                data: revenueData,
-                borderColor: "#3b82f6",
-                backgroundColor: "rgba(59, 130, 246, 0.1)",
-                tension: 0.35,
-                borderWidth: 2,
-                pointRadius: 3,
-                fill: true,
-            },
-        ]
-    };
-
-    const lineTrendChartOptions = {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'top',
-                labels: {
-                    color: '#1e293b',
-                    font: { size: 14, weight: '600' },
-                    padding: 20,
-                },
-            },
-            title: {
-                display: true,
-                text: 'Key Business Trends over Time',
-                color: '#1e293b',
-                font: { size: 18, weight: '700' },
-                padding: { top: 10, bottom: 20 },
-            },
-            tooltip: {
-                mode: 'index',
-                intersect: false,
-                backgroundColor: "#f1f5fd",
-                titleColor: "#1e293b",
-                bodyColor: "#3b82f6",
-                borderColor: "#bae6fd",
-                borderWidth: 2,
-                cornerRadius: 12,
-                padding: 14,
-                callbacks: {
-                    title: (context) => `Month: ${context[0].label}`,
-                    label: (context) => {
-                        const label = context.dataset.label || '';
-                        const value = context.raw;
-                        if (label === 'Orders') {
-                            return `${label}: ${value} units`;
-                        } else {
-                            return `${label}: $${value.toLocaleString()}`;
-                        }
-                    }
-                }
-            },
-        },
-        scales: {
-            x: {
-                title: {
-                    display: true,
-                    text: 'Time Period (Months)',
-                    color: '#475569',
-                    font: { size: 14, weight: '600' },
-                    padding: { top: 10 },
-                },
-                grid: { display: false, drawBorder: false },
-                ticks: {
-                    color: "#64748b",
-                    font: { size: 13, weight: "500" },
-                },
-            },
-            y: {
-                title: {
-                    display: true,
-                    text: 'Value',
-                    color: '#475569',
-                    font: { size: 14, weight: '600' },
-                    padding: { bottom: 10 },
-                },
-                grid: { color: "rgba(203,213,225,0.5)", drawBorder: false },
-                ticks: {
-                    color: "#64748b",
-                    font: { size: 13, weight: "500" },
-                    callback: (value) => {
-                        return value >= 1000 ? `$${(value / 1000).toFixed(1)}K` : `$${value}`;
-                    },
-                },
-                beginAtZero: true,
-            }
-        },
-        layout: { padding: { top: 20, left: 10, right: 10, bottom: 10 } },
-        maintainAspectRatio: false,
-        animation: {
-            duration: 1200,
-            easing: "easeOutQuart"
-        }
-    };
-
-    // --- PIE CHART DATA OBJECT (NEW) ---
-    const pieChartData = {
-        labels: ['Electrical Supplies', 'Hardware Supplies', 'Plumbing Supplies', 'Cleaning Supplies', 'Safety Supplies'],
-        datasets: [
-            {
-                label: 'Sales by Category',
-                data: [35, 25, 15, 10, 15],
-                backgroundColor: [
-                    'rgba(59, 130, 246, 0.8)',
-                    'rgba(16, 185, 129, 0.8)',
-                    'rgba(245, 158, 11, 0.8)',
-                    'rgba(239, 68, 68, 0.8)',
-                    'rgba(139, 92, 246, 0.8)',
-                ],
-                borderColor: '#ffffff',
-                borderWidth: 2,
-            },
-        ],
-    };
-
-    const pieChartOptions = {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'right',
-                labels: {
-                    color: '#1e293b',
-                    font: { size: 14, weight: '600' },
-                    padding: 20,
-                },
-            },
-            title: {
-                display: true,
-                text: 'Sales Distribution by Category',
-                color: '#1e293b',
-                font: { size: 18, weight: '700' },
-                padding: { top: 10, bottom: 20 },
-            },
-            tooltip: {
-                callbacks: {
-                    label: function (context) {
-                        const label = context.label || '';
-                        const value = context.raw || 0;
-                        return `${label}: ${value}%`;
-                    },
-                },
-            },
-        },
-        maintainAspectRatio: false,
-        animation: {
-            animateScale: true,
-            animateRotate: true,
-        },
-    };
-
-    const cardData = [
-        {
-            title: 'Total Revenue',
-            value: '$2,847,329',
-            change: '+12.5%',
-            icon: <MonetizationOnIcon />,
-            color: '#3b82f6',
-            bgColor: '#dbeafe',
-        },
-        {
-            title: 'Total Orders',
-            value: '1,247',
-            change: '+8.2%',
-            icon: <ShoppingCartIcon />,
-            color: '#22c55e',
-            bgColor: '#dcfce7',
-        },
-        {
-            title: 'Active Buyers',
-            value: '847',
-            change: '+15.3%',
-            icon: <PeopleIcon />,
-            color: '#8b5cf6',
-            bgColor: '#ede9fe',
-        },
-        {
-            title: 'Average Order Value',
-            value: '$2,284',
-            change: '+5.7%',
-            icon: <ShoppingCartCheckoutIcon />,
-            color: '#818cf8',
-            bgColor: '#e0e7ff',
-        },
-    ];
-
-    const secondRowCardData = [
-        {
-            title: 'Number of SKU’s',
-            value: '2,500',
-            change: '+10.1%',
-            icon: <LayersIcon />,
-            color: '#f59e0b',
-            bgColor: '#fef3c7',
-        },
-        {
-            title: 'Number. of Industries',
-            value: '15',
-            change: '+2.0%',
-            icon: <DomainIcon />,
-            color: '#ef4444',
-            bgColor: '#fee2e2',
-        },
-        {
-            title: 'Number. of Brands',
-            value: '75',
-            change: '+7.8%',
-            icon: <LocalOfferIcon />,
-            color: '#10b981',
-            bgColor: '#dcfce7',
-        },
-        {
-            title: 'Number. of End-Level Categories',
-            value: '250',
-            change: '+4.3%',
-            icon: <CategoryIcon />,
-            color: '#6366f1',
-            bgColor: '#eef2ff',
-        },
-    ];
-
-    const salesAnalyticsData = [
-        {
-            title: 'Daily revenue',
-            value: '$9,250',
-            change: '+2.5%',
-            icon: <CalendarTodayIcon />,
-            color: '#0ea5e9',
-            bgColor: '#e0f7fa',
-        },
-        {
-            title: 'Weekly revenue',
-            value: '$65,400',
-            change: '+8.1%',
-            icon: <ViewWeekIcon />,
-            color: '#f59e0b',
-            bgColor: '#fff7ed',
-        },
-        {
-            title: 'Monthly revenue',
-            value: '$245,000',
-            change: '+12.3%',
-            icon: <EventNoteIcon />,
-            color: '#10b981',
-            bgColor: '#dcfce7',
-        },
-        {
-            title: 'Annual revenue',
-            value: '$2,940,000',
-            change: '+15.8%',
-            icon: <EventIcon />,
-            color: '#8b5cf6',
-            bgColor: '#ede9fe',
-        },
-    ];
+    const handleTotalSpendingsClick = () => { navigate("/manufacturer/orders", { state: { filter: { payment_status: "Completed" } }, }); };
+    const handlePendingClick = () => { navigate("/manufacturer/orders", { state: { filter: { payment_status: "Pending" } }, }); };
+    const handleReorderClick = () => { navigate("/manufacturer/orders", { state: { filter: { is_reorder: "yes" } }, }); };
+    const handleProductClick = (productId) => { if (!productId) { console.error("Invalid productId"); return; } navigate(`/manufacturer/products/details/${productId}`); };
+    const handleDashboardCategoryChange = (event) => { const categoryId = event.target.value; setSelectedCategory(categoryId); fetchTopSellingProducts(categoryId); };
+    const handleActiveBuyerClick = () => { navigate(`/manufacturer/dealerList`); };
+    const handleRowClick = (username) => { navigate(`/manufacturer/dealer-details/${username}`); };
+    const barChartData = { labels: ['Air Brake Hoses', 'Adhesives', 'Solar Lanterns', 'Bushings', 'Capacitors'], datasets: [{ label: "Units Sold", data: [250, 190, 175, 150, 140], backgroundColor: ['rgba(59, 130, 246, 0.8)','rgba(147, 197, 253, 0.8)','rgba(191, 219, 254, 0.8)','rgba(219, 234, 254, 0.8)','rgba(239, 246, 255, 0.8)'], borderColor: ['rgba(29, 78, 216, 1)','rgba(59, 130, 246, 1)','rgba(147, 197, 253, 1)','rgba(191, 219, 254, 1)','rgba(219, 234, 254, 1)'], borderWidth: 1, borderRadius: 8, hoverBackgroundColor: ['rgba(29, 78, 216, 0.9)','rgba(59, 130, 246, 0.9)','rgba(147, 197, 253, 0.9)','rgba(191, 219, 254, 0.9)','rgba(219, 234, 254, 0.9)']}]};
+    const barChartOptions = { responsive: true, plugins: { legend: { position: 'top', labels: { color: '#1e293b', font: { size: 14, weight: '600' }, padding: 20 } }, title: { display: true, text: 'Top 5 Products by Units Sold', color: '#1e293b', font: { size: 18, weight: '700' }, padding: { top: 10, bottom: 20 } }, tooltip: { backgroundColor: 'rgba(59, 130, 246, 0.95)', titleFont: { size: 14, weight: '600' }, bodyFont: { size: 12 }, padding: 12, cornerRadius: 8, titleColor: '#ffffff', bodyColor: '#f8fafc', callbacks: { label: (context) => `${context.label}: ${context.raw} units` } } }, scales: { x: { grid: { display: false }, ticks: { color: '#475569', font: { size: 12, weight: '500' }, maxRotation: 45, minRotation: 0 }, offset: true }, y: { grid: { color: 'rgba(203, 213, 225, 0.5)', drawBorder: false }, ticks: { color: '#475569', font: { size: 12, weight: '500' }, stepSize: 1 }, beginAtZero: true } }, layout: { padding: 20 }, maintainAspectRatio: false, animation: { duration: 1000, easing: 'easeOutQuart' }};
+    const lineTrendChartData = { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], datasets: [{ label: "Revenue", data: [15000, 18000, 17000, 22000, 24000, 26000, 25000, 27000, 29000, 31000, 34000, 38000], borderColor: "#3b82f6", backgroundColor: "rgba(59, 130, 246, 0.1)", tension: 0.35, borderWidth: 2, pointRadius: 3, fill: true }]};
+    const lineTrendChartOptions = { responsive: true, plugins: { legend: { position: 'top', labels: { color: '#1e293b', font: { size: 14, weight: '600' }, padding: 20 } }, title: { display: true, text: 'Key Business Trends over Time', color: '#1e293b', font: { size: 18, weight: '700' }, padding: { top: 10, bottom: 20 } }, tooltip: { mode: 'index', intersect: false, backgroundColor: "#f1f5fd", titleColor: "#1e293b", bodyColor: "#3b82f6", borderColor: "#bae6fd", borderWidth: 2, cornerRadius: 12, padding: 14, callbacks: { title: (context) => `Month: ${context[0].label}`, label: (context) => { const label = context.dataset.label || ''; const value = context.raw; return label === 'Orders' ? `${label}: ${value} units` : `${label}: $${value.toLocaleString()}`; } } } }, scales: { x: { title: { display: true, text: 'Time Period (Months)', color: '#475569', font: { size: 14, weight: '600' }, padding: { top: 10 } }, grid: { display: false, drawBorder: false }, ticks: { color: "#64748b", font: { size: 13, weight: "500" } } }, y: { title: { display: true, text: 'Value', color: '#475569', font: { size: 14, weight: '600' }, padding: { bottom: 10 } }, grid: { color: "rgba(203,213,225,0.5)", drawBorder: false }, ticks: { color: "#64748b", font: { size: 13, weight: "500" }, callback: (value) => value >= 1000 ? `$${(value / 1000).toFixed(1)}K` : `$${value}` }, beginAtZero: true } }, layout: { padding: { top: 20, left: 10, right: 10, bottom: 10 } }, maintainAspectRatio: false, animation: { duration: 1200, easing: "easeOutQuart" }};
+    const pieChartData = { labels: ['Electrical Supplies', 'Hardware Supplies', 'Plumbing Supplies', 'Cleaning Supplies', 'Safety Supplies'], datasets: [{ label: 'Sales by Category', data: [35, 25, 15, 10, 15], backgroundColor: ['rgba(59, 130, 246, 0.8)','rgba(16, 185, 129, 0.8)','rgba(245, 158, 11, 0.8)','rgba(239, 68, 68, 0.8)','rgba(139, 92, 246, 0.8)'], borderColor: '#ffffff', borderWidth: 2 }]};
+    const pieChartOptions = { responsive: true, plugins: { legend: { position: 'right', labels: { color: '#1e293b', font: { size: 14, weight: '600' }, padding: 20 } }, title: { display: true, text: 'Sales Distribution by Category', color: '#1e293b', font: { size: 18, weight: '700' }, padding: { top: 10, bottom: 20 } }, tooltip: { callbacks: { label: function (context) { const label = context.label || ''; const value = context.raw || 0; return `${label}: ${value}%`; } } } }, maintainAspectRatio: false, animation: { animateScale: true, animateRotate: true }};
+    const cardData = [ { title: 'Total Revenue', value: '$2,847,329', change: '+12.5%', icon: <MonetizationOnIcon />, color: '#3b82f6', bgColor: '#dbeafe', }, { title: 'Total Orders', value: '1,247', change: '+8.2%', icon: <ShoppingCartIcon />, color: '#22c55e', bgColor: '#dcfce7', }, { title: 'Active Buyers', value: '847', change: '+15.3%', icon: <PeopleIcon />, color: '#8b5cf6', bgColor: '#ede9fe', }, { title: 'Average Order Value', value: '$2,284', change: '+5.7%', icon: <ShoppingCartCheckoutIcon />, color: '#818cf8', bgColor: '#e0e7ff', }, ];
+    const secondRowCardData = [ { title: 'Number of SKU’s', value: '2,500', change: '+10.1%', icon: <LayersIcon />, color: '#f59e0b', bgColor: '#fef3c7', }, { title: 'Number. of Industries', value: '15', change: '+2.0%', icon: <DomainIcon />, color: '#ef4444', bgColor: '#fee2e2', }, { title: 'Number. of Brands', value: '75', change: '+7.8%', icon: <LocalOfferIcon />, color: '#10b981', bgColor: '#dcfce7', }, { title: 'Number. of End-Level Categories', value: '250', change: '+4.3%', icon: <CategoryIcon />, color: '#6366f1', bgColor: '#eef2ff', }, ];
+    const salesAnalyticsData = [ { title: 'Daily revenue', value: '$9,250', change: '+2.5%', icon: <CalendarTodayIcon />, color: '#0ea5e9', bgColor: '#e0f7fa', }, { title: 'Weekly revenue', value: '$65,400', change: '+8.1%', icon: <ViewWeekIcon />, color: '#f59e0b', bgColor: '#fff7ed', }, { title: 'Monthly revenue', value: '$245,000', change: '+12.3%', icon: <EventNoteIcon />, color: '#10b981', bgColor: '#dcfce7', }, { title: 'Annual revenue', value: '$2,940,000', change: '+15.8%', icon: <EventIcon />, color: '#8b5cf6', bgColor: '#ede9fe', }, ];
 
     return (
         <Box sx={{ bgcolor: '#f5f7fa', minHeight: '100vh', p: { xs: 2, md: 4 } }}>
-            {/* Sticky filter row */}
-<Box
-    sx={{
-        bgcolor: '#ffffff',
-        borderRadius: '12px',
-        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
-        p: 2,
-        mb: 4,
-        display: 'flex',
-        flexDirection: { xs: 'column', md: 'row' },
-        gap: 2,
-        alignItems: 'center',
-        position: 'sticky',
-        top: 72,
-        zIndex: 1100,
-        width: '100%',
-        backgroundClip: 'padding-box',
-    }}
->
-    {/* Fixed width for all filter dropdowns */}
-    <FormControl size="small" sx={{ width: 220, minWidth: 220 }}>
-        <InputLabel>Industry</InputLabel>
-        <Select
-            value={selectedIndustry}
-            onChange={handleIndustryChange}
-            label="Industry"
-            sx={{
-                borderRadius: '8px',
-                '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e2e8f0' },
-                width: 220,
-                minWidth: 220,
-            }}
-            MenuProps={{
-                PaperProps: {
-                    style: { maxHeight: 320, width: 220, minWidth: 220 }
-                }
-            }}
-            renderValue={(selected) => selected || "All Industries"}
-        >
-            <Box sx={{ px: 2, py: 1 }}>
-                <TextField
-                    size="small"
-                    placeholder="Search Industry"
-                    value={industrySearch}
-                    onChange={e => setIndustrySearch(e.target.value)}
-                    fullWidth
-                    variant="outlined"
-                    InputProps={{
-                        sx: {
-                            bgcolor: '#fff',
-                            color: '#212121',
-                            fontWeight: 500,
-                            borderRadius: 1,
-                            width: 180,
-                            minWidth: 180,
-                            '& input': {
-                                bgcolor: '#fff',
-                                color: '#212121',
-                            }
-                        }
-                    }}
-                />
-            </Box>
-            <MenuItem value="">All Industries</MenuItem>
-            {filteredIndustries.map((industry) => (
-                <MenuItem key={industry} value={industry}>{industry}</MenuItem>
-            ))}
-        </Select>
-    </FormControl>
+            <Box sx={{ bgcolor: '#ffffff', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)', p: 2, mb: 4, display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 2, alignItems: 'center', position: 'sticky', top: 72, zIndex: 1100, width: '100%', backgroundClip: 'padding-box' }} >
+                {/* Industry Dropdown */}
+                <FormControl size="small" sx={{ width: 220, minWidth: 220 }} disabled={filtersLoading}>
+                    <InputLabel>Industry</InputLabel>
+                    <Select value={selectedIndustry} onChange={handleIndustryChange} label="Industry" sx={{ borderRadius: '8px', '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e2e8f0' } }} MenuProps={{ PaperProps: { style: { maxHeight: 320, width: 220 } } }} renderValue={(selected) => selected || "All Industries"} >
+                        <Box sx={{ px: 2, py: 1 }}> <TextField size="small" placeholder="Search Industry" value={industrySearch} onChange={e => setIndustrySearch(e.target.value)} fullWidth variant="outlined" onClick={(e) => e.stopPropagation()} /> </Box>
+                        {filtersLoading ? (<MenuItem disabled>Loading...</MenuItem>) : (
+                           [ <MenuItem key="all" value="">All Industries</MenuItem>,
+                            ...filteredIndustries.map((industry) => (
+                                <MenuItem key={industry.id} value={industry.name}>{industry.name}</MenuItem>
+                            ))]
+                        )}
+                    </Select>
+                </FormControl>
 
-    <FormControl size="small" sx={{ width: 220, minWidth: 220 }}>
-        <InputLabel>End level category</InputLabel>
-        <Select
-            value={selectedCategoryName}
-            onChange={handleCategoryChange}
-            label="End level category"
-            sx={{
-                borderRadius: '8px',
-                '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e2e8f0' },
-                width: 220,
-                minWidth: 220,
-            }}
-            MenuProps={{
-                PaperProps: {
-                    style: { maxHeight: 320, width: 220, minWidth: 220 }
-                }
-            }}
-            renderValue={(selected) => selected || "All Categories"}
-        >
-            <Box sx={{ px: 2, py: 1 }}>
-                <TextField
-                    size="small"
-                    placeholder="Search Category"
-                    value={categorySearch}
-                    onChange={e => setCategorySearch(e.target.value)}
-                    fullWidth
-                    variant="outlined"
-                    InputProps={{
-                        sx: {
-                            bgcolor: '#fff',
-                            color: '#212121',
-                            fontWeight: 500,
-                            borderRadius: 1,
-                            width: 180,
-                            minWidth: 180,
-                            '& input': {
-                                bgcolor: '#fff',
-                                color: '#212121',
-                            }
-                        }
-                    }}
-                />
-            </Box>
-            <MenuItem value="">All Categories</MenuItem>
-            {filteredCategories.map((category) => (
-                <MenuItem key={category} value={category}>{category}</MenuItem>
-            ))}
-        </Select>
-    </FormControl>
+                {/* Category Dropdown */}
+                <FormControl size="small" sx={{ width: 220, minWidth: 220 }} disabled={filtersLoading}>
+                    <InputLabel>End level category</InputLabel>
+                    <Select value={selectedCategoryName} onChange={handleCategoryChange} label="End level category" sx={{ borderRadius: '8px', '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e2e8f0' } }} MenuProps={{ PaperProps: { style: { maxHeight: 320, width: 220 } } }} renderValue={(selected) => selected || "All Categories"} >
+                        <Box sx={{ px: 2, py: 1 }}> <TextField size="small" placeholder="Search Category" value={categorySearch} onChange={e => setCategorySearch(e.target.value)} fullWidth variant="outlined" onClick={(e) => e.stopPropagation()} /> </Box>
+                        {filtersLoading ? (<MenuItem disabled>Loading...</MenuItem>) : (
+                           [ <MenuItem key="all" value="">All Categories</MenuItem>,
+                            ...filteredCategories.map((category) => (
+                                <MenuItem key={category.id} value={category.name}>{category.name}</MenuItem>
+                            ))]
+                        )}
+                    </Select>
+                </FormControl>
 
-    <FormControl size="small" sx={{ width: 220, minWidth: 220 }}>
-        <InputLabel>Brand Name</InputLabel>
-        <Select
-            value={selectedBrand}
-            onChange={handleBrandChange}
-            label="Brand Name"
-            sx={{
-                borderRadius: '8px',
-                '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e2e8f0' },
-                width: 220,
-                minWidth: 220,
-            }}
-            MenuProps={{
-                PaperProps: {
-                    style: { maxHeight: 320, width: 220, minWidth: 220 }
-                }
-            }}
-            renderValue={(selected) => selected || "All Brands"}
-        >
-            <Box sx={{ px: 2, py: 1 }}>
-                <TextField
-                    size="small"
-                    placeholder="Search Brand"
-                    value={brandSearch}
-                    onChange={e => setBrandSearch(e.target.value)}
-                    fullWidth
-                    variant="outlined"
-                    InputProps={{
-                        sx: {
-                            bgcolor: '#fff',
-                            color: '#212121',
-                            fontWeight: 500,
-                            borderRadius: 1,
-                            width: 180,
-                            minWidth: 180,
-                            '& input': {
-                                bgcolor: '#fff',
-                                color: '#212121',
-                            }
-                        }
-                    }}
-                />
-            </Box>
-            <MenuItem value="">All Brands</MenuItem>
-            {filteredBrands.map((brand) => (
-                <MenuItem key={brand} value={brand}>{brand}</MenuItem>
-            ))}
-        </Select>
-    </FormControl>
+                {/* Brand Dropdown */}
+                <FormControl size="small" sx={{ width: 220, minWidth: 220 }} disabled={filtersLoading}>
+                    <InputLabel>Brand Name</InputLabel>
+                    <Select value={selectedBrand} onChange={handleBrandChange} label="Brand Name" sx={{ borderRadius: '8px', '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e2e8f0' } }} MenuProps={{ PaperProps: { style: { maxHeight: 320, width: 220 } } }} renderValue={(selected) => selected || "All Brands"} >
+                        <Box sx={{ px: 2, py: 1 }}> <TextField size="small" placeholder="Search Brand" value={brandSearch} onChange={e => setBrandSearch(e.target.value)} fullWidth variant="outlined" onClick={(e) => e.stopPropagation()} /> </Box>
+                        {filtersLoading ? (<MenuItem disabled>Loading...</MenuItem>) : (
+                           [ <MenuItem key="all" value="">All Brands</MenuItem>,
+                            ...filteredBrands.map((brand) => (
+                                <MenuItem key={brand.id} value={brand.name}>{brand.name}</MenuItem>
+                            ))]
+                        )}
+                    </Select>
+                </FormControl>
 
-    <FormControl size="small" sx={{ width: 220, minWidth: 220 }}>
-        <InputLabel>Buyer Name</InputLabel>
-        <Select
-            value={selectedBuyer}
-            onChange={handleBuyerChange}
-            label="Buyer Name"
-            sx={{
-                borderRadius: '8px',
-                '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e2e8f0' },
-                width: 220,
-                minWidth: 220,
-            }}
-            MenuProps={{
-                PaperProps: {
-                    style: { maxHeight: 320, width: 220, minWidth: 220 }
-                }
-            }}
-            renderValue={(selected) => selected || "All Buyers"}
-        >
-            <Box sx={{ px: 2, py: 1 }}>
-                <TextField
-                    size="small"
-                    placeholder="Search Buyer"
-                    value={buyerSearch}
-                    onChange={e => setBuyerSearch(e.target.value)}
-                    fullWidth
-                    variant="outlined"
-                    InputProps={{
-                        sx: {
-                            bgcolor: '#fff',
-                            color: '#212121',
-                            fontWeight: 500,
-                            borderRadius: 1,
-                            width: 180,
-                            minWidth: 180,
-                            '& input': {
-                                bgcolor: '#fff',
-                                color: '#212121',
-                            }
-                        }
-                    }}
-                />
+                {/* Buyer Dropdown */}
+                <FormControl size="small" sx={{ width: 220, minWidth: 220 }} disabled={filtersLoading}>
+                    <InputLabel>Buyer Name</InputLabel>
+                    <Select value={selectedBuyer} onChange={handleBuyerChange} label="Buyer Name" sx={{ borderRadius: '8px', '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e2e8f0' } }} MenuProps={{ PaperProps: { style: { maxHeight: 320, width: 220 } } }} renderValue={(selected) => selected || "All Buyers"} >
+                        <Box sx={{ px: 2, py: 1 }}> <TextField size="small" placeholder="Search Buyer" value={buyerSearch} onChange={e => setBuyerSearch(e.target.value)} fullWidth variant="outlined" onClick={(e) => e.stopPropagation()} /> </Box>
+                        {filtersLoading ? (<MenuItem disabled>Loading...</MenuItem>) : (
+                           [ <MenuItem key="all" value="">All Buyers</MenuItem>,
+                            ...filteredBuyers.map((buyer) => (
+                                <MenuItem key={buyer.id} value={buyer.name}>{buyer.name}</MenuItem>
+                            ))]
+                        )}
+                    </Select>
+                </FormControl>
+                
+                {/* Date pickers remain unchanged */}
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <Box sx={{ display: "inline-block", border: "2px solid #cbd5e1", borderRadius: "8px", p: 1 }}>
+                        <Grid container spacing={1} sx={{ flexWrap: "nowrap" }}>
+                            <Grid item> <DatePicker label="From Date" value={fromDate} onChange={(newDate) => setFromDate(newDate)} slotProps={{ textField: { size: "small", sx: { minWidth: 120, maxWidth: 140, "& .MuiOutlinedInput-root": { borderRadius: "6px", "& fieldset": { borderColor: "#e2e8f0" } } } } }} /> </Grid>
+                            <Grid item> <DatePicker label="To Date" value={toDate} onChange={(newDate) => setToDate(newDate)} slotProps={{ textField: { size: "small", sx: { minWidth: 120, maxWidth: 140, "& .MuiOutlinedInput-root": { borderRadius: "6px", "& fieldset": { borderColor: "#e2e8f0" } } } } }} /> </Grid>
+                        </Grid>
+                    </Box>
+                </LocalizationProvider>
             </Box>
-            <MenuItem value="">All Buyers</MenuItem>
-            {filteredBuyers.map((buyer) => (
-                <MenuItem key={buyer} value={buyer}>{buyer}</MenuItem>
-            ))}
-        </Select>
-    </FormControl>
-    {/* ...existing date pickers... */}
-<LocalizationProvider dateAdapter={AdapterDayjs}>
-  <Box
-    sx={{
-      display: "inline-block",
-      border: "2px solid #cbd5e1", // visible border color
-      borderRadius: "8px",         // rounded corners
-      p: 1,                        // padding around inputs
-    }}
-  >
-    <Grid container spacing={1} sx={{ flexWrap: "nowrap" }}>
-      <Grid item>
-        <DatePicker
-          label="From Date"
-          value={fromDate}
-          onChange={(newDate) => setFromDate(newDate)}
-          slotProps={{
-            textField: {
-              size: "small",
-              sx: {
-                minWidth: 120,
-                maxWidth: 140,
-                "& .MuiOutlinedInput-root": {
-                  borderRadius: "6px",
-                  "& fieldset": { borderColor: "#e2e8f0" },
-                },
-              },
-            },
-          }}
-        />
-      </Grid>
-      <Grid item>
-        <DatePicker
-          label="To Date"
-          value={toDate}
-          onChange={(newDate) => setToDate(newDate)}
-          slotProps={{
-            textField: {
-              size: "small",
-              sx: {
-                minWidth: 120,
-                maxWidth: 140,
-                "& .MuiOutlinedInput-root": {
-                  borderRadius: "6px",
-                  "& fieldset": { borderColor: "#e2e8f0" },
-                },
-              },
-            },
-          }}
-        />
-      </Grid>
-    </Grid>
-  </Box>
- </LocalizationProvider>
-</Box>
- <Fade in={!loading} timeout={600}>
+            <Fade in={!loading} timeout={600}>
                 <Box>
                     {error && (
                         <Typography
@@ -1760,6 +1020,7 @@ const ManufacturerHome = () => {
                     
                 </Box>
             </Fade>
+            {/* ... Rest of the JSX for dashboard cards, charts, and tables ... */}
 
         </Box>
     );
