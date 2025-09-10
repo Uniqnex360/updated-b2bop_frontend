@@ -103,6 +103,7 @@ function ProductList() {
   const [CategoriesTag, setSelectedCategoryChild] = useState(''); // Selected child category ID
   const [CategoriesparentTag, setSelectedCategoryParent] = useState(""); // Selected child category ID
   const [IndustryTag, setSelectedIndustryName] = useState(''); // Selected child category ID
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [selectedparentfull, setSelectedParentFull] = useState();
   const [CategoriesTagApply, setSelectedCategoryChildApply] = useState(''); // Selected child category ID
   const [CategoriesparentTagApply, setSelectedCategoryParentApply] = useState(""); // Selected child category ID
@@ -833,31 +834,44 @@ function ProductList() {
   const handleOpenFilter = () => setFilterOpen(true);
   const handleCloseFilter = () => setFilterOpen(false);
 
-  useEffect(() => {
-    const applyFilters = () => {
-      fetchData(filters, selectedCategory, industry, selectedBrandIds);
-      setSelectedCategoryChildApply(CategoriesTag);
-      setSelectedCategoryParentApply(CategoriesparentTag);
-      setSelectedIndustryNameApply(IndustryTag);
-      setSelectedBrandApplyNames(selectedBrandNames);
-    };
+const hasMounted = useRef(false);
 
-    const filterTimeout = setTimeout(() => {
-      applyFilters();
-      if (
-        (selectedCategory && selectedCategory !== "All Categories") ||
-        industryIdFor ||
-        selectedBrandIds.length > 0 ||
-        priceRange.price_from !== 0 ||
-        priceRange.price_to !== ''
-      ) {
-        setOpenSnackbar(true);
-      }
-    }, 500);
+// ✅ Keep this effect to sync the filters
+useEffect(() => {
+  const applyFilters = () => {
+    fetchData(filters, selectedCategory, industry, selectedBrandIds);
+    setSelectedCategoryChildApply(CategoriesTag);
+    setSelectedCategoryParentApply(CategoriesparentTag);
+    setSelectedIndustryNameApply(IndustryTag);
+    setSelectedBrandApplyNames(selectedBrandNames);
+  };
 
-    return () => clearTimeout(filterTimeout);
-  }, [selectedCategory, industry, selectedBrandIds, priceRange]);
+  const timeout = setTimeout(() => {
+    applyFilters();
+    hasMounted.current = true; // ✅ Moved alone here
+  }, 500);
 
+  return () => clearTimeout(timeout);
+}, [selectedCategory, industry, selectedBrandIds, priceRange, filters]);
+
+// ✅ Separate effect for showing filter toast AFTER mount
+useEffect(() => {
+  if (!hasMounted.current) return;
+
+  // If filters applied
+  const filtersChanged = (
+    (selectedCategory && selectedCategory !== "All Categories") ||
+    industryIdFor ||
+    selectedBrandIds.length > 0 ||
+    priceRange.price_from !== 0 ||
+    priceRange.price_to !== ''
+  );
+
+  if (filtersChanged) {
+    console.log("✅ Showing snackbar because filters changed");
+    setOpenSnackbar(true);
+  }
+}, [selectedCategory, industryIdFor, selectedBrandIds, priceRange]);
 
   const totalPages = Math.ceil(filteredItems.length / rowsPerPage);
 
