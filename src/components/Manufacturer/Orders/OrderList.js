@@ -1,9 +1,12 @@
-import React, { useState, useMemo } from "react";
+import React, { useEffect, useState, useCallback } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Box,
   Button,
   Table,
   TableBody,
+  MenuItem,
+  Menu,
   TableCell,
   TableContainer,
   TableHead,
@@ -12,19 +15,19 @@ import {
   TextField,
   IconButton,
   InputAdornment,
+  CircularProgress,
   Tooltip,
   Chip,
   Breadcrumbs,
   Typography,
+  ListItemText,
+  Pagination,
+  Grid,
   Stack,
   createTheme,
   ThemeProvider,
-  Menu,
-  MenuItem,
-  Pagination,
-  Grid,
-  ListItemText,
 } from "@mui/material";
+import axios from "axios";
 import ClearIcon from "@mui/icons-material/Clear";
 import SearchIcon from "@mui/icons-material/Search";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -34,154 +37,105 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { styled } from "@mui/material/styles";
+import { useSnackbar } from "notistack";
 import dayjs from "dayjs";
 
-// Dummy static data
-const staticOrders = [
-  {
-    _id: "1",
-    order_id: "3",
-    creation_date: "2025-09-09",
-    dealer_name: "John",
-    address: { city: "Texas", country: "US" },
-    total_items: 7,
-    amount: 54700,
-    payment_status: "Paid",
-    fulfilled_status: "Unfulfilled",
-    delivery_status: "Delivered",
-    is_reorder: false,
-    product_name: "Aervoe 74701 SolaDyne Mini Solar Lantern",
-  },
-  {
-    _id: "2",
-    order_id: "4",
-    creation_date: "2025-09-09",
-    dealer_name: "Sophia Taylor",
-    address: { city: "New York", country: "US" },
-    total_items: 5,
-    amount: 400,
-    payment_status: "Pending",
-    fulfilled_status: "Unfulfilled",
-    delivery_status: "Pending",
-    is_reorder: false,
-    product_name: "A.Y. McDonald 3132-667 Starting Capacitor 2HP 230V 1PH 4 in. DELUXE",
-  },
-  {
-    _id: "3",
-    order_id: "5",
-    creation_date: "2025-09-09",
-    dealer_name: "Christopher Brown",
-    address: { city: "California", country: "US" },
-    total_items: 8,
-    amount: 1060,
-    payment_status: "Paid",
-    fulfilled_status: "Unfulfilled",
-    delivery_status: "Delivered",
-    is_reorder: false,
-    product_name: "A.Y. McDonald 3132-650 Starting Capacitor 3/4HP 230V 1PH 4 in.",
-  },
-  {
-    _id: "4",
-    order_id: "6",
-    creation_date: "2025-09-09",
-    dealer_name: "Isabella Harris",
-    address: { city: "Arizona", country: "US" },
-    total_items: 6,
-    amount: 900,
-    payment_status: "Paid",
-    fulfilled_status: "Unfulfilled",
-    delivery_status: "Delivered",
-    is_reorder: false,
-    product_name:
-      "Thorlabs BF44LS01 1to4 FanOut Bundle, 400 µm Core, Low OH, SMA, Round Common End, 1 m Long",
-  },
-  {
-    _id: "5",
-    order_id: "7",
-    creation_date: "2025-09-09",
-    dealer_name: "William Anderson",
-    address: { city: "Pennsylvania", country: "US" },
-    total_items: 9,
-    amount: 1980,
-    payment_status: "Paid",
-    fulfilled_status: "Unfulfilled",
-    delivery_status: "Delivered",
-    is_reorder: false,
-    product_name:
-      "Thorlabs BF42HS01 1to4 FanOut Bundle, 200 µm Core, High OH, SMA, Round Common End, 1 m Long",
-  },
-  {
-    _id: "6",
-    order_id: "8",
-    creation_date: "2025-09-09",
-    dealer_name: "Emily Davis",
-    address: { city: "Los Angeles", country: "US" },
-    total_items: 6,
-    amount: 1020,
-    payment_status: "Paid",
-    fulfilled_status: "Unfulfilled",
-    delivery_status: "Delivered",
-    is_reorder: false,
-    product_name:
-      "Thorlabs BF44HS01 1to4 FanOut Bundle, 400 µm Core, High OH, SMA, Round Common End, 1 m Long",
-  },
-  {
-    _id: "7",
-    order_id: "1",
-    creation_date: "2025-09-10",
-    dealer_name: "James Miller",
-    address: { city: "Chicago", country: "US" },
-    total_items: 4,
-    amount: 990,
-    payment_status: "Paid",
-    fulfilled_status: "Unfulfilled",
-    delivery_status: "Delivered",
-    is_reorder: false,
-    product_name:
-      "Thorlabs BF42LS01 1to4 FanOut Bundle, 200 µm Core, Low OH, SMA, Round Common End, 1 m Long",
-  },
-  {
-    _id: "8",
-    order_id: "2",
-    creation_date: "2025-09-10",
-    dealer_name: "Michael Johnson",
-    address: { city: "Illinois", country: "US" },
-    total_items: 4,
-    amount: 840,
-    payment_status: "Paid",
-    fulfilled_status: "Unfulfilled",
-    delivery_status: "Delivered",
-    is_reorder: false,
-    product_name:
-      "Thorlabs BFA105LS02 LineartoLinear Bundle, 7 x Ø105 µm Core Fibers, LowOH, SMA, 2 m Long",
-  },
-];
-
-// Dummy list of unique dealers from static data
-const uniqueDealers = [...new Set(staticOrders.map((order) => order.dealer_name))];
-
+// Global theme for consistent typography and spacing
 const theme = createTheme({
   typography: {
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
     fontSize: 14,
+    h1: { fontSize: "2.125rem" },
+    h2: { fontSize: "1.875rem" },
     h3: { fontSize: "1.5rem", fontWeight: 700 },
-    subtitle2: { fontSize: "0.875rem", fontWeight: 600 },
+    h4: { fontSize: "1.25rem", fontWeight: 600 },
+    h5: { fontSize: "1.125rem", fontWeight: 500 },
+    h6: { fontSize: "1rem", fontWeight: 500 },
     body1: { fontSize: "0.9375rem" },
     body2: { fontSize: "0.875rem" },
+    subtitle1: { fontSize: "1rem" },
+    subtitle2: { fontSize: "0.875rem", fontWeight: 600 },
   },
   palette: {
-    primary: { main: "#1976d2" },
-    grey: { 50: "#f9fafb", 100: "#f2f4f7", 200: "#e4e7ec", 400: "#98a2b3", 500: "#667085", 800: "#1d2939" },
-    success: { main: "#12b76a" },
-    error: { main: "#f04438" },
-    warning: { main: "#f79009" },
+    primary: {
+      main: "#1976d2", // A clear blue for primary actions
+    },
+    grey: {
+      50: "#f9fafb",
+      100: "#f2f4f7",
+      200: "#e4e7ec",
+      300: "#d0d5dd",
+      400: "#98a2b3",
+      500: "#667085",
+      600: "#475467",
+      700: "#344054",
+      800: "#1d2939",
+      900: "#101828",
+    },
+    success: {
+      main: "#12b76a",
+    },
+    error: {
+      main: "#f04438",
+    },
+    warning: {
+      main: "#f79009",
+    },
   },
   components: {
-    MuiTextField: { styleOverrides: { root: { "& .MuiOutlinedInput-root": { borderRadius: "8px", fontSize: "0.875rem" } } } },
-    MuiButton: { styleOverrides: { root: { textTransform: "capitalize", fontWeight: 600, borderRadius: "8px", fontSize: "0.875rem" } } },
-    MuiChip: { styleOverrides: { root: { fontWeight: 500, fontSize: "0.75rem", height: "24px" } } },
-    MuiTableHead: { styleOverrides: { root: { "& .MuiTableCell-head": { fontWeight: 600, color: "#475467", backgroundColor: "#f9fafb" } } } },
-    MuiTableBody: { styleOverrides: { root: { "& .MuiTableCell-body": { color: "#344054", fontSize: "0.875rem" } } } },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          "& .MuiOutlinedInput-root": {
+            borderRadius: "8px",
+            fontSize: "0.875rem",
+          },
+          "& .MuiInputLabel-root": {
+            fontSize: "0.875rem",
+          },
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: "capitalize",
+          fontWeight: 600,
+          borderRadius: "8px",
+          fontSize: "0.875rem",
+        },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          fontWeight: 500,
+          fontSize: "0.75rem",
+          height: "24px",
+        },
+      },
+    },
+    MuiTableHead: {
+      styleOverrides: {
+        root: {
+          "& .MuiTableCell-head": {
+            fontWeight: 600,
+            color: "#475467",
+            backgroundColor: "#f9fafb",
+          },
+        },
+      },
+    },
+    MuiTableBody: {
+      styleOverrides: {
+        root: {
+          "& .MuiTableCell-body": {
+            color: "#344054",
+            fontSize: "0.875rem",
+          },
+        },
+      },
+    },
   },
 });
 
@@ -224,26 +178,304 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
+const StyledMenu = styled(Menu)(({ theme }) => ({
+  "& .MuiMenu-paper": {
+    padding: 0,
+    maxHeight: "400px",
+    width: "300px",
+    overflowY: "hidden",
+    fontSize: "12px",
+    display: "flex",
+    flexDirection: "column",
+  },
+  "& .MuiMenu-list": {
+    paddingTop: 0,
+    paddingBottom: 0,
+    margin: "5px 0px",
+  },
+}));
+
 const OrderList = () => {
+  const location = useLocation();
+  const user = JSON.parse(localStorage.getItem("user"));
+  const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
+
+  const filter = location.state?.filter || {};
+  const [orders, setOrders] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [page, setPage] = useState(0);
+  const [totalOrders, setTotalOrders] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
   const [anchorEl, setAnchorEl] = useState(null);
   const [currentColumn, setCurrentColumn] = useState("");
-  const [sortConfig, setSortConfig] = useState({
-    key: "creation_date",
-    direction: "desc",
-  });
-  const [deliveryStatus, setDeliveryStatus] = useState("all");
-  const [fulfilledStatus, setFulfilledStatus] = useState("all");
-  const [paymentStatus, setPaymentStatus] = useState("all");
-  const [isReorder, setIsReorder] = useState("all");
+  const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
+  const [delivery_status, setDeliveryStatus] = useState("all");
+  const [fulfilled_status, setFulfilledStatus] = useState("all");
+  const [payment_status, setPaymentStatus] = useState(
+    filter?.payment_status || "all"
+  );
+  const [is_reorder, setis_reorder] = useState(filter?.is_reorder || "all");
+  const [exportAnchorEl, setExportAnchorEl] = useState(null);
+  const [dealers, setDealers] = useState([]);
+  const [dealerAnchorEl, setDealerAnchorEl] = useState(null);
+  const [selectedDealerIds, setSelectedDealerIds] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [loadingDealers, setLoadingDealers] = useState(false);
 
-  // New state for dealer filter
-  const [dealerAnchorEl, setDealerAnchorEl] = useState(null);
-  const [selectedDealer, setSelectedDealer] = useState("all");
+  const queryParams = new URLSearchParams(location.search);
+  const initialPage = parseInt(queryParams.get("page"), 10) || 0;
+  const [page, setPage] = useState(initialPage);
+
+  // Fetch dealers
+  const fetchDealers = useCallback(async () => {
+    setLoadingDealers(true);
+    setError(null);
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_IP}obtainDealerlist/`,
+        {
+          params: { manufacture_unit_id: user.manufacture_unit_id },
+        }
+      );
+      if (response.status === 200) {
+        setDealers(
+          response.data.data.map((dealer) => ({
+            id: dealer.id,
+            username: dealer.username,
+          })) || []
+        );
+      } else {
+        setError("Failed to load dealer data");
+      }
+    } catch (error) {
+      console.error("Error fetching dealers:", error);
+      setError("An error occurred while fetching dealers.");
+    } finally {
+      setLoadingDealers(false);
+    }
+  }, [user.manufacture_unit_id]);
+
+  // Fetch orders
+  const fetchOrders = useCallback(async () => {
+    setLoading(true);
+    if (!user || !user.manufacture_unit_id) {
+      console.error("User or manufacture_unit_id is not defined.");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const formattedStartDate = selectedDate
+        ? selectedDate.format("YYYY-MM-DD")
+        : null;
+      const formattedEndDate = endDate ? endDate.format("YYYY-MM-DD") : null;
+
+      const response = await axios.post(
+        `${process.env.REACT_APP_IP}obtainOrderList/`,
+        {
+          manufacture_unit_id: user.manufacture_unit_id,
+          search_query: searchTerm,
+          sort_by: sortConfig.key,
+          sort_by_value: sortConfig.direction === "asc" ? 1 : -1,
+          page,
+          rows_per_page: rowsPerPage,
+          dealer_list: selectedDealerIds,
+          delivery_status,
+          fulfilled_status,
+          payment_status,
+          start_date: formattedStartDate,
+          end_date: formattedEndDate,
+          is_reorder,
+        }
+      );
+      setOrders(response.data.data);
+      setTotalOrders(response.data.total_orders);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+      setOrders([]);
+      setTotalOrders(0);
+      enqueueSnackbar("Failed to fetch orders. Please try again.", {
+        variant: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [
+    user.manufacture_unit_id,
+    searchTerm,
+    sortConfig,
+    page,
+    rowsPerPage,
+    selectedDealerIds,
+    delivery_status,
+    fulfilled_status,
+    payment_status,
+    is_reorder,
+    selectedDate,
+    endDate,
+    enqueueSnackbar,
+  ]);
+
+  useEffect(() => {
+    fetchDealers();
+  }, [fetchDealers]);
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const filterParam = searchParams.get("filter");
+
+    if (filterParam === "Pending") {
+      setPaymentStatus("Pending");
+    } else if (filterParam === "yes") {
+      setis_reorder("Yes");
+    }
+
+    fetchOrders();
+  }, [location.search, fetchOrders]);
+
+  // Memoize filtered orders based on current filters and search term
+  const filteredOrders = orders.filter((order) => {
+    const matchesSearch =
+      searchTerm === "" ||
+      order.order_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (order.dealer_name && order.dealer_name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (order.address?.city && order.address.city.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (order.address?.country && order.address.country.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      order.delivery_status.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.payment_status.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesDelivery =
+      delivery_status === "all" || order.delivery_status === delivery_status;
+    const matchesFulfillment =
+      fulfilled_status === "all" || order.fulfilled_status === fulfilled_status;
+    const matchesPayment =
+      payment_status === "all" || order.payment_status === payment_status;
+    const matchesReorder =
+      is_reorder === "all" || order.is_reorder === (is_reorder === "Yes");
+    
+    // Add date range filtering
+    const matchesDate = 
+      (!selectedDate || dayjs(order.creation_date).isAfter(selectedDate, 'day') || dayjs(order.creation_date).isSame(selectedDate, 'day')) &&
+      (!endDate || dayjs(order.creation_date).isBefore(endDate, 'day') || dayjs(order.creation_date).isSame(endDate, 'day'));
+
+    return (
+      matchesSearch &&
+      matchesDelivery &&
+      matchesFulfillment &&
+      matchesPayment &&
+      matchesReorder &&
+      matchesDate
+    );
+  });
+
+  const handleRowClick = (orderId) => {
+    navigate(`/manufacturer/order-details/${orderId}?page=${page}`);
+  };
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const handleOpenMenu = (event, column) => {
+    setCurrentColumn(column);
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+  };
+
+  const handleSelectSort = (key, direction) => {
+    setSortConfig({ key, direction });
+    setPage(0);
+    handleCloseMenu();
+  };
+
+  const handleStatusFilter = (statusType, status) => {
+    setDeliveryStatus("all");
+    setFulfilledStatus("all");
+    setPaymentStatus("all");
+    setis_reorder("all");
+
+    if (statusType === "delivery_status") setDeliveryStatus(status);
+    if (statusType === "fulfilled_status") setFulfilledStatus(status);
+    if (statusType === "payment_status") setPaymentStatus(status);
+    if (statusType === "is_reorder") setis_reorder(status);
+
+    handleCloseMenu();
+  };
+
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+    setPage(0);
+  };
+
+  const handleOpenExportMenu = (event) => {
+    setExportAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseExportMenu = () => {
+    setExportAnchorEl(null);
+  };
+
+  const handleExport = async (status) => {
+    const exportUrl = `${process.env.REACT_APP_IP}exportOrders/`;
+    const params = {
+      manufacture_unit_id: user.manufacture_unit_id,
+      status,
+    };
+
+    try {
+      const response = await axios.get(exportUrl, {
+        params,
+        responseType: "blob",
+      });
+      const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.setAttribute("download", `orders_${status}.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      enqueueSnackbar("Export successful!", { variant: "success" });
+    } catch (error) {
+      console.error("Error exporting orders:", error);
+      enqueueSnackbar("Failed to export orders. Please try again.", {
+        variant: "error",
+      });
+    }
+    handleCloseExportMenu();
+  };
+
+  const handleOpenDealerDropdown = (event) => {
+    setDealerAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseDealerDropdown = () => {
+    setDealerAnchorEl(null);
+  };
+
+  const handleDealerSelection = (dealer) => {
+    setSelectedDealerIds((prevSelectedIds) => {
+      if (prevSelectedIds.includes(dealer.id)) {
+        return prevSelectedIds.filter((id) => id !== dealer.id);
+      } else {
+        return [...prevSelectedIds, dealer.id];
+      }
+    });
+  };
+
+  const handleClearSelection = () => {
+    setSelectedDealerIds([]);
+  };
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -258,184 +490,13 @@ const OrderList = () => {
       case "Completed":
       case "Fulfilled":
       case "Shipped":
-      case "Delivered":
         return "success";
       default:
         return "default";
     }
   };
 
-  const handleOpenMenu = (event, column) => {
-    setCurrentColumn(column);
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleCloseMenu = () => {
-    setAnchorEl(null);
-  };
-
-  const handleOpenDealerDropdown = (event) => {
-    setDealerAnchorEl(event.currentTarget);
-  };
-
-  const handleCloseDealerDropdown = () => {
-    setDealerAnchorEl(null);
-  };
-
-  const handleSelectDealer = (dealerName) => {
-    setSelectedDealer(dealerName);
-    setPage(0);
-    handleCloseDealerDropdown();
-  };
-
-  const handleSelectSort = (key, direction) => {
-    setSortConfig({ key, direction });
-    setPage(0);
-    handleCloseMenu();
-  };
-
-  const handleStatusFilter = (statusType, status) => {
-    switch (statusType) {
-      case "delivery_status":
-        setDeliveryStatus(status);
-        break;
-      case "fulfilled_status":
-        setFulfilledStatus(status);
-        break;
-      case "payment_status":
-        setPaymentStatus(status);
-        break;
-      case "is_reorder":
-        setIsReorder(status);
-        break;
-      default:
-        break;
-    }
-    setPage(0);
-    handleCloseMenu();
-  };
-
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
-    setPage(0);
-  };
-
-  const handleClearDates = () => {
-    setSelectedDate(null);
-    setEndDate(null);
-  };
-
-  const handleExport = (status) => {
-    alert(`Exporting orders with status: ${status}`);
-    handleCloseMenu();
-  };
-
-  const handleRowClick = (orderId) => {
-    alert(`Navigating to order details for Order ID: ${orderId}`);
-  };
-
-  const sortedAndFilteredOrders = useMemo(() => {
-    let tempOrders = [...staticOrders];
-
-    // Filter by selected dealer
-    if (selectedDealer !== "all") {
-      tempOrders = tempOrders.filter(
-        (order) => order.dealer_name === selectedDealer
-      );
-    }
-
-    // Filter by search term
-    if (searchTerm) {
-      tempOrders = tempOrders.filter(
-        (order) =>
-          order.order_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          (order.dealer_name &&
-            order.dealer_name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-          (order.address?.city &&
-            order.address.city.toLowerCase().includes(searchTerm.toLowerCase())) ||
-          (order.address?.country &&
-            order.address.country.toLowerCase().includes(searchTerm.toLowerCase())) ||
-          order.delivery_status.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          order.payment_status.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          order.product_name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    // Filter by statuses and reorder flag
-    if (deliveryStatus !== "all") {
-      tempOrders = tempOrders.filter(
-        (order) => order.delivery_status === deliveryStatus
-      );
-    }
-    if (fulfilledStatus !== "all") {
-      tempOrders = tempOrders.filter(
-        (order) => order.fulfilled_status === fulfilledStatus
-      );
-    }
-    if (paymentStatus !== "all") {
-      tempOrders = tempOrders.filter(
-        (order) => order.payment_status === paymentStatus
-      );
-    }
-    if (isReorder !== "all") {
-      const isReorderBoolean = isReorder === "Yes";
-      tempOrders = tempOrders.filter(
-        (order) => (order.is_reorder || false) === isReorderBoolean
-      );
-    }
-
-    // Filter by date range
-    if (selectedDate) {
-      tempOrders = tempOrders.filter((order) =>
-        dayjs(order.creation_date).isAfter(dayjs(selectedDate).subtract(1, "day"))
-      );
-    }
-    if (endDate) {
-      tempOrders = tempOrders.filter((order) =>
-        dayjs(order.creation_date).isBefore(dayjs(endDate).add(1, "day"))
-      );
-    }
-
-    // Sort the filtered data
-    if (sortConfig.key) {
-      tempOrders.sort((a, b) => {
-        const aValue = a[sortConfig.key];
-        const bValue = b[sortConfig.key];
-
-        if (typeof aValue === "string" && typeof bValue === "string") {
-          return sortConfig.direction === "asc"
-            ? aValue.localeCompare(bValue)
-            : bValue.localeCompare(aValue);
-        }
-        if (aValue < bValue) {
-          return sortConfig.direction === "asc" ? -1 : 1;
-        }
-        if (aValue > bValue) {
-          return sortConfig.direction === "asc" ? 1 : -1;
-        }
-        return 0;
-      });
-    }
-
-    return tempOrders;
-  }, [
-    searchTerm,
-    sortConfig,
-    deliveryStatus,
-    fulfilledStatus,
-    paymentStatus,
-    isReorder,
-    selectedDate,
-    endDate,
-    selectedDealer,
-  ]);
-
-  const paginatedOrders = useMemo(() => {
-    const start = page * rowsPerPage;
-    return sortedAndFilteredOrders.slice(start, start + rowsPerPage);
-  }, [sortedAndFilteredOrders, page, rowsPerPage]);
-
-  const totalPages = Math.ceil(sortedAndFilteredOrders.length / rowsPerPage);
+  const totalPages = Math.ceil(filteredOrders.length / rowsPerPage);
 
   const breadcrumbs = [
     <Typography key="1" color="text.primary" variant="h3">
@@ -475,20 +536,15 @@ const OrderList = () => {
                 }}
                 onClick={handleOpenDealerDropdown}
               >
-                {selectedDealer === "all" ? "View Orders By Dealer Name" : `Filtering by: ${selectedDealer}`}
+                View Orders By Dealer Name
               </Button>
-              <Menu
+              <StyledMenu
                 anchorEl={dealerAnchorEl}
                 open={Boolean(dealerAnchorEl)}
                 onClose={handleCloseDealerDropdown}
-              >
-                <MenuItem onClick={() => handleSelectDealer("all")}>All Dealers</MenuItem>
-                {uniqueDealers.map((dealer) => (
-                  <MenuItem key={dealer} onClick={() => handleSelectDealer(dealer)}>
-                    <ListItemText primary={dealer} />
-                  </MenuItem>
-                ))}
-              </Menu>
+                disableAutoFocusItem
+                sx={{ maxWidth: 400 }}
+              />
             </Grid>
             <Grid item xs={12} md={8} lg={9}>
               <Stack
@@ -523,7 +579,10 @@ const OrderList = () => {
                     />
                     <Tooltip title="Clear dates">
                       <IconButton
-                        onClick={handleClearDates}
+                        onClick={() => {
+                          setSelectedDate(null);
+                          setEndDate(null);
+                        }}
                         sx={{
                           color: "primary.main",
                           "&:hover": { bgcolor: "primary.light" },
@@ -536,6 +595,7 @@ const OrderList = () => {
                     </Tooltip>
                   </Stack>
                 </LocalizationProvider>
+
                 <TextField
                   variant="outlined"
                   value={searchTerm}
@@ -551,26 +611,39 @@ const OrderList = () => {
                     ),
                     sx: { borderRadius: "8px" },
                   }}
+                  onKeyPress={(event) => {
+                    if (
+                      event.key === " " &&
+                      (searchTerm.trim() === "" ||
+                        searchTerm.startsWith(" ") ||
+                        searchTerm.endsWith(" "))
+                    ) {
+                      event.preventDefault();
+                    }
+                  }}
                 />
+
                 <Tooltip title="Export" arrow>
-                  <IconButton onClick={handleOpenMenu} sx={{ p: 0 }}>
+                  <IconButton onClick={handleOpenExportMenu} sx={{ p: 0 }}>
                     <FileUploadOutlinedIcon sx={{ fontSize: "40px", color: "primary.main" }} />
                   </IconButton>
                 </Tooltip>
                 <Menu
-                  anchorEl={anchorEl}
-                  open={Boolean(anchorEl)}
-                  onClose={handleCloseMenu}
+                  anchorEl={exportAnchorEl}
+                  open={Boolean(exportAnchorEl)}
+                  onClose={handleCloseExportMenu}
                 >
-                  <MenuItem onClick={() => handleExport("all")}>Export All Orders</MenuItem>
+                  <MenuItem onClick={() => handleExport("all")}>
+                    Export All Orders
+                  </MenuItem>
                   <MenuItem onClick={() => handleExport("Pending")}>
                     Export Pending Orders
                   </MenuItem>
                   <MenuItem onClick={() => handleExport("Shipped")}>
                     Export Shipped Orders
                   </MenuItem>
-                  <MenuItem onClick={() => handleExport("Delivered")}>
-                    Export Delivered Orders
+                  <MenuItem onClick={() => handleExport("Completed")}>
+                    Export Completed Orders
                   </MenuItem>
                 </Menu>
                 <Box
@@ -585,7 +658,7 @@ const OrderList = () => {
                   }}
                 >
                   <Typography variant="body2" color="text.secondary">
-                    Total Orders: <strong>{sortedAndFilteredOrders.length}</strong>
+                    Total Orders: <strong>{filteredOrders.length}</strong>
                   </Typography>
                 </Box>
               </Stack>
@@ -609,7 +682,17 @@ const OrderList = () => {
                   { id: "delivery_status", label: "Delivery Status" },
                   { id: "is_reorder", label: "Reorder" },
                 ].map((column) => (
-                  <StyledTableCell key={column.id} align="left">
+                  <StyledTableCell
+                    key={column.id}
+                    align="left"
+                    sx={{
+                      ...(column.id === "order_id" && {
+                        left: 0,
+                        zIndex: 3,
+                        bgcolor: "white",
+                      }),
+                    }}
+                  >
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                       <Typography variant="subtitle2" sx={{ whiteSpace: "nowrap" }}>
                         {column.label}
@@ -628,11 +711,28 @@ const OrderList = () => {
                 ))}
               </TableRow>
             </TableHead>
+
             <TableBody>
-              {paginatedOrders.length > 0 ? (
-                paginatedOrders.map((order) => (
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={10} align="center" sx={{ py: 6 }}>
+                    <CircularProgress color="primary" />
+                  </TableCell>
+                </TableRow>
+              ) : filteredOrders.length > 0 ? (
+                filteredOrders.map((order) => (
                   <StyledTableRow key={order._id} onClick={() => handleRowClick(order._id)}>
-                    <StyledTableCell align="left">{order.order_id}</StyledTableCell>
+                    <StyledTableCell
+                      align="left"
+                      sx={{
+                        position: "sticky",
+                        left: 0,
+                        zIndex: 1,
+                        bgcolor: "white",
+                      }}
+                    >
+                      {order.order_id}
+                    </StyledTableCell>
                     <StyledTableCell align="left">
                       {dayjs(order.creation_date).format("YYYY-MM-DD")}
                     </StyledTableCell>
@@ -644,7 +744,7 @@ const OrderList = () => {
                     </StyledTableCell>
                     <StyledTableCell align="left">{order.total_items}</StyledTableCell>
                     <StyledTableCell align="left">
-                      ${order.amount.toFixed(2)}
+                      {order.currency} {order.amount}
                     </StyledTableCell>
                     <StyledTableCell align="left">
                       <Chip
@@ -691,7 +791,7 @@ const OrderList = () => {
           <Pagination
             count={totalPages}
             page={page + 1}
-            onChange={(event, newPage) => setPage(newPage - 1)}
+            onChange={(event, newPage) => handleChangePage(event, newPage - 1)}
             color="primary"
             shape="rounded"
             size="large"
@@ -709,16 +809,6 @@ const OrderList = () => {
               </MenuItem>
             </>
           )}
-          {currentColumn === "creation_date" && (
-            <>
-              <MenuItem onClick={() => handleSelectSort("creation_date", "asc")}>
-                Oldest
-              </MenuItem>
-              <MenuItem onClick={() => handleSelectSort("creation_date", "desc")}>
-                Newest
-              </MenuItem>
-            </>
-          )}
           {currentColumn === "dealer_name" && (
             <>
               <MenuItem onClick={() => handleSelectSort("dealer_name", "asc")}>
@@ -726,6 +816,16 @@ const OrderList = () => {
               </MenuItem>
               <MenuItem onClick={() => handleSelectSort("dealer_name", "desc")}>
                 Sort Z to A
+              </MenuItem>
+            </>
+          )}
+          {currentColumn === "creation_date" && (
+            <>
+              <MenuItem onClick={() => handleSelectSort("creation_date", "asc")}>
+                Oldest
+              </MenuItem>
+              <MenuItem onClick={() => handleSelectSort("creation_date", "desc")}>
+                Newest
               </MenuItem>
             </>
           )}
@@ -749,16 +849,19 @@ const OrderList = () => {
               </MenuItem>
             </>
           )}
-          {currentColumn === "payment_status" && (
+          {currentColumn === "delivery_status" && (
             <>
-              <MenuItem onClick={() => handleStatusFilter("payment_status", "all")}>
+              <MenuItem onClick={() => handleStatusFilter("delivery_status", "all")}>
                 All
               </MenuItem>
-              <MenuItem onClick={() => handleStatusFilter("payment_status", "Paid")}>
-                Paid
-              </MenuItem>
-              <MenuItem onClick={() => handleStatusFilter("payment_status", "Pending")}>
+              <MenuItem onClick={() => handleStatusFilter("delivery_status", "Pending")}>
                 Pending
+              </MenuItem>
+              <MenuItem onClick={() => handleStatusFilter("delivery_status", "Shipped")}>
+                Shipped
+              </MenuItem>
+              <MenuItem onClick={() => handleStatusFilter("delivery_status", "Completed")}>
+                Completed
               </MenuItem>
             </>
           )}
@@ -778,16 +881,22 @@ const OrderList = () => {
               </MenuItem>
             </>
           )}
-          {currentColumn === "delivery_status" && (
+          {currentColumn === "payment_status" && (
             <>
-              <MenuItem onClick={() => handleStatusFilter("delivery_status", "all")}>
+              <MenuItem onClick={() => handleStatusFilter("payment_status", "all")}>
                 All
               </MenuItem>
-              <MenuItem onClick={() => handleStatusFilter("delivery_status", "Delivered")}>
-                Delivered
+              <MenuItem onClick={() => handleStatusFilter("payment_status", "Completed")}>
+                Completed
               </MenuItem>
-              <MenuItem onClick={() => handleStatusFilter("delivery_status", "Pending")}>
+              <MenuItem onClick={() => handleStatusFilter("payment_status", "Pending")}>
                 Pending
+              </MenuItem>
+              <MenuItem onClick={() => handleStatusFilter("payment_status", "Paid")}>
+                Paid
+              </MenuItem>
+              <MenuItem onClick={() => handleStatusFilter("payment_status", "Failed")}>
+                Failed
               </MenuItem>
             </>
           )}
@@ -805,6 +914,91 @@ const OrderList = () => {
             </>
           )}
         </Menu>
+
+        <StyledMenu
+          anchorEl={dealerAnchorEl}
+          open={Boolean(dealerAnchorEl)}
+          onClose={handleCloseDealerDropdown}
+          sx={{ maxWidth: 400 }}
+        >
+          <Box
+            sx={{
+              padding: 1,
+              fontSize: "14px",
+              bgcolor: "white",
+              boxShadow: 1,
+            }}
+          >
+            {loadingDealers
+              ? "Loading..."
+              : selectedDealerIds.length > 0
+              ? `Selected ${selectedDealerIds.length} ${
+                  selectedDealerIds.length > 1 ? "dealers" : "dealer"
+                }`
+              : "No dealers selected"}
+          </Box>
+          <Box sx={{ maxHeight: 300, overflowY: "auto" }}>
+            {loadingDealers ? (
+              <Box
+                sx={{
+                  height: 200,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  p: 2,
+                }}
+              >
+                <CircularProgress />
+              </Box>
+            ) : error ? (
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  p: 2,
+                }}
+              >
+                <Typography color="error">{error}</Typography>
+              </Box>
+            ) : (
+              dealers.map((dealer) => (
+                <MenuItem
+                  key={dealer.id}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    width: "100%",
+                    bgcolor: selectedDealerIds.includes(dealer.id)
+                      ? "grey.200"
+                      : "transparent",
+                    "&:hover": { bgcolor: "grey.300" },
+                  }}
+                  onClick={() => handleDealerSelection(dealer)}
+                >
+                  <ListItemText primary={dealer.username} />
+                </MenuItem>
+              ))
+            )}
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              gap: "10px",
+              bgcolor: "white",
+              boxShadow: 2,
+              p: 1.25,
+            }}
+          >
+            <Button
+              sx={{ fontSize: "12px" }}
+              variant="outlined"
+              onClick={handleClearSelection}
+            >
+              Clear
+            </Button>
+          </Box>
+        </StyledMenu>
       </Box>
     </ThemeProvider>
   );
