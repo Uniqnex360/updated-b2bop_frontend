@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import PropTypes from 'prop-types';
 import {
     Grid,
@@ -62,6 +62,20 @@ import {
     Event as EventIcon,
 } from "@mui/icons-material";
 import './ManufacturerHome.css';
+
+// Custom useDebounce hook to delay state updates
+const useDebounce = (value, delay) => {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedValue(value);
+        }, delay);
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [value, delay]);
+    return debouncedValue;
+};
 
 // ChartJS registration and background plugin remain unchanged...
 ChartJS.register(
@@ -168,7 +182,13 @@ const ManufacturerHome = () => {
     const [categorySearch, setCategorySearch] = useState('');
     const [brandSearch, setBrandSearch] = useState('');
     const [buyerSearch, setBuyerSearch] = useState('');
-    
+
+    // Debounced search terms for performance optimization
+    const debouncedIndustrySearch = useDebounce(industrySearch, 500);
+    const debouncedCategorySearch = useDebounce(categorySearch, 500);
+    const debouncedBrandSearch = useDebounce(brandSearch, 500);
+    const debouncedBuyerSearch = useDebounce(buyerSearch, 500);
+
     // Handlers for filter changes remain the same
     const handleIndustryChange = (event) => { setSelectedIndustry(event.target.value); };
     const handleCategoryChange = (event) => { setSelectedCategoryName(event.target.value); };
@@ -176,7 +196,7 @@ const ManufacturerHome = () => {
     const handleBuyerChange = (event) => { setSelectedBuyer(event.target.value); };
 
     const user = JSON.parse(localStorage.getItem("user"));
-    
+
     // --- Define handler functions BEFORE they are used ---
     const handleSeeMore = () => { setShowAll(!showAll); };
     const handleTotalSpendingsClick = () => { navigate("/manufacturer/orders", { state: { filter: { payment_status: "Completed" } }, }); };
@@ -186,6 +206,21 @@ const ManufacturerHome = () => {
     const handleActiveBuyerClick = () => { navigate(`/manufacturer/dealerList`); };
     const handleRowClick = (username) => { navigate(`/manufacturer/dealer-details/${username}`); };
     
+    // Function to apply filters (placeholder for now)
+    const handleApplyFilters = () => {
+        // Here you would implement the logic to fetch data based on the selected filters
+        console.log("Applying filters:", {
+            selectedIndustry,
+            selectedCategoryName,
+            selectedBrand,
+            selectedBuyer,
+            fromDate,
+            toDate,
+        });
+        // In a real application, you would call your data fetching functions here
+        // e.g., fetchData({ industry: selectedIndustry, ... });
+    };
+
     // --- API fetching logic ---
     const fetchFilterData = useCallback(async () => {
         const manufactureUnitId = user?.manufacture_unit_id;
@@ -270,16 +305,16 @@ const ManufacturerHome = () => {
     
     useEffect(() => {
         fetchFilterData();
-        fetchKpis(); 
+        fetchKpis();
         fetchTopSellingProducts();
         fetchDashboardCategory();
     }, [fetchFilterData, fetchKpis, fetchTopSellingProducts, fetchDashboardCategory]);
 
     // --- Data processing and card data definitions ---
-    const filteredIndustries = industries.filter(ind => ind.name.toLowerCase().includes(industrySearch.toLowerCase()));
-    const filteredCategories = categories.filter(cat => cat.name.toLowerCase().includes(categorySearch.toLowerCase()));
-    const filteredBrands = brands.filter(br => br.name.toLowerCase().includes(brandSearch.toLowerCase()));
-    const filteredBuyers = buyers.filter(buy => buy.name.toLowerCase().includes(buyerSearch.toLowerCase()));
+    const filteredIndustries = useMemo(() => industries.filter(ind => ind.name.toLowerCase().includes(debouncedIndustrySearch.toLowerCase())), [industries, debouncedIndustrySearch]);
+    const filteredCategories = useMemo(() => categories.filter(cat => cat.name.toLowerCase().includes(debouncedCategorySearch.toLowerCase())), [categories, debouncedCategorySearch]);
+    const filteredBrands = useMemo(() => brands.filter(br => br.name.toLowerCase().includes(debouncedBrandSearch.toLowerCase())), [brands, debouncedBrandSearch]);
+    const filteredBuyers = useMemo(() => buyers.filter(buy => buy.name.toLowerCase().includes(debouncedBuyerSearch.toLowerCase())), [buyers, debouncedBuyerSearch]);
     
     // KPI values from the API response
     const totalRevenue = dashboardData?.total_revenue || 0;
@@ -288,10 +323,12 @@ const ManufacturerHome = () => {
     const averageOrderValue = dashboardData?.average_order_value || 0;
     const completedOrders = dashboardData?.completed_orders || 0;
     const pendingOrders = dashboardData?.order_details?.filter(order => order.payment_status === "Pending")?.length || 0;
-    const totalSKUs = topSellingProducts?.product_count || 0;
-    const totalIndustries = industries?.length || 0;
-    const totalBrands = brands?.length || 0;
-    const totalCategories = categories?.length || 0;
+    
+    // Updated to use real data from the API
+    const totalSKUs = dashboardData?.number_of_skus || 0;
+    const totalIndustries = dashboardData?.industries_info?.count || 0;
+    const totalBrands = dashboardData?.number_of_brands || 0;
+    const totalCategories = dashboardData?.number_of_end_level_categories || 0;
 
     const cardData = [
         { title: 'Total Revenue', value: `$${totalRevenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, change: '+12.5%', icon: <MonetizationOnIcon />, color: '#3b82f6', bgColor: '#dbeafe', onClick: handleTotalSpendingsClick },
@@ -301,10 +338,10 @@ const ManufacturerHome = () => {
     ];
     
     const secondRowCardData = [
-        { title: 'Number of SKU’s', value: '2,500', change: '+10.1%', icon: <LayersIcon />, color: '#f59e0b', bgColor: '#fef3c7', },
-        { title: 'Number. of Industries', value: '15', change: '+2.0%', icon: <DomainIcon />, color: '#ef4444', bgColor: '#fee2e2', },
-        { title: 'Number. of Brands', value: '75', change: '+7.8%', icon: <LocalOfferIcon />, color: '#10b981', bgColor: '#dcfce7', },
-        { title: 'Number. of End-Level Categories', value: '250', change: '+4.3%', icon: <CategoryIcon />, color: '#6366f1', bgColor: '#eef2ff', },
+        { title: 'Number of SKU’s', value: totalSKUs.toLocaleString(), change: '+10.1%', icon: <LayersIcon />, color: '#f59e0b', bgColor: '#fef3c7', },
+        { title: 'Number. of Industries', value: totalIndustries.toLocaleString(), change: '+2.0%', icon: <DomainIcon />, color: '#ef4444', bgColor: '#fee2e2', },
+        { title: 'Number. of Brands', value: totalBrands.toLocaleString(), change: '+7.8%', icon: <LocalOfferIcon />, color: '#10b981', bgColor: '#dcfce7', },
+        { title: 'Number. of End-Level Categories', value: totalCategories.toLocaleString(), change: '+4.3%', icon: <CategoryIcon />, color: '#6366f1', bgColor: '#eef2ff', },
     ];
     
     const salesAnalyticsData = [
@@ -386,14 +423,85 @@ const ManufacturerHome = () => {
                 </FormControl>
                 
                 {/* Date pickers remain unchanged */}
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <Box sx={{ display: "inline-block", border: "2px solid #cbd5e1", borderRadius: "8px", p: 1 }}>
-                        <Grid container spacing={1} sx={{ flexWrap: "nowrap" }}>
-                            <Grid item> <DatePicker label="From Date" value={fromDate} onChange={(newDate) => setFromDate(newDate)} slotProps={{ textField: { size: "small", sx: { minWidth: 120, maxWidth: 140, "& .MuiOutlinedInput-root": { borderRadius: "6px", "& fieldset": { borderColor: "#e2e8f0" } } } } }} /> </Grid>
-                            <Grid item> <DatePicker label="To Date" value={toDate} onChange={(newDate) => setToDate(newDate)} slotProps={{ textField: { size: "small", sx: { minWidth: 120, maxWidth: 140, "& .MuiOutlinedInput-root": { borderRadius: "6px", "& fieldset": { borderColor: "#e2e8f0" } } } } }} /> </Grid>
-                        </Grid>
-                    </Box>
-                </LocalizationProvider>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+  <Box sx={{ display: "inline-block", border: "2px solid #cbd5e1", borderRadius: "8px", p: 1 }}>
+    <Grid container spacing={1} sx={{ flexWrap: "nowrap" }}>
+      
+      <Grid item>
+        <DatePicker
+          label="From Date"
+          value={fromDate}
+          onChange={(newDate) => setFromDate(newDate)}
+          slotProps={{
+            textField: {
+              size: "small",
+              sx: {
+                minWidth: 80,
+                maxWidth: 80,
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: "6px",
+                  "& fieldset": { borderColor: "#e2e8f0" },
+                  "& input": { fontSize: "12px" } // ↓ decreased font size here
+                }
+              }
+            }
+          }}
+        />
+      </Grid>
+
+      <Grid item>
+        <DatePicker
+          label="To Date"
+          value={toDate}
+          onChange={(newDate) => setToDate(newDate)}
+          slotProps={{
+            textField: {
+              size: "small",
+              sx: {
+                minWidth: 80,
+                maxWidth: 80,
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: "6px",
+                  "& fieldset": { borderColor: "#e2e8f0" },
+                  "& input": { fontSize: "12px" } // ↓ decreased font size here
+                }
+              }
+            }
+          }}
+        />
+      </Grid>
+
+    </Grid>
+  </Box>
+</LocalizationProvider>
+
+
+                {/* Apply Button */}
+                <Button 
+                    variant="contained" 
+                    onClick={handleApplyFilters} 
+                    disabled={loading}
+                    sx={{
+                        minWidth: 100,
+                        height: 40,
+                        bgcolor: '#3b82f6',
+                        borderRadius: '8px',
+                        textTransform: 'none',
+                        fontWeight: 600,
+                        boxShadow: '0 4px 10px rgba(59, 130, 246, 0.25)',
+                        '&:hover': {
+                            bgcolor: '#2563eb',
+                            boxShadow: '0 6px 15px rgba(59, 130, 246, 0.35)',
+                        },
+                        '&:disabled': {
+                            bgcolor: '#dbeafe',
+                            color: '#9ca3af',
+                            cursor: 'not-allowed',
+                        }
+                    }}
+                >
+                    Apply
+                </Button>
             </Box>
             <Fade in={!loading} timeout={600}>
                 <Box>
