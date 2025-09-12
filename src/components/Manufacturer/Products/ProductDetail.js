@@ -270,7 +270,9 @@ const ProductDetail = () => {
   }, [id]);
 
   const handleCancel = () => {
-    navigate(`/manufacturer/products?page=${currentPage}`, { state: { searchQuery } });
+    navigate(`/manufacturer/products?page=${currentPage}`, {
+      state: { searchQuery },
+    });
   };
 
   const toggleVisibility = async () => {
@@ -347,7 +349,9 @@ const ProductDetail = () => {
             >
               Products
             </Link>
-            <Typography color="text.primary">{product?.product_name}</Typography>
+            <Typography color="text.primary">
+              {product?.product_name}
+            </Typography>
           </Breadcrumbs>
           {/* Main Product Grid */}
           <ProductDetailsWrapper>
@@ -374,7 +378,8 @@ const ProductDetail = () => {
                       component="img"
                       image={
                         mainImage &&
-                        (mainImage.startsWith("http://example.com") || !mainImage.startsWith("http")
+                        (mainImage.startsWith("http://example.com") ||
+                        !mainImage.startsWith("http")
                           ? soonImg
                           : mainImage)
                       }
@@ -403,7 +408,8 @@ const ProductDetail = () => {
                         <ThumbnailImage
                           src={
                             image &&
-                            (image.startsWith("http://example.com") || !image.startsWith("http")
+                            (image.startsWith("http://example.com") ||
+                            !image.startsWith("http")
                               ? soonImg
                               : image)
                           }
@@ -418,28 +424,58 @@ const ProductDetail = () => {
 
               {/* Product Details Section */}
               <Grid item xs={12} md={7}>
-                <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    height: "100%",
+                  }}
+                >
                   {/* Brand and Name */}
                   <Box sx={{ mb: 1 }}>
                     {product?.brand_logo ? (
                       <img
                         src={product.brand_logo}
                         alt={product.brand_name}
-                        style={{ width: "48px", height: "48px", objectFit: "contain", marginBottom: "8px" }}
-                        onError={(e) => { e.target.style.display = "none"; }}
+                        style={{
+                          width: "48px",
+                          height: "48px",
+                          objectFit: "contain",
+                          marginBottom: "8px",
+                        }}
+                        onError={(e) => {
+                          e.target.style.display = "none";
+                        }}
                       />
                     ) : (
-                      <Typography variant="h6" sx={{ fontWeight: 600, fontSize: 18, color: "text.primary" }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: 600,
+                          fontSize: 18,
+                          color: "text.primary",
+                        }}
+                      >
                         {product?.brand_name || "N/A"}
                       </Typography>
                     )}
                   </Box>
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: "text.primary", mt: 1 }}>
+                  <Typography
+                    variant="h4"
+                    sx={{ fontWeight: 700, color: "text.primary", mt: 1 }}
+                  >
                     {product?.product_name}
                   </Typography>
-                  <Typography variant="body1" sx={{ mt: 1, color: "text.secondary" }}>
-                    {product?.short_description}
-                  </Typography>
+
+                  {product?.short_description &&
+                    product?.short_description !== "N/A" && (
+                      <Typography
+                        variant="body1"
+                        sx={{ mt: 1, color: "text.secondary" }}
+                      >
+                        {product.short_description}
+                      </Typography>
+                    )}
                   <Box
                     sx={{
                       mt: 2,
@@ -453,123 +489,188 @@ const ProductDetail = () => {
                   >
                     <Typography
                       component="p"
-                      sx={{ fontSize: { xs: 22, sm: 28, md: 32 }, fontWeight: 700, color: "text.primary" }}
+                      sx={{
+                        fontSize: { xs: 22, sm: 28, md: 32 },
+                        fontWeight: 700,
+                        color: "text.primary",
+                      }}
                     >
-                      {product?.currency} {product?.list_price ? product.list_price.toFixed(2) : "N/A"}
+                      {product?.currency}{" "}
+                      {product?.list_price
+                        ? product.list_price.toFixed(2)
+                        : "N/A"}
                     </Typography>
-                    {product?.was_price && product?.list_price && product.list_price < product.was_price && (
-                      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                        <Typography
-                          component="p"
-                          sx={{ fontSize: 18, color: "text.secondary", textDecoration: "line-through" }}
+                    {product?.was_price &&
+                      product?.list_price &&
+                      product.list_price < product.was_price && (
+                        <Box
+                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
                         >
-                          {product?.was_price.toFixed(2)}
-                        </Typography>
-                        {product?.discount && product.discount !== "0%" && (
-                          <span
-                            style={{
-                              color: "#fff",
-                              fontSize: 13,
-                              fontWeight: 500,
-                              background: flipkartTheme.palette.error.main,
-                              borderRadius: 4,
-                              padding: "2px 8px",
+                          <Typography
+                            component="p"
+                            sx={{
+                              fontSize: 18,
+                              color: "text.secondary",
+                              textDecoration: "line-through",
                             }}
                           >
-                            {product.discount} OFF
-                          </span>
-                        )}
-                      </Box>
-                    )}
+                            {product?.was_price.toFixed(2)}
+                          </Typography>
+                          {product?.discount && product.discount !== "0%" && (
+                            <span
+                              style={{
+                                color: "#fff",
+                                fontSize: 13,
+                                fontWeight: 500,
+                                background: flipkartTheme.palette.error.main,
+                                borderRadius: 4,
+                                padding: "2px 8px",
+                              }}
+                            >
+                              {product.discount} OFF
+                            </span>
+                          )}
+                        </Box>
+                      )}
                   </Box>
                   {/* Status and Visibility */}
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 3, flexWrap: "wrap" }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 2,
+                      mt: 3,
+                      flexWrap: "wrap",
+                    }}
+                  >
                     <Button
                       variant="contained"
                       sx={{
-                        backgroundColor: product?.availability ? "#4CAF50" : "#F44336",
+                        backgroundColor: product?.availability
+                          ? "#4CAF50"
+                          : "#F44336",
                         "&:hover": {
-                          backgroundColor: product?.availability ? "#388E3C" : "#D32F2F",
+                          backgroundColor: product?.availability
+                            ? "#388E3C"
+                            : "#D32F2F",
                         },
                       }}
                     >
                       {product?.availability ? "In Stock" : "Out Of Stock"}
                     </Button>
                     <Tooltip
-                      title={product?.visible ? "Product Visibility On" : "Product Visibility Off"}
+                      title={
+                        product?.visible
+                          ? "Product Visibility On"
+                          : "Product Visibility Off"
+                      }
                       arrow
                     >
-                      <IconButton onClick={toggleVisibility} sx={{ color: "text.secondary", "&:hover": { color: flipkartTheme.palette.primary.main } }}>
-                        {product?.visible ? (
-                          <Visibility />
-                        ) : (
-                          <VisibilityOff />
-                        )}
+                      <IconButton
+                        onClick={toggleVisibility}
+                        sx={{
+                          color: "text.secondary",
+                          "&:hover": {
+                            color: flipkartTheme.palette.primary.main,
+                          },
+                        }}
+                      >
+                        {product?.visible ? <Visibility /> : <VisibilityOff />}
                       </IconButton>
                     </Tooltip>
                   </Box>
                   {/* Accordions */}
                   <Box sx={{ mt: 4, flexGrow: 1 }}>
-   
-<StyledAccordion
-  expanded={expandedInfo}
-  onChange={() => setExpandedInfo(!expandedInfo)}
->
-  <AccordionSummary
-    expandIcon={expandedInfo ? <RemoveIcon /> : <AddIcon />}
-    sx={{ background: flipkartTheme.palette.background.default }}
-  >
-    <Typography sx={{ fontWeight: 600, color: flipkartTheme.palette.secondary.main }}>
-      Product Information
-    </Typography>
-  </AccordionSummary>
-  <AccordionDetails sx={{ p: 2 }}>
-    <TableContainer>
-      <Table size="small">
-        <TableBody>
-          {Object.entries({
-            "Model Name": product?.model,
-            "Brand Name": product?.brand_name,
-            "Product Category": product?.end_level_category,
-            Industry: product?.industry_name || product?.industry_name || "N/A",
-            "Product Description": product?.long_description,
-            "MPN Number": product?.mpn,
-            "UPC Number": product?.upc_ean,
-            MSRP: product?.msrp ? `$${product.msrp.toFixed(2)}` : (product?.industry_name || "N/A"),
-          }).map(([key, value]) => (
-            <TableRow key={key}>
-              <TableCell
-                sx={{
-                  width: 180,
-                  fontWeight: 600,
-                  color: "text.primary",
-                  borderBottom: "none",
-                }}
-              >
-                {key}
-              </TableCell>
-              <TableCell sx={{ color: "text.secondary", borderBottom: "none" }}>
-                {value === "N/A" && key === "MSRP"
-                  ? product?.industry_name || "N/A"
-                  : value || product?.industry_name || "N/A"}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  </AccordionDetails>
-</StyledAccordion>
+                    <StyledAccordion
+                      expanded={expandedInfo}
+                      onChange={() => setExpandedInfo(!expandedInfo)}
+                    >
+                      <AccordionSummary
+                        expandIcon={expandedInfo ? <RemoveIcon /> : <AddIcon />}
+                        sx={{
+                          background: flipkartTheme.palette.background.default,
+                        }}
+                      >
+                        <Typography
+                          sx={{
+                            fontWeight: 600,
+                            color: flipkartTheme.palette.secondary.main,
+                          }}
+                        >
+                          Product Information
+                        </Typography>
+                      </AccordionSummary>
+                      <AccordionDetails sx={{ p: 2 }}>
+                        <TableContainer>
+                          <Table size="small">
+                            <TableBody>
+                              {Object.entries({
+                                "Model Name": product?.model,
+                                "Brand Name": product?.brand_name,
+                                "Product Category": product?.end_level_category,
+                                Industry:
+                                  product?.industry_name ||
+                                  product?.industry_name ||
+                                  "N/A",
+                                "Product Description":
+                                  product?.long_description,
+                                "MPN Number": product?.mpn,
+                                "UPC Number": product?.upc_eann && product?.upc_ean!=='N/A'?product?.upc_ean:"-",
+                                MSRP: product?.msrp
+                                  ? `$${product.msrp.toFixed(2)}`
+                                  : product?.industry_name || "-",
+                              }).map(([key, value]) => (
+                                <TableRow key={key}>
+                                  <TableCell
+                                    sx={{
+                                      width: 180,
+                                      fontWeight: 600,
+                                      color: "text.primary",
+                                      borderBottom: "none",
+                                    }}
+                                  >
+                                    {key}
+                                  </TableCell>
+                                  <TableCell
+                                    sx={{
+                                      color: "text.secondary",
+                                      borderBottom: "none",
+                                    }}
+                                  >
+                                    {value === "N/A" && key === "MSRP"
+                                      ? product?.industry_name || "N/A"
+                                      : value ||
+                                        product?.industry_name ||
+                                        "N/A"}
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </TableContainer>
+                      </AccordionDetails>
+                    </StyledAccordion>
 
                     <StyledAccordion
                       expanded={expandedAttributes}
-                      onChange={() => setExpandedAttributes(!expandedAttributes)}
+                      onChange={() =>
+                        setExpandedAttributes(!expandedAttributes)
+                      }
                     >
                       <AccordionSummary
-                        expandIcon={expandedAttributes ? <RemoveIcon /> : <AddIcon />}
-                        sx={{ background: flipkartTheme.palette.background.default }}
+                        expandIcon={
+                          expandedAttributes ? <RemoveIcon /> : <AddIcon />
+                        }
+                        sx={{
+                          background: flipkartTheme.palette.background.default,
+                        }}
                       >
-                        <Typography sx={{ fontWeight: 600, color: flipkartTheme.palette.secondary.main }}>
+                        <Typography
+                          sx={{
+                            fontWeight: 600,
+                            color: flipkartTheme.palette.secondary.main,
+                          }}
+                        >
                           Product Attributes
                         </Typography>
                       </AccordionSummary>
@@ -578,23 +679,30 @@ const ProductDetail = () => {
                           <Table size="small">
                             <TableBody>
                               {product?.attributes &&
-                                Object.entries(product.attributes).map(([key, value]) => (
-                                  <TableRow key={key}>
-                                    <TableCell
-                                      sx={{
-                                        width: 180,
-                                        fontWeight: 600,
-                                        color: "text.primary",
-                                        borderBottom: "none",
-                                      }}
-                                    >
-                                      {key}
-                                    </TableCell>
-                                    <TableCell sx={{ color: "text.secondary", borderBottom: "none" }}>
-                                      {value}
-                                    </TableCell>
-                                  </TableRow>
-                                ))}
+                                Object.entries(product.attributes).map(
+                                  ([key, value]) => (
+                                    <TableRow key={key}>
+                                      <TableCell
+                                        sx={{
+                                          width: 180,
+                                          fontWeight: 600,
+                                          color: "text.primary",
+                                          borderBottom: "none",
+                                        }}
+                                      >
+                                        {key}
+                                      </TableCell>
+                                      <TableCell
+                                        sx={{
+                                          color: "text.secondary",
+                                          borderBottom: "none",
+                                        }}
+                                      >
+                                        {value}
+                                      </TableCell>
+                                    </TableRow>
+                                  )
+                                )}
                             </TableBody>
                           </Table>
                         </TableContainer>
@@ -605,10 +713,19 @@ const ProductDetail = () => {
                       onChange={() => setExpandedFeatures(!expandedFeatures)}
                     >
                       <AccordionSummary
-                        expandIcon={expandedFeatures ? <RemoveIcon /> : <AddIcon />}
-                        sx={{ background: flipkartTheme.palette.background.default }}
+                        expandIcon={
+                          expandedFeatures ? <RemoveIcon /> : <AddIcon />
+                        }
+                        sx={{
+                          background: flipkartTheme.palette.background.default,
+                        }}
                       >
-                        <Typography sx={{ fontWeight: 600, color: flipkartTheme.palette.secondary.main }}>
+                        <Typography
+                          sx={{
+                            fontWeight: 600,
+                            color: flipkartTheme.palette.secondary.main,
+                          }}
+                        >
                           Features
                         </Typography>
                       </AccordionSummary>
@@ -638,7 +755,10 @@ const ProductDetail = () => {
                             ))}
                           </ul>
                         ) : (
-                          <Typography color="text.secondary" sx={{ textAlign: "left" }}>
+                          <Typography
+                            color="text.secondary"
+                            sx={{ textAlign: "left" }}
+                          >
                             No data available for features
                           </Typography>
                         )}
@@ -695,8 +815,17 @@ const ProductDetail = () => {
             <Grid container spacing={2}>
               {RelatedProducts && RelatedProducts.length > 0 ? (
                 RelatedProducts.map((relatedProduct) => (
-                  <Grid item key={relatedProduct.id} xs={6} sm={4} md={3} lg={2.4}>
-                    <RelatedProductCard onClick={() => handleProductClick(relatedProduct.id)}>
+                  <Grid
+                    item
+                    key={relatedProduct.id}
+                    xs={6}
+                    sm={4}
+                    md={3}
+                    lg={2.4}
+                  >
+                    <RelatedProductCard
+                      onClick={() => handleProductClick(relatedProduct.id)}
+                    >
                       <CardMedia
                         component="img"
                         sx={{
@@ -709,14 +838,22 @@ const ProductDetail = () => {
                         }}
                         image={
                           relatedProduct.logo &&
-                          (relatedProduct.logo.startsWith("http://example.com") ||
-                          !relatedProduct.logo.startsWith("http")
+                          (relatedProduct.logo.startsWith(
+                            "http://example.com"
+                          ) || !relatedProduct.logo.startsWith("http")
                             ? soonImg
                             : relatedProduct.logo)
                         }
                         alt={relatedProduct?.name}
                       />
-                      <CardContent sx={{ p: 1, flexGrow: 1, display: "flex", flexDirection: "column" }}>
+                      <CardContent
+                        sx={{
+                          p: 1,
+                          flexGrow: 1,
+                          display: "flex",
+                          flexDirection: "column",
+                        }}
+                      >
                         <Tooltip title={relatedProduct.name} arrow>
                           <Typography
                             sx={{
@@ -734,12 +871,23 @@ const ProductDetail = () => {
                             {relatedProduct.name}
                           </Typography>
                         </Tooltip>
-                        <Box sx={{ mt: 1, fontSize: 12, color: "text.secondary" }}>
-                          <Typography sx={{ fontSize: 12 }}>SKU: {relatedProduct.sku_number}</Typography>
+                        <Box
+                          sx={{ mt: 1, fontSize: 12, color: "text.secondary" }}
+                        >
+                          <Typography sx={{ fontSize: 12 }}>
+                            SKU: {relatedProduct.sku_number}
+                          </Typography>
                         </Box>
                         <Box sx={{ mt: 1 }}>
-                          <Typography sx={{ fontWeight: 700, fontSize: 15, color: flipkartTheme.palette.secondary.main }}>
-                            {relatedProduct.currency}{relatedProduct.price}
+                          <Typography
+                            sx={{
+                              fontWeight: 700,
+                              fontSize: 15,
+                              color: flipkartTheme.palette.secondary.main,
+                            }}
+                          >
+                            {relatedProduct.currency}
+                            {relatedProduct.price}
                           </Typography>
                           <Typography
                             sx={{
@@ -748,23 +896,26 @@ const ProductDetail = () => {
                               color: "text.disabled",
                             }}
                           >
-                            {relatedProduct.was_price ? `${relatedProduct.currency}${relatedProduct.was_price}` : null}
+                            {relatedProduct.was_price
+                              ? `${relatedProduct.currency}${relatedProduct.was_price}`
+                              : null}
                           </Typography>
-                          {relatedProduct.discount && relatedProduct.discount !== "0%" && (
-                            <Box
-                              sx={{
-                                color: flipkartTheme.palette.error.main,
-                                fontWeight: 600,
-                                fontSize: 12,
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 0.5,
-                              }}
-                            >
-                              <LocalOfferIcon fontSize="inherit" />
-                              {relatedProduct.discount} OFF
-                            </Box>
-                          )}
+                          {relatedProduct.discount &&
+                            relatedProduct.discount !== "0%" && (
+                              <Box
+                                sx={{
+                                  color: flipkartTheme.palette.error.main,
+                                  fontWeight: 600,
+                                  fontSize: 12,
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 0.5,
+                                }}
+                              >
+                                <LocalOfferIcon fontSize="inherit" />
+                                {relatedProduct.discount} OFF
+                              </Box>
+                            )}
                         </Box>
                       </CardContent>
                     </RelatedProductCard>
