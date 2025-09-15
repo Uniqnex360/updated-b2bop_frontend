@@ -436,8 +436,8 @@ const ManufacturerHome = () => {
             textField: {
               size: "small",
               sx: {
-                minWidth: 80,
-                maxWidth: 80,
+                minWidth: 120,
+                maxWidth: 120,
                 "& .MuiOutlinedInput-root": {
                   borderRadius: "6px",
                   "& fieldset": { borderColor: "#e2e8f0" },
@@ -458,8 +458,8 @@ const ManufacturerHome = () => {
             textField: {
               size: "small",
               sx: {
-                minWidth: 80,
-                maxWidth: 80,
+                minWidth: 120,
+                maxWidth: 120,
                 "& .MuiOutlinedInput-root": {
                   borderRadius: "6px",
                   "& fieldset": { borderColor: "#e2e8f0" },
@@ -477,7 +477,7 @@ const ManufacturerHome = () => {
 
 
                 {/* Apply Button */}
-                <Button 
+                {/* <Button 
                     variant="contained" 
                     onClick={handleApplyFilters} 
                     disabled={loading}
@@ -501,7 +501,7 @@ const ManufacturerHome = () => {
                     }}
                 >
                     Apply
-                </Button>
+                </Button> */}
             </Box>
             <Fade in={!loading} timeout={600}>
                 <Box>
