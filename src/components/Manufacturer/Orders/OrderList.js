@@ -132,6 +132,7 @@ const theme = createTheme({
           "& .MuiTableCell-body": {
             color: "#344054",
             fontSize: "0.875rem",
+            padding: "12px 16px",
           },
         },
       },
@@ -204,11 +205,10 @@ const OrderList = () => {
   const filter = location.state?.filter || {};
   const [orders, setOrders] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [totalOrders, setTotalOrders] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(25);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [anchorEl, setAnchorEl] = useState(null);
   const [currentColumn, setCurrentColumn] = useState("");
-  const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
+  const [sortConfig, setSortConfig] = useState({ key: "creation_date", direction: "desc" }); // Default sort to newest
   const [delivery_status, setDeliveryStatus] = useState("all");
   const [fulfilled_status, setFulfilledStatus] = useState("all");
   const [payment_status, setPaymentStatus] = useState(
@@ -224,9 +224,10 @@ const OrderList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [loadingDealers, setLoadingDealers] = useState(false);
+  const [totalCount, setTotalCount] = useState(0);
 
   const queryParams = new URLSearchParams(location.search);
-  const initialPage = parseInt(queryParams.get("page"), 10) || 0;
+  const initialPage = parseInt(queryParams.get("page"), 10) || 1;
   const [page, setPage] = useState(initialPage);
 
   // Fetch dealers
@@ -281,7 +282,7 @@ const OrderList = () => {
           sort_by: sortConfig.key,
           sort_by_value: sortConfig.direction === "asc" ? 1 : -1,
           page,
-          rows_per_page: rowsPerPage,
+          limit: rowsPerPage,
           dealer_list: selectedDealerIds,
           delivery_status,
           fulfilled_status,
@@ -292,11 +293,11 @@ const OrderList = () => {
         }
       );
       setOrders(response.data.data);
-      setTotalOrders(response.data.total_orders);
+      setTotalCount(response.data.total_count);
     } catch (error) {
       console.error("Error fetching orders:", error);
       setOrders([]);
-      setTotalOrders(0);
+      setTotalCount(0);
       enqueueSnackbar("Failed to fetch orders. Please try again.", {
         variant: "error",
       });
@@ -334,42 +335,20 @@ const OrderList = () => {
     }
 
     fetchOrders();
-  }, [location.search, fetchOrders]);
-
-  // Memoize filtered orders based on current filters and search term
-  const filteredOrders = orders.filter((order) => {
-    const matchesSearch =
-      searchTerm === "" ||
-      order.order_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (order.dealer_name && order.dealer_name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (order.address?.city && order.address.city.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (order.address?.country && order.address.country.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      order.delivery_status.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.payment_status.toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesDelivery =
-      delivery_status === "all" || order.delivery_status === delivery_status;
-    const matchesFulfillment =
-      fulfilled_status === "all" || order.fulfilled_status === fulfilled_status;
-    const matchesPayment =
-      payment_status === "all" || order.payment_status === payment_status;
-    const matchesReorder =
-      is_reorder === "all" || order.is_reorder === (is_reorder === "Yes");
-    
-    // Add date range filtering
-    const matchesDate = 
-      (!selectedDate || dayjs(order.creation_date).isAfter(selectedDate, 'day') || dayjs(order.creation_date).isSame(selectedDate, 'day')) &&
-      (!endDate || dayjs(order.creation_date).isBefore(endDate, 'day') || dayjs(order.creation_date).isSame(endDate, 'day'));
-
-    return (
-      matchesSearch &&
-      matchesDelivery &&
-      matchesFulfillment &&
-      matchesPayment &&
-      matchesReorder &&
-      matchesDate
-    );
-  });
+  }, [
+    location.search,
+    fetchOrders,
+    page,
+    rowsPerPage,
+    sortConfig,
+    selectedDealerIds,
+    delivery_status,
+    fulfilled_status,
+    payment_status,
+    is_reorder,
+    selectedDate,
+    endDate,
+  ]);
 
   const handleRowClick = (orderId) => {
     navigate(`/manufacturer/order-details/${orderId}?page=${page}`);
@@ -381,7 +360,7 @@ const OrderList = () => {
 
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+    setPage(1);
   };
 
   const handleOpenMenu = (event, column) => {
@@ -395,27 +374,27 @@ const OrderList = () => {
 
   const handleSelectSort = (key, direction) => {
     setSortConfig({ key, direction });
-    setPage(0);
+    setPage(1);
     handleCloseMenu();
   };
 
   const handleStatusFilter = (statusType, status) => {
-    setDeliveryStatus("all");
-    setFulfilledStatus("all");
-    setPaymentStatus("all");
-    setis_reorder("all");
-
     if (statusType === "delivery_status") setDeliveryStatus(status);
     if (statusType === "fulfilled_status") setFulfilledStatus(status);
     if (statusType === "payment_status") setPaymentStatus(status);
     if (statusType === "is_reorder") setis_reorder(status);
 
+    setPage(1);
     handleCloseMenu();
   };
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
-    setPage(0);
+  };
+
+  const handleSearchSubmit = () => {
+    setPage(1);
+    fetchOrders();
   };
 
   const handleOpenExportMenu = (event) => {
@@ -465,12 +444,19 @@ const OrderList = () => {
 
   const handleDealerSelection = (dealer) => {
     setSelectedDealerIds((prevSelectedIds) => {
-      if (prevSelectedIds.includes(dealer.id)) {
-        return prevSelectedIds.filter((id) => id !== dealer.id);
-      } else {
-        return [...prevSelectedIds, dealer.id];
-      }
+      const isSelected = prevSelectedIds.includes(dealer.id);
+      const newIds = isSelected
+        ? prevSelectedIds.filter((id) => id !== dealer.id)
+        : [...prevSelectedIds, dealer.id];
+      
+      return newIds;
     });
+  };
+
+  const handleApplyDealerFilter = () => {
+    setPage(1);
+    fetchOrders();
+    handleCloseDealerDropdown();
   };
 
   const handleClearSelection = () => {
@@ -496,7 +482,7 @@ const OrderList = () => {
     }
   };
 
-  const totalPages = Math.ceil(filteredOrders.length / rowsPerPage);
+  const totalPages = Math.ceil(totalCount / rowsPerPage);
 
   const breadcrumbs = [
     <Typography key="1" color="text.primary" variant="h3">
@@ -582,6 +568,7 @@ const OrderList = () => {
                         onClick={() => {
                           setSelectedDate(null);
                           setEndDate(null);
+                          setPage(1); // Reset page on date clear
                         }}
                         sx={{
                           color: "primary.main",
@@ -601,6 +588,11 @@ const OrderList = () => {
                   value={searchTerm}
                   size="small"
                   onChange={handleSearchChange}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleSearchSubmit();
+                    }
+                  }}
                   placeholder="Search by Order ID, Dealer Name, City, Country, Delivery or Payment Status"
                   sx={{ width: { xs: "100%", sm: "300px" }, borderRadius: "8px" }}
                   InputProps={{
@@ -609,17 +601,20 @@ const OrderList = () => {
                         <SearchIcon sx={{ color: "grey.400" }} />
                       </InputAdornment>
                     ),
+                    endAdornment: (
+                      searchTerm && (
+                        <InputAdornment position="end">
+                          <IconButton onClick={() => {
+                            setSearchTerm("");
+                            setPage(1);
+                            fetchOrders();
+                          }} size="small">
+                            <ClearIcon />
+                          </IconButton>
+                        </InputAdornment>
+                      )
+                    ),
                     sx: { borderRadius: "8px" },
-                  }}
-                  onKeyPress={(event) => {
-                    if (
-                      event.key === " " &&
-                      (searchTerm.trim() === "" ||
-                        searchTerm.startsWith(" ") ||
-                        searchTerm.endsWith(" "))
-                    ) {
-                      event.preventDefault();
-                    }
                   }}
                 />
 
@@ -658,7 +653,7 @@ const OrderList = () => {
                   }}
                 >
                   <Typography variant="body2" color="text.secondary">
-                    Total Orders: <strong>{filteredOrders.length}</strong>
+                    Total Orders: <strong>{totalCount}</strong>
                   </Typography>
                 </Box>
               </Stack>
@@ -719,8 +714,8 @@ const OrderList = () => {
                     <CircularProgress color="primary" />
                   </TableCell>
                 </TableRow>
-              ) : filteredOrders.length > 0 ? (
-                filteredOrders.map((order) => (
+              ) : orders.length > 0 ? (
+                orders.map((order) => (
                   <StyledTableRow key={order._id} onClick={() => handleRowClick(order._id)}>
                     <StyledTableCell
                       align="left"
@@ -787,16 +782,18 @@ const OrderList = () => {
             </TableBody>
           </Table>
         </StyledTableContainer>
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 3, mb: 2 }}>
-          <Pagination
-            count={totalPages}
-            page={page + 1}
-            onChange={(event, newPage) => handleChangePage(event, newPage - 1)}
-            color="primary"
-            shape="rounded"
-            size="large"
-          />
-        </Box>
+        {orders.length > 0 && (
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 3, mb: 2 }}>
+            <Pagination
+              count={totalPages}
+              page={page}
+              onChange={handleChangePage}
+              color="primary"
+              shape="rounded"
+              size="large"
+            />
+          </Box>
+        )}
 
         <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleCloseMenu}>
           {currentColumn === "order_id" && (
@@ -996,6 +993,13 @@ const OrderList = () => {
               onClick={handleClearSelection}
             >
               Clear
+            </Button>
+            <Button
+              sx={{ fontSize: "12px" }}
+              variant="contained"
+              onClick={handleApplyDealerFilter}
+            >
+              Apply
             </Button>
           </Box>
         </StyledMenu>
