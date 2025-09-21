@@ -24,8 +24,8 @@ import {
   styled,
   createTheme,
   ThemeProvider,
-  Breadcrumbs, // Import Breadcrumbs
-  Link, // Import Link
+  Breadcrumbs,
+  Link,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AddIcon from "@mui/icons-material/Add";
@@ -37,133 +37,68 @@ import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import WorkspacePremiumIcon from "@mui/icons-material/WorkspacePremium";
 import VerifiedIcon from "@mui/icons-material/Verified";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext"; // Import NavigateNextIcon for the separator
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import soonImg from "../../assets/soon-img.png";
 import fallbackImage from "../../../../src/whirlpool.jpeg";
 
-// Define the Flipkart-inspired theme
+// Flipkart-inspired theme
 const flipkartTheme = createTheme({
   palette: {
-    primary: {
-      main: "#1565C0", // Flipkart's primary blue
-    },
-    secondary: {
-      main: "#212121", // A dark gray for main text
-    },
-    error: {
-      main: "#ff6161", // A red for error states and discounts
-    },
-    background: {
-      default: "#f1f3f6", // A light gray for the main page background
-      paper: "#FFFFFF", // White for cards and sections
-    },
-    text: {
-      primary: "#212121",
-      secondary: "#878787", // Gray for secondary text
-      disabled: "#D6D6D6",
-    },
+    primary: { main: "#1565C0" },
+    secondary: { main: "#212121" },
+    error: { main: "#ff6161" },
+    background: { default: "#f1f3f6", paper: "#FFFFFF" },
+    text: { primary: "#212121", secondary: "#878787", disabled: "#D6D6D6" },
   },
   typography: {
     fontFamily: "'Roboto', sans-serif",
-    h4: {
-      fontWeight: 600,
-      fontSize: "2.1rem",
-      "@media (max-width:600px)": {
-        fontSize: "1.7rem",
-      },
-    },
-    h5: {
-      fontWeight: 600,
-      fontSize: "1.6rem",
-      "@media (max-width:600px)": {
-        fontSize: "1.3rem",
-      },
-    },
-    h6: {
-      fontWeight: 500,
-      fontSize: "1.1rem",
-      "@media (max-width:600px)": {
-        fontSize: "1rem",
-      },
-    },
-    body1: {
-      fontSize: "1rem",
-    },
-    body2: {
-      fontSize: "0.875rem",
-    },
+    h4: { fontWeight: 600, fontSize: "2.1rem", "@media (max-width:600px)": { fontSize: "1.7rem" } },
+    h5: { fontWeight: 600, fontSize: "1.6rem", "@media (max-width:600px)": { fontSize: "1.3rem" } },
+    h6: { fontWeight: 500, fontSize: "1.1rem", "@media (max-width:600px)": { fontSize: "1rem" } },
+    body1: { fontSize: "1rem" },
+    body2: { fontSize: "0.875rem" },
   },
   components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          textTransform: "none",
-          fontWeight: 600,
-        },
-      },
-    },
+    MuiButton: { styleOverrides: { root: { textTransform: "none", fontWeight: 600 } } },
     MuiAccordionSummary: {
       styleOverrides: {
-        root: {
-          minHeight: 48,
-          "&.Mui-expanded": {
-            minHeight: 48,
-          },
-        },
-        content: {
-          "&.Mui-expanded": {
-            margin: "12px 0",
-          },
-        },
+        root: { minHeight: 48, "&.Mui-expanded": { minHeight: 48 } },
+        content: { "&.Mui-expanded": { margin: "12px 0" } },
       },
     },
   },
 });
 
-// Styled components for better readability and reusable styles
 const ProductContainer = styled(Box)(({ theme }) => ({
   background: theme.palette.background.default,
   minHeight: "100vh",
   padding: theme.spacing(2, 2, 4),
-  [theme.breakpoints.up("md")]: {
-    padding: theme.spacing(3, 4, 6),
-  },
+  [theme.breakpoints.up("md")]: { padding: theme.spacing(3, 4, 6) },
 }));
-
 const ProductDetailsWrapper = styled(Box)(({ theme }) => ({
   background: theme.palette.background.paper,
   borderRadius: theme.spacing(1),
   boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.1)",
   padding: theme.spacing(2),
   marginBottom: theme.spacing(4),
-  [theme.breakpoints.up("md")]: {
-    padding: theme.spacing(4),
-  },
+  [theme.breakpoints.up("md")]: { padding: theme.spacing(4) },
 }));
-
 const ProductImageContainer = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   position: "sticky",
-  top: theme.spacing(10), // Adjust based on your header height
+  top: theme.spacing(10),
   alignSelf: "flex-start",
   zIndex: 2,
-  [theme.breakpoints.down("md")]: {
-    position: "static",
-    top: "auto",
-  },
+  [theme.breakpoints.down("md")]: { position: "static", top: "auto" },
 }));
-
 const MainImage = styled(CardMedia)(({ theme }) => ({
   width: "100%",
   height: "100%",
   objectFit: "contain",
   maxHeight: 400,
-  [theme.breakpoints.down("sm")]: {
-    maxHeight: 250,
-  },
+  [theme.breakpoints.down("sm")]: { maxHeight: 250 },
 }));
-
 const ThumbnailImage = styled("img")(({ theme, isSelected }) => ({
   width: "100%",
   height: "100%",
@@ -174,11 +109,8 @@ const ThumbnailImage = styled("img")(({ theme, isSelected }) => ({
   borderRadius: theme.spacing(0.5),
   cursor: "pointer",
   transition: "border 0.2s",
-  "&:hover": {
-    borderColor: theme.palette.primary.main,
-  },
+  "&:hover": { borderColor: theme.palette.primary.main },
 }));
-
 const QuantityBox = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
@@ -186,7 +118,6 @@ const QuantityBox = styled(Box)(({ theme }) => ({
   borderRadius: theme.spacing(0.5),
   height: 38,
 }));
-
 const ActionButton = styled(Button)(({ theme, bgcolor }) => ({
   color: theme.palette.background.paper,
   fontWeight: 600,
@@ -200,33 +131,23 @@ const ActionButton = styled(Button)(({ theme, bgcolor }) => ({
     opacity: 0.9,
     boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
   },
-  [theme.breakpoints.down("sm")]: {
-    fontSize: 14,
-    padding: theme.spacing(1.5, 2),
-  },
+  [theme.breakpoints.down("sm")]: { fontSize: 14, padding: theme.spacing(1.5, 2) },
 }));
-
 const StyledAccordion = styled(Accordion)(({ theme }) => ({
   borderRadius: theme.spacing(1),
   boxShadow: "0 1px 2px 0 rgba(0,0,0,0.1)",
   marginBottom: theme.spacing(2),
   border: `1px solid ${theme.palette.divider}`,
-  "&::before": {
-    display: "none",
-  },
+  "&::before": { display: "none" },
 }));
-
 const RelatedProductsSection = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(4),
   padding: theme.spacing(2),
   background: theme.palette.background.paper,
   borderRadius: theme.spacing(1),
   boxShadow: "0 1px 2px 0 rgba(0,0,0,0.1)",
-  [theme.breakpoints.up("md")]: {
-    padding: theme.spacing(3),
-  },
+  [theme.breakpoints.up("md")]: { padding: theme.spacing(3) },
 }));
-
 const RelatedProductCard = styled(Card)(({ theme }) => ({
   width: "100%",
   height: "100%",
@@ -244,18 +165,14 @@ const RelatedProductCard = styled(Card)(({ theme }) => ({
     borderColor: theme.palette.primary.main,
   },
 }));
-
 const EngagementsSection = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(4),
   padding: theme.spacing(3),
   background: theme.palette.background.paper,
   borderRadius: theme.spacing(1),
   boxShadow: "0 1px 2px 0 rgba(0,0,0,0.1)",
-  [theme.breakpoints.up("md")]: {
-    padding: theme.spacing(4),
-  },
+  [theme.breakpoints.up("md")]: { padding: theme.spacing(4) },
 }));
-
 const EngagementItem = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
@@ -291,20 +208,23 @@ const ProductDetail = ({ fetchCartCount }) => {
     const fetchProduct = async () => {
       setLoading(true);
       try {
-        const productResponse = await axios.get(
-          `${process.env.REACT_APP_IP}obtainProductDetails/?product_id=${id}`
-        );
-        const productData = productResponse.data.data || {};
-        setProduct(productData);
-        setMainImage(productData.logo || soonImg);
-        setCurrentIndex(0);
-
+        // --- Get buyer_id from localStorage ---
+        let buyerId = "";
         const userData = localStorage.getItem("user");
         let manufactureUnitId = "";
         if (userData) {
           const data = JSON.parse(userData);
           manufactureUnitId = data.manufacture_unit_id;
+          buyerId = data.id;
         }
+        // --- Pass buyer_id as query param ---
+        const productResponse = await axios.get(
+          `${process.env.REACT_APP_IP}obtainProductDetails/?product_id=${id}${buyerId ? `&buyer_id=${buyerId}` : ""}`
+        );
+        const productData = productResponse.data.data || {};
+        setProduct(productData);
+        setMainImage(productData.logo || soonImg);
+        setCurrentIndex(0);
 
         const relatedResponse = await axios.get(
           `${process.env.REACT_APP_IP}get_related_products/?product_id=${id}&manufacture_unit_id=${manufactureUnitId}`
@@ -312,7 +232,6 @@ const ProductDetail = ({ fetchCartCount }) => {
         const relatedData = relatedResponse.data.data || [];
         setRelatedProducts(relatedData);
       } catch (err) {
-        console.error("Error fetching product data:", err);
         setError("Failed to load product details.");
       } finally {
         setLoading(false);
@@ -326,6 +245,7 @@ const ProductDetail = ({ fetchCartCount }) => {
     setQuantity((prev) => (type === "increment" ? prev + 1 : Math.max(prev - 1, 1)));
   };
 
+  // --- Use discounted_price for cart actions ---
   const handleAddToCart = async (product, quantity, isBuyNow = false) => {
     try {
       const userData = localStorage.getItem("user");
@@ -348,7 +268,10 @@ const ProductDetail = ({ fetchCartCount }) => {
         user_id: userId,
         product_id: product.id,
         quantity: newQuantity,
-        price: product.list_price,
+        price:
+          product.discounted_price !== undefined
+            ? product.discounted_price
+            : product.list_price,
       });
 
       setCartItems((prev) => {
@@ -357,7 +280,17 @@ const ProductDetail = ({ fetchCartCount }) => {
             item.product_id === product.id ? { ...item, quantity: newQuantity } : item
           );
         } else {
-          return [...prev, { product_id: product.id, quantity: quantity, price: product.list_price }];
+          return [
+            ...prev,
+            {
+              product_id: product.id,
+              quantity: quantity,
+              price:
+                product.discounted_price !== undefined
+                  ? product.discounted_price
+                  : product.list_price,
+            },
+          ];
         }
       });
 
@@ -369,7 +302,6 @@ const ProductDetail = ({ fetchCartCount }) => {
         });
       }
     } catch (error) {
-      console.error("Error adding item to cart:", error);
       toast.error("Failed to add product to cart.");
     }
   };
@@ -417,6 +349,69 @@ const ProductDetail = ({ fetchCartCount }) => {
     if (newTab) {
       newTab.focus();
     }
+  };
+
+  // --- Helper for price display (discounted/original) ---
+  const renderPriceSection = (product) => {
+    if (
+      product?.discounted_price !== undefined &&
+      product?.discounted_price !== null &&
+      product?.discounted_price !== product?.list_price
+    ) {
+      return (
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <Typography
+            component="span"
+            sx={{
+              fontSize: { xs: 22, sm: 28, md: 32 },
+              fontWeight: 700,
+              color: "text.primary",
+            }}
+          >
+            {product.currency} {product.discounted_price?.toFixed(2)}
+          </Typography>
+          <Typography
+            component="span"
+            sx={{
+              fontSize: 18,
+              color: "text.secondary",
+              textDecoration: "line-through",
+            }}
+          >
+            {product.currency} {product.list_price?.toFixed(2)}
+          </Typography>
+          {product.applied_discount_value && (
+            <span
+              style={{
+                color: "#fff",
+                fontSize: 13,
+                fontWeight: 500,
+                background: flipkartTheme.palette.error.main,
+                borderRadius: 4,
+                padding: "2px 8px",
+              }}
+            >
+              {product.applied_discount_unit === "%"
+                ? `${product.applied_discount_value}% OFF`
+                : `-${product.currency}${product.applied_discount_value} OFF`}
+            </span>
+          )}
+        </Box>
+      );
+    }
+    // No discount
+    return (
+      <Typography
+        component="span"
+        sx={{
+          fontSize: { xs: 22, sm: 28, md: 32 },
+          fontWeight: 700,
+          color: "text.primary",
+        }}
+      >
+        {product?.currency} {product?.list_price ? product.list_price.toFixed(2) : "N/A"}
+      </Typography>
+    );
   };
 
   if (loading)
@@ -561,36 +556,7 @@ const ProductDetail = ({ fetchCartCount }) => {
                       flexWrap: "wrap",
                     }}
                   >
-                    <Typography
-                      component="p"
-                      sx={{ fontSize: { xs: 22, sm: 28, md: 32 }, fontWeight: 700, color: "text.primary" }}
-                    >
-                      {product?.currency} {product?.list_price ? product.list_price.toFixed(2) : "N/A"}
-                    </Typography>
-                    {product?.was_price && product?.list_price && product.list_price < product.was_price && (
-                      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                        <Typography
-                          component="p"
-                          sx={{ fontSize: 18, color: "text.secondary", textDecoration: "line-through" }}
-                        >
-                          {product?.was_price.toFixed(2)}
-                        </Typography>
-                        {product?.discount && product.discount !== "0%" && (
-                          <span
-                            style={{
-                              color: "#fff",
-                              fontSize: 13,
-                              fontWeight: 500,
-                              background: flipkartTheme.palette.error.main,
-                              borderRadius: 4,
-                              padding: "2px 8px",
-                            }}
-                          >
-                            {product.discount} OFF
-                          </span>
-                        )}
-                      </Box>
-                    )}
+                    {renderPriceSection(product)}
                   </Box>
                   {/* Icons Section */}
                   <Box sx={{ width: "100%", mt: 2, display: "flex", gap: 3, flexWrap: "wrap" }}>
@@ -607,8 +573,10 @@ const ProductDetail = ({ fetchCartCount }) => {
                       <LocalOfferIcon fontSize="small" />
                       <span>
                         Special Price:{" "}
-                        {product?.discount && product.discount !== "0%"
-                          ? product.discount + " OFF"
+                        {product?.applied_discount_value
+                          ? (product.applied_discount_unit === "%"
+                              ? `${product.applied_discount_value}% OFF`
+                              : `-${product.currency}${product.applied_discount_value} OFF`)
                           : "Best Deal"}
                       </span>
                     </Box>
@@ -617,7 +585,7 @@ const ProductDetail = ({ fetchCartCount }) => {
                         display: "flex",
                         alignItems: "center",
                         gap: 1,
-                        color: "#2196f3", // Consistent with the new blue theme
+                        color: "#2196f3",
                         fontSize: 13,
                         mt: { xs: 1, sm: 0 },
                       }}
@@ -653,7 +621,7 @@ const ProductDetail = ({ fetchCartCount }) => {
                       Add to Cart
                     </ActionButton>
                     <ActionButton
-                      bgcolor="#fb641b" // A vibrant orange for Buy Now, common on Flipkart
+                      bgcolor="#fb641b"
                       startIcon={<FlashOnIcon />}
                       onClick={handleBuyNow}
                     >
@@ -767,7 +735,7 @@ const ProductDetail = ({ fetchCartCount }) => {
                               paddingLeft: 24,
                               margin: 0,
                               color: "inherit",
-                              listStyleType: "disc", // <-- ensure bullets
+                              listStyleType: "disc",
                             }}
                           >
                             {product.features.map((feature, index) => (
@@ -778,7 +746,7 @@ const ProductDetail = ({ fetchCartCount }) => {
                                   lineHeight: 1.43,
                                   marginBottom: 5,
                                   color: "inherit",
-                                  listStyleType: "disc", // <-- ensure bullets for each li
+                                  listStyleType: "disc",
                                 }}
                               >
                                 {feature}
@@ -800,26 +768,7 @@ const ProductDetail = ({ fetchCartCount }) => {
 
           {/* From The Manufacturer */}
           <Box sx={{ my: 4 }}>
-            {/* <Typography variant="h6" sx={{ color: "text.primary", fontWeight: 600 }}>
-              From The Manufacturer
-            </Typography>
-            <Box sx={{ mt: 2, borderRadius: 1, overflow: "hidden", boxShadow: "0 1px 2px 0 rgba(0,0,0,0.1)" }}>
-              {product?.from_the_manufacture &&
-              product.from_the_manufacture !== "N/A" &&
-              !product.from_the_manufacture.startsWith("http://example.com") ? (
-                <img
-                  src={product.from_the_manufacture}
-                  alt="Manufacturer"
-                  style={{ width: "100%", height: "auto", display: "block" }}
-                />
-              ) : (
-                <img
-                  src={fallbackImage}
-                  alt="Fallback Manufacturer"
-                  style={{ width: "100%", height: "auto", display: "block" }}
-                />
-              )}
-            </Box> */}
+            {/* ...optional manufacturer section... */}
           </Box>
 
           {/* Extra engaging info section */}

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -29,7 +28,7 @@ import {
   AccordionSummary,
   AccordionDetails,
   Divider,
-  Autocomplete, // Import Autocomplete
+  Autocomplete,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import SearchIcon from "@mui/icons-material/Search";
@@ -40,7 +39,6 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import ViewList from "@mui/icons-material/ViewList";
 import ViewModule from "@mui/icons-material/ViewModule";
 import RefreshIcon from "@mui/icons-material/Refresh";
-
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import soonImg from "../../assets/soon-img.png";
 import ProductBrand from "./ProductBrands";
@@ -187,9 +185,11 @@ const ProductList = ({ fetchCartCount }) => {
         industryId = industry?.id || industryId;
         const userData = localStorage.getItem("user");
         let manufactureUnitId = "";
+        let buyerId = "";
         if (userData) {
           const data = JSON.parse(userData);
           manufactureUnitId = data.manufacture_unit_id;
+          buyerId = data.id; // Use your actual buyer id field if different
         }
         const requestData = {
           manufacture_unit_id: manufactureUnitId,
@@ -203,6 +203,7 @@ const ProductList = ({ fetchCartCount }) => {
           brand_id_list: selectedBrandIds,
           price_from: priceRange.price_from,
           price_to: priceRange.price_to,
+          buyer_id: buyerId, // Send buyer_id for discount support
         };
         const productResponse = await axios.post(
           `${process.env.REACT_APP_IP}obtainProductsListForDealer/`,
@@ -341,12 +342,11 @@ const ProductList = ({ fetchCartCount }) => {
 
         setSuggestions(response.data.data || []);
       } catch (error) {
-        console.error("Error fetching suggestions:", error);
         setSuggestions([]);
       } finally {
         setSearchLoading(false);
       }
-    }, 500); // 500ms debounce delay
+    }, 500);
     setDebounceTimeout(newTimeout);
   };
 
@@ -375,7 +375,7 @@ const ProductList = ({ fetchCartCount }) => {
     setSearchResults([]);
     try {
       const userData = JSON.parse(localStorage.getItem("user"));
-      const { manufacture_unit_id, role_name } = userData;
+      const { manufacture_unit_id, role_name, id: buyer_id } = userData;
       const response = await axios.post(
         `${process.env.REACT_APP_IP}productSearch/`,
         {
@@ -387,6 +387,7 @@ const ProductList = ({ fetchCartCount }) => {
           sort_by: "price",
           sort_by_value: sortByValue,
           filters: "all",
+          buyer_id, // send buyer_id for search as well
         }
       );
       if (
@@ -441,7 +442,7 @@ const ProductList = ({ fetchCartCount }) => {
             user_id: userId,
             product_id: product.id,
             quantity: existingItem.quantity + quantity,
-            price: product.price,
+            price: product.discounted_price !== undefined ? product.discounted_price : product.price,
           }
         );
         toast.success("Product quantity updated.");
@@ -449,7 +450,7 @@ const ProductList = ({ fetchCartCount }) => {
         const newCartItem = {
           product_id: product.id,
           quantity: quantity,
-          price: product.price,
+          price: product.discounted_price !== undefined ? product.discounted_price : product.price,
         };
         setCartItems([...cartItems, newCartItem]);
         await axios.post(
@@ -458,7 +459,7 @@ const ProductList = ({ fetchCartCount }) => {
             user_id: userId,
             product_id: product.id,
             quantity: quantity,
-            price: product.price,
+            price: product.discounted_price !== undefined ? product.discounted_price : product.price,
           }
         );
         toast.success("Product added successfully.");
@@ -523,6 +524,27 @@ const ProductList = ({ fetchCartCount }) => {
     );
   };
 
+  // Helper for price display (discounted/original)
+  const renderPriceCell = (product) => {
+    if (
+      product.discounted_price !== undefined &&
+      product.discounted_price !== null &&
+      product.discounted_price !== product.price
+    ) {
+      return (
+        <>
+          <span style={{ textDecoration: "line-through", color: "#888", marginRight: 4 }}>
+            {product.currency}{product.price?.toFixed(2)}
+          </span>
+          <span style={{ color: "#2874f0", fontWeight: 700 }}>
+            {product.currency}{product.discounted_price?.toFixed(2)}
+          </span>
+        </>
+      );
+    }
+    return product.price ? `${product.currency}${product.price.toFixed(2)}` : "N/A";
+  };
+
   if (loading)
     return (
       <Box
@@ -555,7 +577,6 @@ const ProductList = ({ fetchCartCount }) => {
               minHeight: "100vh",
             }}
           >
-            {/* Removed static brand images and associated display logic */}
             <Accordion>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography variant="subtitle2" fontWeight={700}>
@@ -805,7 +826,6 @@ const ProductList = ({ fetchCartCount }) => {
                       <TableCell align="left" sx={{ fontWeight: 700, color: "#050505", fontFamily: 'Roboto' }}>Category</TableCell>
                       <TableCell align="right" sx={{ fontWeight: 700, color: "#050505", fontFamily: 'Roboto' }}>Price</TableCell>
                       <TableCell align="center" sx={{ fontWeight: 700, color: "#050505", fontFamily: 'Roboto' }}>Availability</TableCell>
-                      {/* <<< MODIFICATION: ADDED ACTIONS HEADER >>> */}
                       <TableCell align="center" sx={{ fontWeight: 700, color: "#050505", fontFamily: 'Roboto', minWidth: '160px' }}>Quantity</TableCell>
                     </TableRow>
                   </TableHead>
@@ -861,7 +881,7 @@ const ProductList = ({ fetchCartCount }) => {
                         <TableCell align="left" sx={{ color: "#555", fontFamily: 'Roboto' }}>{product.brand_name}</TableCell>
                         <TableCell align="left" sx={{ color: "#555", fontFamily: 'Roboto' }}>{product.end_level_category}</TableCell>
                         <TableCell align="right" sx={{ fontWeight: 600, color: "#2874f0", fontFamily: 'Roboto' }}>
-                          {product.price ? `${product.currency}${product.price.toFixed(2)}` : "N/A"}
+                          {renderPriceCell(product)}
                         </TableCell>
                         <TableCell align="center">
                           <span
@@ -874,7 +894,6 @@ const ProductList = ({ fetchCartCount }) => {
                             {product.availability ? "In Stock" : "Out of Stock"}
                           </span>
                         </TableCell>
-                        {/* <<< MODIFICATION: ADDED ACTIONS CELL WITH QUANTITY AND ADD TO CART >>> */}
                         <TableCell align="center">
                            <Stack direction="row" spacing={1} alignItems="center" onClick={(e) => e.stopPropagation()}>
                                 <TextField
@@ -982,24 +1001,26 @@ const ProductList = ({ fetchCartCount }) => {
                                 height: 120,
                               }}
                             />
-                            {product.discount > 0 && (
-                              <Chip
-                                label={`${product.discount}% OFF`}
-                                size="small"
-                                sx={{
-                                  position: "absolute",
-                                  top: 8,
-                                  left: 8,
-                                  bgcolor: "#d32f2f",
-                                  color: "#fff",
-                                  fontWeight: 600,
-                                  fontSize: "10px",
-                                  px: 0.5,
-                                  zIndex: 2,
-                                  height: 20,
-                                }}
-                              />
-                            )}
+                            {product.discounted_price !== undefined &&
+                              product.discounted_price !== null &&
+                              product.discounted_price !== product.price && (
+                                <Chip
+                                  label={`Discount`}
+                                  size="small"
+                                  sx={{
+                                    position: "absolute",
+                                    top: 8,
+                                    left: 8,
+                                    bgcolor: "#d32f2f",
+                                    color: "#fff",
+                                    fontWeight: 600,
+                                    fontSize: "10px",
+                                    px: 0.5,
+                                    zIndex: 2,
+                                    height: 20,
+                                  }}
+                                />
+                              )}
                           </Box>
                           <CardContent
                             sx={{
@@ -1077,7 +1098,6 @@ const ProductList = ({ fetchCartCount }) => {
                                   ? "In Stock"
                                   : "Out of Stock"}
                               </Typography>
-                              
                               <Box
                                 sx={{
                                   display: "flex",
@@ -1094,30 +1114,9 @@ const ProductList = ({ fetchCartCount }) => {
                                     fontSize: "1rem",
                                   }}
                                 >
-                                  {product.price
-                                    ? `${
-                                        product.currency || ""
-                                      }${product.price.toFixed(2)}`
-                                    : "N/A"}
+                                  {renderPriceCell(product)}
                                 </Typography>
-                                {product.discount > 0 && product.price && (
-                                  <Typography
-                                    variant="body2"
-                                    sx={{
-                                      color: "#878787",
-                                      textDecoration: "line-through",
-                                      ml: 1,
-                                      fontSize: "0.8rem",
-                                    }}
-                                  >
-                                    {`${product.currency || ""}${(
-                                      product.price /
-                                      (1 - product.discount / 100)
-                                    ).toFixed(2)}`}
-                                  </Typography>
-                                )}
                               </Box>
-
                             </Box>
                             <Box
                               sx={{

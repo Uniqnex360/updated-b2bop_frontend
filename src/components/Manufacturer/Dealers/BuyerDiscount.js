@@ -136,7 +136,7 @@ export default function BuyerDiscount({ user: userProp, buyerId }) {
       .finally(() => setBrandLoading(false));
   }, [user?.manufacture_unit_id, brandPage]);
 
-  // Fetch paginated categories (split into two lists)
+  // Fetch paginated categories
   useEffect(() => {
     if (!user?.manufacture_unit_id) return;
     setCategoryLoading(true);
@@ -176,7 +176,7 @@ export default function BuyerDiscount({ user: userProp, buyerId }) {
       .finally(() => setLoadingDiscounts(false));
   }, [buyerId]);
 
-  // validation
+  // Form validation
   const isFormValid = useMemo(() => {
     switch (tab) {
       case 0:
@@ -207,12 +207,19 @@ export default function BuyerDiscount({ user: userProp, buyerId }) {
       setMessage({ text: "Please fill all required fields.", type: "error" });
       return;
     }
+    if (!user?.manufacture_unit_id) {
+      setMessage({ text: "Manufacturer info missing.", type: "error" });
+      return;
+    }
+
     let payload = {
+      manufacture_unit_id: user.manufacture_unit_id, // 👈 add manufacturer
       buyer_id: buyerId,
       type: tabLabels[tab].replace("-wise", "").replace("Order-level", "Order"),
       discount_value: Number(discountValue),
       discount_type: discountType,
     };
+
     if (tab === 0) {
       payload.product_id = selectedProduct?.id;
       payload.min_quantity = Number(qty);
@@ -265,9 +272,10 @@ export default function BuyerDiscount({ user: userProp, buyerId }) {
     orderLevelValue,
     discountValue,
     discountType,
+    user?.manufacture_unit_id,
   ]);
 
-  // Remove discount from backend
+  // Remove discount
   const handleRemove = useCallback(
     (discountId) => {
       fetch(`${process.env.REACT_APP_IP}delete_discount/${discountId}/`, {
@@ -298,9 +306,7 @@ export default function BuyerDiscount({ user: userProp, buyerId }) {
               onChange={(_, newValue) =>
                 setFormState((prev) => ({ ...prev, selectedProduct: newValue }))
               }
-              onInputChange={(_, newInputValue) => {
-                setProductSearchQuery(newInputValue);
-              }}
+              onInputChange={(_, newInputValue) => setProductSearchQuery(newInputValue)}
               value={selectedProduct}
               isOptionEqualToValue={(o, v) => o.id === v.id}
               sx={{ width: { xs: "100%", sm: 300 } }}
@@ -314,9 +320,7 @@ export default function BuyerDiscount({ user: userProp, buyerId }) {
                     ...params.InputProps,
                     endAdornment: (
                       <>
-                        {productLoading && (
-                          <CircularProgress color="inherit" size={20} />
-                        )}
+                        {productLoading && <CircularProgress color="inherit" size={20} />}
                         {params.InputProps.endAdornment}
                       </>
                     ),
@@ -326,9 +330,7 @@ export default function BuyerDiscount({ user: userProp, buyerId }) {
               renderOption={(props, option) => (
                 <Tooltip title={option.product_name} arrow>
                   <Box component="li" {...props}>
-                    <Typography variant="body2">
-                      {option.product_name}
-                    </Typography>
+                    <Typography variant="body2">{option.product_name}</Typography>
                   </Box>
                 </Tooltip>
               )}
@@ -339,10 +341,7 @@ export default function BuyerDiscount({ user: userProp, buyerId }) {
               sx={{ width: { xs: "100%", sm: 120 } }}
               value={qty}
               onChange={(e) =>
-                setFormState((prev) => ({
-                  ...prev,
-                  qty: e.target.value.replace(/\D/, ""),
-                }))
+                setFormState((prev) => ({ ...prev, qty: e.target.value.replace(/\D/, "") }))
               }
               type="number"
             />
@@ -355,12 +354,7 @@ export default function BuyerDiscount({ user: userProp, buyerId }) {
               options={level1Categories}
               getOptionLabel={(option) => option.label || ""}
               value={selectedLevel1}
-              onChange={(_, newValue) =>
-                setFormState((prev) => ({
-                  ...prev,
-                  selectedLevel1: newValue,
-                }))
-              }
+              onChange={(_, newValue) => setFormState((prev) => ({ ...prev, selectedLevel1: newValue }))}
               sx={{ width: { xs: "100%", sm: 180 } }}
               loading={categoryLoading}
               renderInput={(params) => (
@@ -372,9 +366,7 @@ export default function BuyerDiscount({ user: userProp, buyerId }) {
                     ...params.InputProps,
                     endAdornment: (
                       <>
-                        {categoryLoading && (
-                          <CircularProgress color="inherit" size={20} />
-                        )}
+                        {categoryLoading && <CircularProgress color="inherit" size={20} />}
                         {params.InputProps.endAdornment}
                       </>
                     ),
@@ -386,12 +378,7 @@ export default function BuyerDiscount({ user: userProp, buyerId }) {
               options={endLevelCategories}
               getOptionLabel={(option) => option.label || ""}
               value={selectedEndLevel}
-              onChange={(_, newValue) =>
-                setFormState((prev) => ({
-                  ...prev,
-                  selectedEndLevel: newValue,
-                }))
-              }
+              onChange={(_, newValue) => setFormState((prev) => ({ ...prev, selectedEndLevel: newValue }))}
               sx={{ width: { xs: "100%", sm: 180 } }}
               loading={categoryLoading}
               renderInput={(params) => (
@@ -403,9 +390,7 @@ export default function BuyerDiscount({ user: userProp, buyerId }) {
                     ...params.InputProps,
                     endAdornment: (
                       <>
-                        {categoryLoading && (
-                          <CircularProgress color="inherit" size={20} />
-                        )}
+                        {categoryLoading && <CircularProgress color="inherit" size={20} />}
                         {params.InputProps.endAdornment}
                       </>
                     ),
@@ -420,9 +405,7 @@ export default function BuyerDiscount({ user: userProp, buyerId }) {
           <Autocomplete
             options={brands}
             getOptionLabel={(option) => option.name || ""}
-            onChange={(_, newValue) =>
-              setFormState((prev) => ({ ...prev, selectedBrand: newValue }))
-            }
+            onChange={(_, newValue) => setFormState((prev) => ({ ...prev, selectedBrand: newValue }))}
             value={selectedBrand}
             isOptionEqualToValue={(o, v) => o.id === v.id}
             sx={{ width: { xs: "100%", sm: 300 }, mb: 1 }}
@@ -436,9 +419,7 @@ export default function BuyerDiscount({ user: userProp, buyerId }) {
                   ...params.InputProps,
                   endAdornment: (
                     <>
-                      {brandLoading && (
-                        <CircularProgress color="inherit" size={20} />
-                      )}
+                      {brandLoading && <CircularProgress color="inherit" size={20} />}
                       {params.InputProps.endAdornment}
                     </>
                   ),
@@ -454,12 +435,7 @@ export default function BuyerDiscount({ user: userProp, buyerId }) {
             size="small"
             sx={{ width: { xs: "100%", sm: 180 }, mb: 1 }}
             value={orderLevelValue}
-            onChange={(e) =>
-              setFormState((prev) => ({
-                ...prev,
-                orderLevelValue: e.target.value.replace(/[^0-9.]/, ""),
-              }))
-            }
+            onChange={(e) => setFormState((prev) => ({ ...prev, orderLevelValue: e.target.value.replace(/[^0-9.]/, "") }))}
             type="number"
           />
         );
@@ -471,19 +447,8 @@ export default function BuyerDiscount({ user: userProp, buyerId }) {
   const hasError = message?.type === "error";
   if (hasError && (message?.text.includes("User") || message?.text.includes("Buyer"))) {
     return (
-      <Box
-        sx={{
-          background: "#f8fafc",
-          minHeight: "60vh",
-          p: { xs: 2, sm: 3, md: 4 },
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Alert severity="error" sx={{ fontSize: 18, fontWeight: 500 }}>
-          {message.text}
-        </Alert>
+      <Box sx={{ background: "#f8fafc", minHeight: "60vh", p: { xs: 2, sm: 3, md: 4 }, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <Alert severity="error" sx={{ fontSize: 18, fontWeight: 500 }}>{message.text}</Alert>
       </Box>
     );
   }
@@ -509,9 +474,7 @@ export default function BuyerDiscount({ user: userProp, buyerId }) {
 
       <StyledCard>
         <CardContent>
-          <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-            {tabLabels[tab]} Discount
-          </Typography>
+          <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>{tabLabels[tab]} Discount</Typography>
           <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", mb: 1 }}>
             {renderFormFields()}
 
@@ -520,42 +483,24 @@ export default function BuyerDiscount({ user: userProp, buyerId }) {
               size="small"
               sx={{ width: { xs: "100%", sm: 120 } }}
               value={discountValue}
-              onChange={(e) =>
-                setFormState((prev) => ({
-                  ...prev,
-                  discountValue: e.target.value.replace(/[^0-9.]/, ""),
-                }))
-              }
+              onChange={(e) => setFormState((prev) => ({ ...prev, discountValue: e.target.value.replace(/[^0-9.]/, "") }))}
               InputProps={{
-                startAdornment:
-                  discountType === "$" ? (
-                    <InputAdornment position="start">₹</InputAdornment>
-                  ) : null,
-                endAdornment:
-                  discountType === "%" ? (
-                    <InputAdornment position="end">%</InputAdornment>
-                  ) : null,
+                startAdornment: discountType === "$" ? <InputAdornment position="start">₹</InputAdornment> : null,
+                endAdornment: discountType === "%" ? <InputAdornment position="end">%</InputAdornment> : null,
               }}
             />
 
             <FormControl size="small" sx={{ minWidth: 90 }}>
               <Select
                 value={discountType}
-                onChange={(e) =>
-                  setFormState((prev) => ({ ...prev, discountType: e.target.value }))
-                }
+                onChange={(e) => setFormState((prev) => ({ ...prev, discountType: e.target.value }))}
                 sx={{ fontSize: "14px" }}
               >
                 <MenuItem value="%">%</MenuItem>
                 <MenuItem value="$">$</MenuItem>
               </Select>
             </FormControl>
-            <StyledButton
-              variant="contained"
-              onClick={handleAdd}
-              disabled={!isFormValid}
-              sx={{ alignSelf: "center" }}
-            >
+            <StyledButton variant="contained" onClick={handleAdd} disabled={!isFormValid} sx={{ alignSelf: "center" }}>
               Add
             </StyledButton>
           </Box>
@@ -586,11 +531,11 @@ export default function BuyerDiscount({ user: userProp, buyerId }) {
                   <TableCell>{d.type}</TableCell>
                   <TableCell>
                     {d.type === "Product"
-                      ? (products.find(p => p.id === d.product_id)?.product_name || d.product_id)
+                      ? products.find(p => p.id === d.product_id)?.product_name || d.product_id
                       : d.type === "Category"
                       ? `${d.category_level1_name || ""} → ${d.category_end_name || ""}`
                       : d.type === "Brand"
-                      ? (brands.find(b => b.id === d.brand_id)?.name || d.brand_id)
+                      ? brands.find(b => b.id === d.brand_id)?.name || d.brand_id
                       : "Order"}
                   </TableCell>
                   <TableCell>{d.category_level1_name || "-"}</TableCell>
@@ -602,15 +547,9 @@ export default function BuyerDiscount({ user: userProp, buyerId }) {
                       ? `Min Value: ₹${d.min_order_value}`
                       : "-"}
                   </TableCell>
+                  <TableCell>{d.discount_type === "%" ? `${d.discount_value}%` : `₹${d.discount_value}`}</TableCell>
                   <TableCell>
-                    {d.discount_type === "%"
-                      ? `${d.discount_value}%`
-                      : `₹${d.discount_value}`}
-                  </TableCell>
-                  <TableCell>
-                    <Button color="error" onClick={() => handleRemove(d._id)}>
-                      Remove
-                    </Button>
+                    <Button color="error" onClick={() => handleRemove(d._id)}>Remove</Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -619,18 +558,8 @@ export default function BuyerDiscount({ user: userProp, buyerId }) {
         </TableContainer>
       ) : null}
 
-      <Snackbar
-        open={!!message.text}
-        autoHideDuration={4000}
-        onClose={() => setMessage({ text: "", type: "success" })}
-      >
-        <Alert
-          severity={message.type}
-          onClose={() => setMessage({ text: "", type: "success" })}
-          sx={{ width: "100%" }}
-        >
-          {message.text}
-        </Alert>
+      <Snackbar open={!!message.text} autoHideDuration={4000} onClose={() => setMessage({ text: "", type: "success" })}>
+        <Alert severity={message.type}>{message.text}</Alert>
       </Snackbar>
     </Box>
   );

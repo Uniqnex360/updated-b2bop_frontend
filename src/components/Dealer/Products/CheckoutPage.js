@@ -1,5 +1,3 @@
-// C:\Users\Win11\Desktop\B2B-OP-dev-feb-12\src\components\Dealer\Products\CheckoutPage.js
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useLocation } from "react-router-dom";
@@ -23,18 +21,17 @@ import {
 
 import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
 import CloseIcon from '@mui/icons-material/Close';
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import soonImg from "../../assets/soon-img.png";
 
 // Define the Flipkart-inspired theme
 const flipkartTheme = createTheme({
   palette: {
     primary: {
-      main: "#1565C0", // Flipkart's primary blue
+      main: "#1565C0",
       dark: "#0a4b86",
     },
     secondary: {
-      main: "#212121", // A dark gray for main text
+      main: "#212121",
     },
     error: {
       main: "#ff6161",
@@ -43,12 +40,12 @@ const flipkartTheme = createTheme({
       main: "#388e3c",
     },
     background: {
-      default: "#f1f3f6", // A light gray for the main page background
-      paper: "#FFFFFF", // White for cards and sections
+      default: "#f1f3f6",
+      paper: "#FFFFFF",
     },
     text: {
       primary: "#212121",
-      secondary: "#878787", // Gray for secondary text
+      secondary: "#878787",
       disabled: "#D6D6D6",
     },
   },
@@ -116,7 +113,7 @@ const flipkartTheme = createTheme({
 
 // Styled components for a modern, Flipkart-like look
 const WhiteBackgroundBox = styled(Box)(({ theme }) => ({
-  backgroundColor: '#ffffff', // Set background to solid white
+  backgroundColor: '#ffffff',
   minHeight: '100vh',
   padding: theme.spacing(4),
 }));
@@ -127,13 +124,13 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   backdropFilter: 'blur(4px)',
   WebkitBackdropFilter: 'blur(4px)',
   border: '1px solid rgba(255, 255, 255, 0.18)',
-  backgroundColor: 'rgba(255, 255, 255, 0.9)', // Semi-transparent white
+  backgroundColor: 'rgba(255, 255, 255, 0.9)',
   padding: theme.spacing(4),
   height: '100%',
 }));
 
 const CheckoutButton = styled(Button)(({ theme }) => ({
-  backgroundColor: theme.palette.primary.main, // Flipkart Blue
+  backgroundColor: theme.palette.primary.main,
   border: 0,
   borderRadius: 8,
   color: 'white',
@@ -142,7 +139,7 @@ const CheckoutButton = styled(Button)(({ theme }) => ({
   boxShadow: '0 3px 5px 2px rgba(21, 101, 192, .3)',
   transition: 'background-color 0.2s ease-in-out',
   '&:hover': {
-    backgroundColor: theme.palette.primary.dark, // A slightly darker blue on hover
+    backgroundColor: theme.palette.primary.dark,
   },
 }));
 
@@ -189,34 +186,24 @@ function CheckoutPage({ fetchCartCount }) {
     return userData ? JSON.parse(userData) : null;
   };
 
-  const fetchCartItems = async (userId) => {
-    try {
-      setLoading(true);
-      const response = await axios.get(
-        `${process.env.REACT_APP_IP}obtainUserCartItemList/?user_id=${userId}`
-      );
-      setCartItems(response.data.data || []);
-    } catch (err) {
-      setError("Failed to load cart items");
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // Fetch total amount and cart items with discount info
   const fetchTotalAmountAndCount = async (userId) => {
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_IP}totalCheckOutAmount/?user_id=${userId}`
       );
       if (response.data && response.data.data) {
-        const { total_amount, cart_count } = response.data.data;
+        const { total_amount, cart_count, cart_items } = response.data.data;
         setTotalAmount(total_amount || 0);
         setCartCount(cart_count || 0);
+        setCartItems(cart_items || []);
       } else {
         console.error("Invalid response structure for total amount and count.");
       }
     } catch (err) {
       console.error("Error fetching total amount and count:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -228,9 +215,6 @@ function CheckoutPage({ fetchCartCount }) {
       setOpenDialog(true);
       return;
     }
-    
-    // Instead of creating an order on the backend, we navigate to the payment page.
-    // The order creation will happen on the payment page after the user confirms payment method.
     navigate("/dealer/paymentPage", {
       state: {
         cartItems: cartItems,
@@ -253,11 +237,14 @@ function CheckoutPage({ fetchCartCount }) {
 
     if (singleProduct) {
       setCartItems([singleProduct]);
-      setTotalAmount(singleProduct.price * singleProduct.quantity);
+      setTotalAmount(
+        (singleProduct.discounted_price !== undefined && singleProduct.discounted_price !== null
+          ? singleProduct.discounted_price
+          : singleProduct.price) * singleProduct.quantity
+      );
       setCartCount(1);
       setLoading(false);
     } else {
-      fetchCartItems(user.id);
       fetchTotalAmountAndCount(user.id);
     }
   }, [location.state]);
@@ -450,51 +437,100 @@ function CheckoutPage({ fetchCartCount }) {
                     borderRadius: '2px',
                   },
                 }}>
-                  {cartItems.map((item, index) => (
-                    <Box key={index} display="flex" alignItems="center" my={2}>
-                      <Box
-                        sx={{
-                          width: 60,
-                          height: 60,
-                          borderRadius: 2,
-                          overflow: 'hidden',
-                          flexShrink: 0,
-                          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                        }}
-                      >
-                        <img
-                          src={!item.primary_image || item.primary_image?.startsWith("http://example.com") || !(item.primary_image?.startsWith("http") || item.primary_image?.startsWith("https"))
-                            ? soonImg
-                            : item.primary_image
-                          }
-                          alt={item.name}
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        />
-                      </Box>
-                      <Box ml={2} flex={1}>
-                        <Typography
-                          variant="subtitle1"
-                          sx={{ fontSize: '14px', lineHeight: '1.2', cursor: 'pointer', fontWeight: 500 }}
-                          onClick={() => handleProductClick(item.product_id)}
+                  {cartItems.map((item, index) => {
+                    const hasDiscount =
+                      item.discounted_price !== undefined &&
+                      item.discounted_price !== null &&
+                      item.discounted_price !== item.price;
+                    const displayPrice = hasDiscount
+                      ? item.discounted_price
+                      : item.price;
+                    return (
+                      <Box key={index} display="flex" alignItems="center" my={2}>
+                        <Box
+                          sx={{
+                            width: 60,
+                            height: 60,
+                            borderRadius: 2,
+                            overflow: 'hidden',
+                            flexShrink: 0,
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                          }}
                         >
-                          {item.name}
-                        </Typography>
-                        <Typography variant="body2" sx={{ mt: 0.5 }}>
-                          Quantity: {item.quantity} x ${item.price.toFixed(2)}
+                          <img
+                            src={!item.primary_image || item.primary_image?.startsWith("http://example.com") || !(item.primary_image?.startsWith("http") || item.primary_image?.startsWith("https"))
+                              ? soonImg
+                              : item.primary_image
+                            }
+                            alt={item.name}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          />
+                        </Box>
+                        <Box ml={2} flex={1}>
+                          <Typography
+                            variant="subtitle1"
+                            sx={{ fontSize: '14px', lineHeight: '1.2', cursor: 'pointer', fontWeight: 500 }}
+                            onClick={() => handleProductClick(item.product_id)}
+                          >
+                            {item.name}
+                          </Typography>
+                          <Typography variant="body2" sx={{ mt: 0.5 }}>
+                            Quantity: {item.quantity} x {item.currency}
+                            {hasDiscount ? (
+                              <>
+                                <span style={{ fontWeight: 700 }}>
+                                  {item.discounted_price?.toFixed(2)}
+                                </span>
+                                <span
+                                  style={{
+                                    textDecoration: "line-through",
+                                    color: "#888",
+                                    marginLeft: 8,
+                                    fontWeight: 400,
+                                  }}
+                                >
+                                  {item.price?.toFixed(2)}
+                                </span>
+                                {item.applied_discount_value && (
+                                  <span
+                                    style={{
+                                      color: "#fff",
+                                      fontSize: 12,
+                                      fontWeight: 500,
+                                      background: flipkartTheme.palette.error.main,
+                                      borderRadius: 4,
+                                      padding: "2px 8px",
+                                      marginLeft: 8,
+                                    }}
+                                  >
+                                    {item.applied_discount_unit === "%"
+                                      ? `${item.applied_discount_value}% OFF`
+                                      : `-${item.currency}${item.applied_discount_value} OFF`}
+                                  </span>
+                                )}
+                              </>
+                            ) : (
+                              <span style={{ fontWeight: 700 }}>
+                                {item.price?.toFixed(2)}
+                              </span>
+                            )}
+                          </Typography>
+                        </Box>
+                        <Typography variant="subtitle1" sx={{ fontWeight: 600, color: 'text.primary' }}>
+                          {(displayPrice * item.quantity).toFixed(2)}
                         </Typography>
                       </Box>
-                      <Typography variant="subtitle1" sx={{ fontWeight: 600, color: 'text.primary' }}>
-                        {(item.price * item.quantity).toFixed(2)}
-                      </Typography>
-                    </Box>
-                  ))}
+                    );
+                  })}
                 </Box>
 
                 <Divider sx={{ my: 2 }} />
 
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                   <Typography variant="h6" sx={{ color: 'text.primary' }}>Order Total</Typography>
-                  <Typography variant="h5" color="primary" sx={{ fontWeight: 700 }}>${totalAmount.toFixed(2)}</Typography>
+                  <Typography variant="h5" color="primary" sx={{ fontWeight: 700 }}>
+                    {cartItems[0]?.currency}{totalAmount.toFixed(2)}
+                  </Typography>
                 </Box>
 
                 <CheckoutButton

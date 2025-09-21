@@ -30,11 +30,11 @@ import soonImg from "../../assets/soon-img.png";
 const flipkartTheme = createTheme({
   palette: {
     primary: {
-      main: "#1565C0", // Flipkart's primary blue
+      main: "#1565C0",
       dark: "#0a4b86",
     },
     secondary: {
-      main: "#212121", // A dark gray for main text
+      main: "#212121",
     },
     error: {
       main: "#ff6161",
@@ -43,12 +43,12 @@ const flipkartTheme = createTheme({
       main: "#388e3c",
     },
     background: {
-      default: "#f1f3f6", // A light gray for the main page background
-      paper: "#FFFFFF", // White for cards and sections
+      default: "#f1f3f6",
+      paper: "#FFFFFF",
     },
     text: {
       primary: "#212121",
-      secondary: "#878787", // Gray for secondary text
+      secondary: "#878787",
       disabled: "#D6D6D6",
     },
   },
@@ -202,6 +202,7 @@ const CartPage = ({ fetchCartCount, fetchWishlist }) => {
     return userData ? JSON.parse(userData) : null;
   };
 
+  // Fetch cart items and use discounted_price if present
   const fetchCartItems = useCallback(async (userId) => {
     try {
       setLoading(true);
@@ -225,9 +226,15 @@ const CartPage = ({ fetchCartCount, fetchWishlist }) => {
     }
   }, []);
 
+  // Use discounted_price for total calculation if present
   const totalAmount = useMemo(() => {
     return cartItems.reduce(
-      (acc, item) => acc + item.price * (itemQuantity[item.id] || item.quantity),
+      (acc, item) =>
+        acc +
+        ((item.discounted_price !== undefined && item.discounted_price !== null
+          ? item.discounted_price
+          : item.price) *
+          (itemQuantity[item.id] || item.quantity)),
       0
     );
   }, [cartItems, itemQuantity]);
@@ -266,7 +273,6 @@ const CartPage = ({ fetchCartCount, fetchWishlist }) => {
       setMovingToWishlistId(null);
       return;
     }
-    
     try {
       await axios.post(
         `${process.env.REACT_APP_IP}moveCartItemsToWishlist/`,
@@ -275,24 +281,15 @@ const CartPage = ({ fetchCartCount, fetchWishlist }) => {
           product_id: item.product_id,
         }
       );
-      
-      // Update local cart state to remove the item
       setCartItems(prevItems => prevItems.filter(cartItem => cartItem.id !== item.id));
-      
-      // Trigger a refresh on the wishlist page by calling the passed prop
       if (fetchWishlist) {
         fetchWishlist();
       }
-      
-      // Update cart count
       if (fetchCartCount) {
         fetchCartCount();
       }
-
     } catch (error) {
-      console.error("Error moving item to wishlist:", error);
       setError("Failed to move item to wishlist. Please try again.");
-      // Revert the state change if the API call fails
       setCartItems(prevItems => [...prevItems, item]);
     } finally {
       setMovingToWishlistId(null);
@@ -495,208 +492,256 @@ const CartPage = ({ fetchCartCount, fetchWishlist }) => {
             <Grid container spacing={2}>
               <Grid item xs={12} md={8}>
                 <StyledPaper sx={{ p: { xs: 1, sm: 2 } }}>
-                  {cartItems.map((item) => (
-                    <Box key={item.id} sx={{ borderBottom: '1px solid #D6D6D6', '&:last-of-type': { borderBottom: 'none' } }}>
-                      <CartItemContainer>
-                        <ProductImageContainer>
-                          <img
-                            src={
-                              !item.primary_image ||
-                              item.primary_image?.startsWith("http://example.com") ||
-                              !(
-                                item.primary_image?.startsWith("http") ||
-                                item.primary_image?.startsWith("https")
-                              )
-                                ? soonImg
-                                : item.primary_image
-                            }
-                            alt={item.name || "Product Image"}
-                            style={{
-                              width: "100%",
-                              height: "100%",
-                              objectFit: "contain",
-                            }}
-                          />
-                        </ProductImageContainer>
-                        <ProductDetailsContainer>
-                          <Typography
-                            variant="subtitle1"
-                            sx={{
-                              fontWeight: 700,
-                              color: flipkartTheme.palette.text.primary,
-                              cursor: "pointer",
-                              mb: 0.5,
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              whiteSpace: "nowrap",
-                            }}
-                            onClick={() => handleProductClick(item.product_id)}
-                          >
-                            {item.name}
-                          </Typography>
-                          <Stack
-                            direction={{ xs: "column", sm: "row" }}
-                            spacing={{ xs: 0, sm: 1 }}
-                            divider={
-                              <Divider
-                                orientation="vertical"
-                                flexItem
-                                sx={{ display: { xs: "none", sm: "block" } }}
-                              />
-                            }
-                            sx={{ mb: 1, flexWrap: "wrap" }}
-                          >
-                            <Typography
-                              sx={{
-                                fontSize: "12px",
-                                color: flipkartTheme.palette.text.secondary,
+                  {cartItems.map((item) => {
+                    const hasDiscount =
+                      item.discounted_price !== undefined &&
+                      item.discounted_price !== null &&
+                      item.discounted_price !== item.price;
+                    const displayPrice = hasDiscount
+                      ? item.discounted_price
+                      : item.price;
+                    return (
+                      <Box key={item.id} sx={{ borderBottom: '1px solid #D6D6D6', '&:last-of-type': { borderBottom: 'none' } }}>
+                        <CartItemContainer>
+                          <ProductImageContainer>
+                            <img
+                              src={
+                                !item.primary_image ||
+                                item.primary_image?.startsWith("http://example.com") ||
+                                !(
+                                  item.primary_image?.startsWith("http") ||
+                                  item.primary_image?.startsWith("https")
+                                )
+                                  ? soonImg
+                                  : item.primary_image
+                              }
+                              alt={item.name || "Product Image"}
+                              style={{
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "contain",
                               }}
-                            >
-                              Brand: {item.brand_name || "-"}
-                            </Typography>
+                            />
+                          </ProductImageContainer>
+                          <ProductDetailsContainer>
                             <Typography
-                              sx={{
-                                fontSize: "12px",
-                                color: flipkartTheme.palette.text.secondary,
-                              }}
-                            >
-                              SKU: {item.sku_number}
-                            </Typography>
-                          </Stack>
-                          <Typography
-                            variant="body2"
-                            sx={{
-                              fontWeight: 500,
-                              color: flipkartTheme.palette.text.secondary,
-                            }}
-                          >
-                            Each item price: {item.currency}{item.price?.toFixed(2)}
-                          </Typography>
-                          <Box sx={{ my: 1 }}>
-                            <Typography
-                              variant="h6"
+                              variant="subtitle1"
                               sx={{
                                 fontWeight: 700,
                                 color: flipkartTheme.palette.text.primary,
-                                fontSize: "1.25rem",
+                                cursor: "pointer",
+                                mb: 0.5,
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
                               }}
+                              onClick={() => handleProductClick(item.product_id)}
                             >
-                              {item.currency}{(itemQuantity[item.id] * item.price)?.toFixed(2)}
+                              {item.name}
                             </Typography>
-                          </Box>
-                          <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
-                            <QuantityBox sx={{ width: "fit-content" }}>
-                              <Button
-                                sx={{
-                                  minWidth: 32,
-                                  px: 0,
-                                  color: flipkartTheme.palette.text.primary,
-                                  fontWeight: 700,
-                                  fontSize: 20,
-                                }}
-                                onClick={() =>
-                                  handleQuantityChange(
-                                    item.id,
-                                    Math.max(1, (itemQuantity[item.id] || item.quantity) - 1)
-                                  )
-                                }
-                                disabled={isUpdating}
-                              >
-                                -
-                              </Button>
-                              <TextField
-                                type="number"
-                                value={itemQuantity[item.id] || item.quantity}
-                                onChange={(e) =>
-                                  handleQuantityChange(item.id, e.target.value)
-                                }
-                                size="small"
-                                inputProps={{
-                                  min: 1,
-                                  style: { textAlign: "center", padding: "6px 0" },
-                                }}
-                                sx={{
-                                  width: "50px",
-                                  "& .MuiInputBase-input": {
-                                    textAlign: "center",
-                                    fontWeight: 600,
-                                    fontSize: 15,
-                                  },
-                                }}
-                                disabled={isUpdating}
-                              />
-                              <Button
-                                sx={{
-                                  minWidth: 32,
-                                  px: 0,
-                                  color: flipkartTheme.palette.text.primary,
-                                  fontWeight: 700,
-                                  fontSize: 20,
-                                }}
-                                onClick={() =>
-                                  handleQuantityChange(
-                                    item.id,
-                                    (itemQuantity[item.id] || item.quantity) + 1
-                                  )
-                                }
-                                disabled={isUpdating}
-                              >
-                                +
-                              </Button>
-                            </QuantityBox>
-                          </Box>
-                          <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
-                            <Button
-                              variant="outlined"
-                              sx={{
-                                flex: 1,
-                                borderColor: flipkartTheme.palette.primary.main,
-                                color: flipkartTheme.palette.primary.main,
-                                fontWeight: 600,
-                                "&:hover": {
-                                  bgcolor: 'transparent',
-                                  textDecoration: 'underline'
-                                }
-                              }}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleMoveToWishlist(item);
-                              }}
-                              disabled={isUpdating || movingToWishlistId === item.id}
+                            <Stack
+                              direction={{ xs: "column", sm: "row" }}
+                              spacing={{ xs: 0, sm: 1 }}
+                              divider={
+                                <Divider
+                                  orientation="vertical"
+                                  flexItem
+                                  sx={{ display: { xs: "none", sm: "block" } }}
+                                />
+                              }
+                              sx={{ mb: 1, flexWrap: "wrap" }}
                             >
-                              {movingToWishlistId === item.id ? <CircularProgress size={20} color="inherit" /> : "SAVE FOR LATER"}
-                            </Button>
-                            <Button
-                              variant="contained"
+                              <Typography
+                                sx={{
+                                  fontSize: "12px",
+                                  color: flipkartTheme.palette.text.secondary,
+                                }}
+                              >
+                                Brand: {item.brand_name || "-"}
+                              </Typography>
+                              <Typography
+                                sx={{
+                                  fontSize: "12px",
+                                  color: flipkartTheme.palette.text.secondary,
+                                }}
+                              >
+                                SKU: {item.sku_number}
+                              </Typography>
+                            </Stack>
+                            <Typography
+                              variant="body2"
                               sx={{
-                                flex: 1,
-                                bgcolor: flipkartTheme.palette.primary.main,
-                                color: flipkartTheme.palette.background.paper,
-                                fontWeight: 600,
-                                "&:hover": { bgcolor: flipkartTheme.palette.primary.dark }
+                                fontWeight: 500,
+                                color: flipkartTheme.palette.text.secondary,
                               }}
-                              onClick={() => handleSingleProductCheckout(item)}
-                              disabled={isPlacingOrder || isUpdating}
                             >
-                              Checkout
-                            </Button>
-                          </Box>
-                        </ProductDetailsContainer>
-                        <DeleteIconContainer>
-                          <IconButton
-                            aria-label="delete item"
-                            sx={{
-                              color: flipkartTheme.palette.error.main,
-                            }}
-                            onClick={() => handleDeleteConfirmation(item.id)}
-                            disabled={isUpdating}
-                          >
-                            <HighlightOffIcon />
-                          </IconButton>
-                        </DeleteIconContainer>
-                      </CartItemContainer>
-                    </Box>
-                  ))}
+                              Each item price: {item.currency}
+                              {hasDiscount ? (
+                                <>
+                                  <span style={{ fontWeight: 700 }}>
+                                    {item.discounted_price?.toFixed(2)}
+                                  </span>
+                                  <span
+                                    style={{
+                                      textDecoration: "line-through",
+                                      color: "#888",
+                                      marginLeft: 8,
+                                      fontWeight: 400,
+                                    }}
+                                  >
+                                    {item.price?.toFixed(2)}
+                                  </span>
+                                  {item.applied_discount_value && (
+                                    <span
+                                      style={{
+                                        color: "#fff",
+                                        fontSize: 12,
+                                        fontWeight: 500,
+                                        background: flipkartTheme.palette.error.main,
+                                        borderRadius: 4,
+                                        padding: "2px 8px",
+                                        marginLeft: 8,
+                                      }}
+                                    >
+                                      {item.applied_discount_unit === "%"
+                                        ? `${item.applied_discount_value}% OFF`
+                                        : `-${item.currency}${item.applied_discount_value} OFF`}
+                                    </span>
+                                  )}
+                                </>
+                              ) : (
+                                <span style={{ fontWeight: 700 }}>
+                                  {item.price?.toFixed(2)}
+                                </span>
+                              )}
+                            </Typography>
+                            <Box sx={{ my: 1 }}>
+                              <Typography
+                                variant="h6"
+                                sx={{
+                                  fontWeight: 700,
+                                  color: flipkartTheme.palette.text.primary,
+                                  fontSize: "1.25rem",
+                                }}
+                              >
+                                {item.currency}
+                                {(itemQuantity[item.id] * displayPrice)?.toFixed(2)}
+                              </Typography>
+                            </Box>
+                            <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
+                              <QuantityBox sx={{ width: "fit-content" }}>
+                                <Button
+                                  sx={{
+                                    minWidth: 32,
+                                    px: 0,
+                                    color: flipkartTheme.palette.text.primary,
+                                    fontWeight: 700,
+                                    fontSize: 20,
+                                  }}
+                                  onClick={() =>
+                                    handleQuantityChange(
+                                      item.id,
+                                      Math.max(1, (itemQuantity[item.id] || item.quantity) - 1)
+                                    )
+                                  }
+                                  disabled={isUpdating}
+                                >
+                                  -
+                                </Button>
+                                <TextField
+                                  type="number"
+                                  value={itemQuantity[item.id] || item.quantity}
+                                  onChange={(e) =>
+                                    handleQuantityChange(item.id, e.target.value)
+                                  }
+                                  size="small"
+                                  inputProps={{
+                                    min: 1,
+                                    style: { textAlign: "center", padding: "6px 0" },
+                                  }}
+                                  sx={{
+                                    width: "50px",
+                                    "& .MuiInputBase-input": {
+                                      textAlign: "center",
+                                      fontWeight: 600,
+                                      fontSize: 15,
+                                    },
+                                  }}
+                                  disabled={isUpdating}
+                                />
+                                <Button
+                                  sx={{
+                                    minWidth: 32,
+                                    px: 0,
+                                    color: flipkartTheme.palette.text.primary,
+                                    fontWeight: 700,
+                                    fontSize: 20,
+                                  }}
+                                  onClick={() =>
+                                    handleQuantityChange(
+                                      item.id,
+                                      (itemQuantity[item.id] || item.quantity) + 1
+                                    )
+                                  }
+                                  disabled={isUpdating}
+                                >
+                                  +
+                                </Button>
+                              </QuantityBox>
+                            </Box>
+                            <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
+                              <Button
+                                variant="outlined"
+                                sx={{
+                                  flex: 1,
+                                  borderColor: flipkartTheme.palette.primary.main,
+                                  color: flipkartTheme.palette.primary.main,
+                                  fontWeight: 600,
+                                  "&:hover": {
+                                    bgcolor: 'transparent',
+                                    textDecoration: 'underline'
+                                  }
+                                }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleMoveToWishlist(item);
+                                }}
+                                disabled={isUpdating || movingToWishlistId === item.id}
+                              >
+                                {movingToWishlistId === item.id ? <CircularProgress size={20} color="inherit" /> : "SAVE FOR LATER"}
+                              </Button>
+                              <Button
+                                variant="contained"
+                                sx={{
+                                  flex: 1,
+                                  bgcolor: flipkartTheme.palette.primary.main,
+                                  color: flipkartTheme.palette.background.paper,
+                                  fontWeight: 600,
+                                  "&:hover": { bgcolor: flipkartTheme.palette.primary.dark }
+                                }}
+                                onClick={() => handleSingleProductCheckout(item)}
+                                disabled={isPlacingOrder || isUpdating}
+                              >
+                                Checkout
+                              </Button>
+                            </Box>
+                          </ProductDetailsContainer>
+                          <DeleteIconContainer>
+                            <IconButton
+                              aria-label="delete item"
+                              sx={{
+                                color: flipkartTheme.palette.error.main,
+                              }}
+                              onClick={() => handleDeleteConfirmation(item.id)}
+                              disabled={isUpdating}
+                            >
+                              <HighlightOffIcon />
+                            </IconButton>
+                          </DeleteIconContainer>
+                        </CartItemContainer>
+                      </Box>
+                    );
+                  })}
                   <Box
                     sx={{
                       mt: 3,
