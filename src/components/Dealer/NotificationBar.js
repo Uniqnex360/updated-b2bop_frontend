@@ -125,26 +125,7 @@ const NotificationBar = ({ cartCount, userData, toggleSidebar }) => {
         display: 'flex', 
         justifyContent: { xs: 'center', sm: 'flex-start' }
       }}>
-        <TextField
-          variant="outlined"
-          placeholder="Search Brand, Category..."
-          size="small"
-          sx={{ width: '100%', maxWidth: 500 }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon sx={{ color: '#94a3b8' }} />
-              </InputAdornment>
-            ),
-            sx: {
-              borderRadius: '8px',
-              bgcolor: '#f8fafc',
-              '& fieldset': { border: 'none' },
-              '&:hover fieldset': { border: 'none' },
-              '&.Mui-focused fieldset': { border: '1px solid #3b82f6' },
-            }
-          }}
-        />
+
       </Box>
 
       {/* Right - Navigation Icons and Profile */}

@@ -71,29 +71,7 @@ const NotificationBar = ({ toggleSidebar }) => {
           Seller Dashboard
         </Typography>
 
-        <TextField
-          variant="outlined"
-          placeholder="Search Brand, Category, Buyer..."
-          size="small"
-          sx={{ 
-            width: '100%', 
-            maxWidth: { xs: 'none', sm: 300, md: 500 },
-          }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon sx={{ color: '#94a3b8' }} />
-              </InputAdornment>
-            ),
-            sx: {
-              borderRadius: '8px',
-              bgcolor: '#f8fafc',
-              '& fieldset': { border: 'none' },
-              '&:hover fieldset': { border: 'none' },
-              '&.Mui-focused fieldset': { border: '1px solid #3b82f6' },
-            }
-          }}
-        />
+
       </Box>
 
       {/* Right - Profile */}
