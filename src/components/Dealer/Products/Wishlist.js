@@ -124,7 +124,9 @@ const Wishlist = ({ fetchCartCount, fetchWishlist }) => {
           user_id: userId,
           product_id: product.product_id,
           quantity: 1,
-          price: product.price,
+          price: product.discounted_price !== undefined && product.discounted_price !== null
+            ? product.discounted_price
+            : product.price,
         }
       );
 
@@ -245,25 +247,35 @@ const Wishlist = ({ fetchCartCount, fetchWishlist }) => {
                     height: 160,
                   }}
                 />
-                {product.discount > 0 &&
-                  product.price.toFixed(2) !== product.was_price.toFixed(2) && (
-                    <Chip
-                      icon={<LocalOfferIcon sx={{ color: "#fff" }} />}
-                      label={`${product.discount}% OFF`}
-                      size="small"
-                      sx={{
-                        position: "absolute",
-                        top: 10,
-                        left: 10,
-                        bgcolor: flipkartBlue,
-                        color: "#fff",
-                        fontWeight: 600,
-                        fontSize: "12px",
-                        px: 1,
-                        zIndex: 2,
-                      }}
-                    />
-                  )}
+                {/* Discount Chip: Show backend discount percent or applied_discount_value/unit */}
+                {(product.discount > 0 ||
+                  (product.applied_discount_value && product.applied_discount_unit)) &&
+                  (product.discounted_price !== undefined &&
+                    product.discounted_price !== null &&
+                    product.discounted_price !== product.price) && (
+                  <Chip
+                    icon={<LocalOfferIcon sx={{ color: "#fff" }} />}
+                    label={
+                      product.applied_discount_value && product.applied_discount_unit
+                        ? product.applied_discount_unit === "%"
+                          ? `${product.applied_discount_value}% OFF`
+                          : `Save ${product.currency}${product.applied_discount_value}`
+                        : `${product.discount}% OFF`
+                    }
+                    size="small"
+                    sx={{
+                      position: "absolute",
+                      top: 10,
+                      left: 10,
+                      bgcolor: flipkartBlue,
+                      color: "#fff",
+                      fontWeight: 600,
+                      fontSize: "12px",
+                      px: 1,
+                      zIndex: 2,
+                    }}
+                  />
+                )}
                 {product.in_cart && (
                   <Chip
                     label="In Cart"
@@ -344,9 +356,15 @@ const Wishlist = ({ fetchCartCount, fetchWishlist }) => {
                       }}
                     >
                       {product.currency}
-                      {product.price.toFixed(2)}
+                      {(product.discounted_price !== undefined &&
+                        product.discounted_price !== null &&
+                        product.discounted_price !== product.price)
+                        ? product.discounted_price.toFixed(2)
+                        : product.price.toFixed(2)}
                     </Typography>
-                    {product.price.toFixed(2) !== product.was_price.toFixed(2) && (
+                    {(product.discounted_price !== undefined &&
+                      product.discounted_price !== null &&
+                      product.discounted_price !== product.price) && (
                       <Typography
                         variant="body2"
                         color="text.secondary"
@@ -357,20 +375,24 @@ const Wishlist = ({ fetchCartCount, fetchWishlist }) => {
                         }}
                       >
                         {product.currency}
-                        {product.was_price.toFixed(2)}
+                        {product.price.toFixed(2)}
                       </Typography>
                     )}
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        fontSize: "0.95rem",
-                        color: "#388e3c",
-                        fontWeight: 600,
-                        ml: 1,
-                      }}
-                    >
-                      {product.discount > 0 ? `Save ${product.currency}${(product.was_price - product.price).toFixed(2)}` : ""}
-                    </Typography>
+                    {(product.discounted_price !== undefined &&
+                      product.discounted_price !== null &&
+                      product.discounted_price !== product.price) && (
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontSize: "0.95rem",
+                          color: "#388e3c",
+                          fontWeight: 600,
+                          ml: 1,
+                        }}
+                      >
+                        {`Save ${product.currency}${(product.price - product.discounted_price).toFixed(2)}`}
+                      </Typography>
+                    )}
                   </Stack>
                   <Typography sx={{ fontSize: "12px", color: "#878787", mt: 0.5 }}>
                     MSRP: {product.currency}{product.msrp?.toFixed(2)}

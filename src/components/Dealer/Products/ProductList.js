@@ -881,7 +881,7 @@ const ProductList = ({ fetchCartCount }) => {
                                   ? product.logo
                                   : soonImg)
                               }
-                              alt={product.name}
+                              alt={product.product_name}
                               style={{
                                 width: 44,
                                 height: 44,
@@ -894,7 +894,7 @@ const ProductList = ({ fetchCartCount }) => {
                           </Box>
                         </TableCell>
                         <TableCell align="left" sx={{ fontWeight: 500, fontFamily: 'Roboto' }}>{product.mpn}</TableCell>
-                        <TableCell align="left" sx={{ fontWeight: 500, color: "#212121", fontFamily: 'Roboto' }}>{product.name}</TableCell>
+                        <TableCell align="left" sx={{ fontWeight: 500, color: "#212121", fontFamily: 'Roboto' }}>{product.product_name}</TableCell>
                         <TableCell align="left" sx={{ color: "#555", fontFamily: 'Roboto' }}>{product.brand_name}</TableCell>
                         <TableCell align="left" sx={{ color: "#555", fontFamily: 'Roboto' }}>{product.end_level_category}</TableCell>
                         <TableCell align="right" sx={{ fontWeight: 600, color: "#2874f0", fontFamily: 'Roboto' }}>
@@ -1009,7 +1009,7 @@ const ProductList = ({ fetchCartCount }) => {
                                   ? product.logo
                                   : soonImg)
                               }
-                              alt={product.name || "Product Image"}
+                              alt={product.product_name || "Product Image"}
                               sx={{
                                 objectFit: "contain",
                                 borderRadius: 1,
@@ -1068,7 +1068,7 @@ const ProductList = ({ fetchCartCount }) => {
                                   fontSize: "0.85rem",
                                 }}
                               >
-                                {product.name}
+                                {product.product_name}
                               </Typography>
                               <Typography
                                 sx={{
