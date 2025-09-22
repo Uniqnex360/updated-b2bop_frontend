@@ -35,6 +35,7 @@ const Wishlist = ({ fetchCartCount, fetchWishlist }) => {
   const [addingToCartId, setAddingToCartId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Updated: fetchData now expects the backend to return the new fields (was_price, discount, in_cart, etc.)
   const fetchData = useCallback(
     async (query = "") => {
       try {
@@ -68,7 +69,6 @@ const Wishlist = ({ fetchCartCount, fetchWishlist }) => {
   const handleSearchChange = (e) => {
     const query = e.target.value;
     setSearchQuery(query);
-    // Debounce or directly call API on change
     if (query.length > 2 || query.length === 0) {
       fetchData(query);
     }
@@ -83,7 +83,6 @@ const Wishlist = ({ fetchCartCount, fetchWishlist }) => {
       await axios.get(
         `${process.env.REACT_APP_IP}deleteWishlist/?wish_list_id=${itemToDelete}`
       );
-      // Re-fetch the data to get the updated list from the server
       fetchData(searchQuery);
     } catch (error) {
       setError("Failed to remove item from wishlist");
@@ -136,10 +135,8 @@ const Wishlist = ({ fetchCartCount, fetchWishlist }) => {
       if (fetchCartCount) {
         fetchCartCount();
       }
-      // Re-fetch the data to get the updated list from the server
       fetchData(searchQuery);
     } catch (error) {
-      console.error("Failed to add to cart or remove from wishlist:", error);
       setError("Failed to move item to cart.");
       setWishlist(originalWishlist);
     } finally {
@@ -419,14 +416,18 @@ const Wishlist = ({ fetchCartCount, fetchWishlist }) => {
                       py: 0.5,
                       fontSize: "0.95rem",
                     }}
-                    disabled={!product.availability || addingToCartId === product.id}
+                    disabled={!product.availability || addingToCartId === product.id || product.in_cart}
                     onClick={(e) => {
                       e.stopPropagation();
                       handleAddToCart(product);
                     }}
                     startIcon={addingToCartId === product.id ? <CircularProgress size={20} color="inherit" /> : <ShoppingCartOutlinedIcon />}
                   >
-                    {addingToCartId === product.id ? "Adding..." : "Add to Cart"}
+                    {product.in_cart
+                      ? "In Cart"
+                      : addingToCartId === product.id
+                      ? "Adding..."
+                      : "Add to Cart"}
                   </Button>
                   <Tooltip title="Remove Item">
                     <IconButton

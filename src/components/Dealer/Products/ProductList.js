@@ -191,12 +191,13 @@ const ProductList = ({ fetchCartCount }) => {
           manufactureUnitId = data.manufacture_unit_id;
           buyerId = data.id; // Use your actual buyer id field if different
         }
+        // --- CHANGED: Use page and page_size for backend pagination ---
         const requestData = {
           manufacture_unit_id: manufactureUnitId,
           product_category_id: selectedCategoryId || "",
           industry_id: industry?.id || "",
-          skip: (page - 1) * productsPerPage,
-          limit: productsPerPage,
+          page: page,
+          page_size: productsPerPage,
           sort_by: "price",
           sort_by_value: sortByValue,
           filters: "all",
@@ -212,6 +213,13 @@ const ProductList = ({ fetchCartCount }) => {
         const products = productResponse.data.data || [];
         setProducts(products);
         setNoProductsFound(products.length === 0);
+
+        // --- Use backend pagination metadata if available ---
+        const pagination = productResponse.data.pagination;
+        if (pagination) {
+          setTotalPages(pagination.total_pages);
+          setProductsCount(pagination.total_count);
+        }
       } catch (err) {
         setError("Failed to load items");
       } finally {
@@ -228,7 +236,7 @@ const ProductList = ({ fetchCartCount }) => {
     priceRange,
   ]);
 
-  // Product count
+  // Product count (can be removed if backend always returns pagination metadata)
   useEffect(() => {
     const productCountForDealer = async () => {
       try {
@@ -404,6 +412,15 @@ const ProductList = ({ fetchCartCount }) => {
     } finally {
       setSearchLoading(false);
     }
+  };
+
+  // Pagination handler: update page state and URL query param
+  const handlePageChange = (_, value) => {
+    setPage(value);
+    // Update the URL with the new page param (preserving other params)
+    const params = new URLSearchParams(location.search);
+    params.set("page", value);
+    navigate({ search: params.toString() }, { replace: true });
   };
 
   // Card actions
@@ -1231,7 +1248,7 @@ const ProductList = ({ fetchCartCount }) => {
               <Pagination
                 count={totalPages}
                 page={page}
-                onChange={(_, value) => setPage(value)}
+                onChange={handlePageChange}
                 color="primary"
                 shape="rounded"
                 size="large"
