@@ -139,12 +139,25 @@ function AddNewDealer({ reloadDealers, onClose }) {
       );
 
       console.log("API Response:", response);
-      if (response.data && response.data.data && response.data.data.username) {
-        setUsername(response.data.data.username);
-      } else {
-        console.error("Username not found in response:", response.data);
-        setUsername("Generation Failed"); // Indicate failure
+      console.log("Raw response data:", JSON.stringify(response.data));
+      
+      // Check for both possible response structures
+      if (response.data) {
+        // Direct username property at top level (current backend)
+        if (response.data.username) {
+          setUsername(response.data.username);
+          return;
+        }
+        
+        // Nested under data property (expected structure)
+        if (response.data.data && response.data.data.username) {
+          setUsername(response.data.data.username);
+          return;
+        }
       }
+      
+      console.error("Username not found in response:", response.data);
+      setUsername("Generation Failed"); // Indicate failure
     } catch (error) {
       console.error("Error generating username:", error);
       setUsername("Generation Error"); // Indicate error
@@ -168,6 +181,7 @@ function AddNewDealer({ reloadDealers, onClose }) {
       if (response.status === 200) {
         const message =
           response.data.data?.data?.message ||
+          response.data.message ||
           "User created successfully and email sent!";
         setSuccessMessage(message);
         setSnackbarOpen(true); // Open custom snackbar

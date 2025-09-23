@@ -339,13 +339,13 @@ function PaymentPage() {
                         >
                           {item.name}
                         </Typography>
-                        <Typography variant="body2" sx={{ mt: 0.5 }}>
-                          Quantity: {item.quantity} x ${item.price.toFixed(2)}
-                        </Typography>
+                   <Typography variant="body2" sx={{ mt: 0.5 }}>
+  Quantity: {item.quantity} x ${(item.price ?? 0).toFixed(2)}
+</Typography>
                       </Box>
-                      <Typography variant="subtitle1" sx={{ fontWeight: 600, color: 'text.primary' }}>
-                        ${(item.price * item.quantity).toFixed(2)}
-                      </Typography>
+<Typography variant="subtitle1" sx={{ fontWeight: 600, color: 'text.primary' }}>
+  ${((item.price ?? 0) * (item.quantity ?? 1)).toFixed(2)}
+</Typography>
                     </Box>
                   ))}
                 </Box>
@@ -354,8 +354,9 @@ function PaymentPage() {
 
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                   <Typography variant="h6" sx={{ color: 'text.primary' }}>Order Total</Typography>
-                  <Typography variant="h5" color="primary" sx={{ fontWeight: 700 }}>${totalAmount?.toFixed(2) || '0.00'}</Typography>
-                </Box>
+<Typography variant="h5" color="primary" sx={{ fontWeight: 700 }}>
+  ${(totalAmount ?? 0).toFixed(2)}
+</Typography>                </Box>
                 <PaymentButton
                   fullWidth
                   size="large"
