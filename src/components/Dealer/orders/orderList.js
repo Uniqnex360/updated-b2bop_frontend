@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, Link as RouterLink } from "react-router-dom";
 import {
   Box,
@@ -157,7 +157,6 @@ const OrderList = () => {
   const filter = location.state?.filter || {};
   const [orders, setOrders] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [rowsPerPage] = useState(25);
   const [anchorEl, setAnchorEl] = useState(null);
   const [currentColumn, setCurrentColumn] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
@@ -171,21 +170,23 @@ const OrderList = () => {
   const [endDate, setEndDate] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Pagination states
   const initialPage = parseInt(queryParams.get("page"), 10) || 1;
   const [page, setPage] = useState(initialPage);
+  const [pageSize] = useState(25);
+  const [totalCount, setTotalCount] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
 
-  useEffect(() => {
-    if (searchTerm) setPage(1);
-  }, [searchTerm]);
-
-  const fetchOrderList = async (key, direction) => {
+  // Fetch orders from backend with pagination
+  const fetchOrderList = async (key, direction, pageNum = page) => {
     setLoading(true);
     try {
       const formattedStartDate = selectedDate
         ? selectedDate.format("YYYY-MM-DD")
-        : null;
-      const formattedEndDate = endDate ? endDate.format("YYYY-MM-DD") : null;
-      const sort_by_value = direction === "asc" ? 1 : direction === "desc" ? -1 : "";
+        : "";
+      const formattedEndDate = endDate ? endDate.format("YYYY-MM-DD") : "";
+      const sort_by_value =
+        direction === "asc" ? 1 : direction === "desc" ? -1 : "";
 
       const response = await axios.post(
         `${process.env.REACT_APP_IP}obtainOrderListForDealer/`,
@@ -199,21 +200,37 @@ const OrderList = () => {
           is_reorder,
           start_date: formattedStartDate,
           end_date: formattedEndDate,
+          page: pageNum,
+          page_size: pageSize,
         }
       );
       const fetchedOrders = Array.isArray(response?.data?.data)
         ? response.data.data
         : [];
       setOrders(fetchedOrders);
+
+      // Use backend pagination metadata
+      const pagination = response.data.pagination;
+      if (pagination) {
+        setTotalCount(pagination.total_count);
+        setTotalPages(pagination.total_pages);
+        setPage(pagination.current_page);
+      } else {
+        setTotalCount(fetchedOrders.length);
+        setTotalPages(1);
+      }
     } catch (error) {
       setOrders([]);
+      setTotalCount(0);
+      setTotalPages(1);
     } finally {
       setLoading(false);
     }
   };
 
+  // Fetch on mount and when filters change
   useEffect(() => {
-    fetchOrderList(sortConfig.key, sortConfig.direction);
+    fetchOrderList(sortConfig.key, sortConfig.direction, page);
     // eslint-disable-next-line
   }, [
     user?.id,
@@ -225,32 +242,23 @@ const OrderList = () => {
     endDate,
     sortConfig.key,
     sortConfig.direction,
+    page,
+    pageSize,
   ]);
 
-  const filteredOrders = useMemo(() => {
-    let tempOrders = [...orders];
+  // Reset to page 1 on filter/search change
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm]);
 
-    if (searchTerm) {
-      tempOrders = tempOrders.filter(
-        (order) =>
-          order.order_id?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
-          order.payment_status?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          order.delivery_status?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          order.fulfilled_status?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    // Server-side filtering is already handled by fetchOrderList, but client-side filtering by searchTerm is needed here.
-    // The other filters (statuses, dates, sorting) trigger a new API call, handled by the useEffect.
-
-    return tempOrders;
-  }, [orders, searchTerm]);
-
-  const totalPages = Math.ceil(filteredOrders.length / rowsPerPage);
-
-  const paginatedOrders = filteredOrders.slice(
-    (page - 1) * rowsPerPage,
-    (page - 1) * rowsPerPage + rowsPerPage
+  // Client-side search filter
+  const filteredOrders = orders.filter((order) =>
+    searchTerm
+      ? (order.order_id?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.payment_status?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.delivery_status?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.fulfilled_status?.toLowerCase().includes(searchTerm.toLowerCase()))
+      : true
   );
 
   const handlePayment = (orderId) => {
@@ -320,6 +328,7 @@ const OrderList = () => {
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
+    fetchOrderList(sortConfig.key, sortConfig.direction, newPage);
   };
 
   const breadcrumbs = [
@@ -422,7 +431,7 @@ const OrderList = () => {
                   }}
                 >
                   <Typography variant="body2" color="text.secondary">
-                    Total Orders: <strong>{filteredOrders.length}</strong>
+                    Total Orders: <strong>{totalCount}</strong>
                   </Typography>
                 </Box>
               </Stack>
@@ -472,8 +481,8 @@ const OrderList = () => {
                     <CircularProgress color="primary" />
                   </StyledTableCell>
                 </StyledTableRow>
-              ) : paginatedOrders.length > 0 ? (
-                paginatedOrders.map((order) => (
+              ) : filteredOrders.length > 0 ? (
+                filteredOrders.map((order) => (
                   <StyledTableRow
                     key={order.order_id}
                     onClick={() => handleOrderClick(order.id)}
@@ -558,7 +567,7 @@ const OrderList = () => {
           </Table>
         </StyledTableContainer>
 
-        {filteredOrders.length > rowsPerPage && (
+        {totalPages > 1 && (
           <Box sx={{ display: "flex", justifyContent: "center", mt: 3, mb: 2 }}>
             <Pagination
               count={totalPages}
